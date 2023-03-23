@@ -43,8 +43,13 @@ statement
     | assignment SEMI
     | invoke SEMI
     | Stop SEMI
+    | return SEMI
     ;
-// todo: return type
+
+return
+    : Return expression
+    ;
+
 function
     :  To ID LPAR (formalParameters)? RPAR COLON returnType block
     ;
@@ -194,6 +199,7 @@ False: 'false';
 And: 'and';
 Or: 'or';
 Stop: 'stop';
+Return: 'return';
 To: 'to';
 Variable: 'variable';
 If: 'if';
