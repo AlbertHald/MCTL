@@ -73,6 +73,7 @@ assignment
 
 invoke
     : ID LPAR (actualParameters)? RPAR
+    | (ID | STRING) DOT (Add|IndexesOf|SubString|SubList) LPAR actualParameters RPAR
     ;
 
 formalParameters
@@ -196,6 +197,10 @@ Boolean: 'BOOLEAN';
 Struct: 'struct';
 True: 'true';
 False: 'false';
+Add: 'add';
+IndexesOf: 'indexesOf';
+SubString: 'subString';
+SubList: 'subString';
 And: 'and';
 Or: 'or';
 Stop: 'stop';
