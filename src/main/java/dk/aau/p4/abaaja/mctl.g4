@@ -72,7 +72,7 @@ assignment
     ;
 
 invoke
-    : ID LPAR actualParameters RPAR
+    : ID LPAR (actualParameters)? RPAR
     ;
 
 formalParameters
@@ -91,7 +91,7 @@ actualParameters
 
 
 postfixExpression
-    : ID LPAR actualParameters RPAR
+    : invoke
     | LPAR expression RPAR
     ;
 
