@@ -90,14 +90,14 @@ actualParameters
 
 
 
-invokeExpression
+postfixExpression
     : ID LPAR actualParameters RPAR
-    |
+    | LPAR expression RPAR
     ;
 
 unaryExpression
     : (NOT|MINUS|PLUS) castExpression
-    | invokeExpression
+    | postfixExpression
     ;
 
 castExpression

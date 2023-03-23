@@ -125,6 +125,18 @@ public class mctlBaseListener implements mctlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterReturn(mctlParser.ReturnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitReturn(mctlParser.ReturnContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterFunction(mctlParser.FunctionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -233,13 +245,13 @@ public class mctlBaseListener implements mctlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterInvokeExpression(mctlParser.InvokeExpressionContext ctx) { }
+	@Override public void enterPostfixExpression(mctlParser.PostfixExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitInvokeExpression(mctlParser.InvokeExpressionContext ctx) { }
+	@Override public void exitPostfixExpression(mctlParser.PostfixExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

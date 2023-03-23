@@ -65,6 +65,12 @@ public interface mctlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStatement(mctlParser.StatementContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link mctlParser#return}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReturn(mctlParser.ReturnContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link mctlParser#function}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -119,11 +125,11 @@ public interface mctlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitActualParameters(mctlParser.ActualParametersContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link mctlParser#invokeExpression}.
+	 * Visit a parse tree produced by {@link mctlParser#postfixExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitInvokeExpression(mctlParser.InvokeExpressionContext ctx);
+	T visitPostfixExpression(mctlParser.PostfixExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link mctlParser#unaryExpression}.
 	 * @param ctx the parse tree

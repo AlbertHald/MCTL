@@ -98,6 +98,16 @@ public interface mctlListener extends ParseTreeListener {
 	 */
 	void exitStatement(mctlParser.StatementContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link mctlParser#return}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturn(mctlParser.ReturnContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link mctlParser#return}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturn(mctlParser.ReturnContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link mctlParser#function}.
 	 * @param ctx the parse tree
 	 */
@@ -188,15 +198,15 @@ public interface mctlListener extends ParseTreeListener {
 	 */
 	void exitActualParameters(mctlParser.ActualParametersContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link mctlParser#invokeExpression}.
+	 * Enter a parse tree produced by {@link mctlParser#postfixExpression}.
 	 * @param ctx the parse tree
 	 */
-	void enterInvokeExpression(mctlParser.InvokeExpressionContext ctx);
+	void enterPostfixExpression(mctlParser.PostfixExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link mctlParser#invokeExpression}.
+	 * Exit a parse tree produced by {@link mctlParser#postfixExpression}.
 	 * @param ctx the parse tree
 	 */
-	void exitInvokeExpression(mctlParser.InvokeExpressionContext ctx);
+	void exitPostfixExpression(mctlParser.PostfixExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link mctlParser#unaryExpression}.
 	 * @param ctx the parse tree
