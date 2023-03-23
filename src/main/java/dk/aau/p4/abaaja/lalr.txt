@@ -1,0 +1,136 @@
+Prog    -> Lines
+
+Lines    -> Lines Line
+    |  Line
+    |  EPSILON
+
+Line    -> Dcl
+    |  Stmt
+    |  Cmnt
+    |  semicolon
+
+
+
+Dcl    -> Init
+    |  Func
+
+Stmt    -> If
+    |  Repeat
+    |  Assignment
+    |  Invoke semicolon
+    |  Stop
+
+Cmnt    -> hashtag leftcurl APhrase rightcurl
+
+
+Inits    -> Inits Init
+    |  Init
+    |  EPSILON
+
+Init    -> variable Id colon Dtype semicolon
+
+Func    -> to Id leftparen Dparams rightparen colon Drtype block
+
+If    -> if leftparen Expr rightparen block Else
+
+Else    -> else If
+    |  else leftcurl Lines rightcurl
+    |  EPSILON
+
+Repeat    -> repeat leftparen Expr rightparen leftcurl Lines rightcurl
+
+Assignments    -> Assignments Assignment
+    |  Assignment
+
+Assignment    -> Id assign Expr semicolon
+    |  Id PostfixOperator semicolon
+
+PostfixOperator    -> addone
+    |  subtractone
+
+Invoke    -> Id leftparen Iparams rightparen
+
+Stop    -> stop semicolon
+
+
+
+Dparams    -> Dparam comma Dparams
+    |  Dparam
+
+Dparam    -> Id colon Dtype
+    |  EPSILON
+
+# Potentielt problem?
+Iparams -> Iparam comma Iparams
+    |  Iparam
+
+Iparam    -> Expr
+
+# Double check this
+Expr    -> Expr Infxop SingularExpr
+    |  SingiularExpr
+
+# Fix EPSILON here
+SingularExpr    -> leftparen Expr rightparen
+    |  Prefxop Expr
+    |  Invoke
+    |  Id
+    |  Value
+    |  EPSILON
+
+Prefxop    -> not
+
+Infxop    -> Compop
+    | Logop
+    | Numop
+
+Compop    -> equal
+    |  lessthan
+    |  largerthan
+
+Logop    -> and
+    |  or
+
+Numop    -> add
+    |  subtract
+    |  divide
+    |  multiply
+    |  powerof
+    |  modulo
+
+Drtype    -> Dtype
+    |  NOTHING
+
+Dtype    -> Dtype Darray
+    |  STRUCT leftcurl Inits rightcurl
+    |  BOOLEAN
+    |  STRING
+    |  NUMBER
+
+Darray    -> leftsquare rightsquare
+
+Id    -> Id leftsquare Expr rightsquare
+    |  Id dot id
+    |  id
+
+Value    -> Struct
+    |  Boolean
+    |  String
+    |  Number
+    |  Nothing
+
+Struct    -> leftcurl Assignments rightcurl
+
+Boolean    -> true
+    |  false
+
+String    -> citationmark APhrase citationmark
+
+Number    -> Numpart dot Numpart
+    |  Numpart
+
+Numpart    -> digit
+
+Nothing    -> nothing
+
+APhrase    -> EPSILON
