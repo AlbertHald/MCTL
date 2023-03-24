@@ -25,7 +25,7 @@ variableDeclaration
     ;
 
 structDeclaration
-    : Struct STRUCTID structBlock
+    : Struct ID structBlock
     ;
 
 structBlock
@@ -152,7 +152,7 @@ baseVariableType
     : Boolean
     | String
     | Number
-    | STRUCTID
+    | ID
     ;
 
 boolean
@@ -200,7 +200,7 @@ False: 'false';
 Add: 'add';
 IndexesOf: 'indexesOf';
 SubString: 'subString';
-SubList: 'subString';
+SubList: 'subList';
 And: 'and';
 Or: 'or';
 Stop: 'stop';
@@ -211,7 +211,6 @@ If: 'if';
 Else: 'else';
 Repeat: 'repeat';
 
-STRUCTID: [A-Z_] [A-Z0-9_]*;
 ID: [a-zA-Z_] [a-zA-Z0-9_]*;
 NUMBER: [0-9]+('.'[0-9]*)?;
 
