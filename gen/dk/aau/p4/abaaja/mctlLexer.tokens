@@ -44,9 +44,8 @@ Variable=43
 If=44
 Else=45
 Repeat=46
-STRUCTID=47
-ID=48
-NUMBER=49
+ID=47
+NUMBER=48
 '=='=3
 '!='=4
 '<'=5
@@ -79,6 +78,8 @@ NUMBER=49
 'false'=33
 'add'=34
 'indexesOf'=35
+'subString'=36
+'subList'=37
 'and'=38
 'or'=39
 'stop'=40
