@@ -33,7 +33,7 @@ structBlock
     ;
 
 id
-    : ID (DOT id)?
+    : ID DOT id
     | ID (LSQR expression RSQR)*
     ;
 
