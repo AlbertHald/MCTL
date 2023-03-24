@@ -1,5 +1,5 @@
 // Generated from java-escape by ANTLR 4.11.1
-package gen;
+package dk.aau.p4.abaaja;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
 /**
