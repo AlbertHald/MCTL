@@ -51,16 +51,15 @@ return
     ;
 
 function
-    :  To ID LPAR (formalParameters)? RPAR COLON returnType block
+    : To ID LPAR (formalParameters)? RPAR COLON returnType block
     ;
 
 if
-    : If LPAR expression RPAR block (else)?
+    : ifLiteral block (Else ifLiteral block)* (Else block)?
     ;
 
-else
-    : Else if
-    | Else block
+ifLiteral
+    : If LPAR expression RPAR
     ;
 
 repeat
@@ -69,6 +68,7 @@ repeat
 
 assignment
     : id ASSIGN expression
+    | id PLUS PLUS
     ;
 
 invoke
@@ -88,55 +88,21 @@ actualParameters
     : (expression COMMA)* expression (COMMA)?
     ;
 
-
-
-
-postfixExpression
+expression
     : invoke
     | LPAR expression RPAR
-    ;
-
-unaryExpression
-    : (NOT|MINUS|PLUS) castExpression
-    | postfixExpression
-    ;
-
-castExpression
-    : unaryExpression
-    | LPAR variableType RPAR castExpression
+    | (NOT|MINUS|PLUS) expression
+    | LPAR variableType RPAR expression
     | boolean
     | NUMBER
     | id
     | STRING
-    ;
-
-multiplicativeExpression
-    : castExpression ((MULTIPLY|DIVIDE|MODULO) castExpression)*
-    ;
-
-additiveExpression
-    : multiplicativeExpression ((PLUS|MINUS) multiplicativeExpression)*
-    ;
-
-relationalExpression
-    : additiveExpression ((LESS|LESSEQUAL|GREATER|GREATEREQUAL) additiveExpression)*
-    ;
-
-equalityExpression
-    : relationalExpression ((EQUAL|NOTEQUAL) relationalExpression)*
-    ;
-
-logicalAndExpression
-    : equalityExpression (And equalityExpression)*
-    ;
-
-logicalOrExpression
-    : logicalAndExpression (Or logicalAndExpression)*
-    ;
-
-expression
-    : LPAR expression RPAR
-    | logicalOrExpression
+    | expression (MULTIPLY|DIVIDE|MODULO) expression
+    | expression (PLUS|MINUS) expression
+    | expression (LESS|LESSEQUAL|GREATER|GREATEREQUAL) expression
+    | expression (EQUAL|NOTEQUAL) expression
+    | expression And expression
+    | expression Or expression
     ;
 
 returnType
