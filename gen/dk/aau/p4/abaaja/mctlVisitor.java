@@ -89,6 +89,23 @@ public interface mctlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitIdStruct(mctlParser.IdStructContext ctx);
+<<<<<<< Updated upstream
+=======
+	/**
+	 * Visit a parse tree produced by the {@code idArray}
+	 * labeled alternative in {@link mctlParser#id}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdArray(mctlParser.IdArrayContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code idVar}
+	 * labeled alternative in {@link mctlParser#id}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdVar(mctlParser.IdVarContext ctx);
+>>>>>>> Stashed changes
 	/**
 	 * Visit a parse tree produced by the {@code idArray}
 	 * labeled alternative in {@link mctlParser#id}.
@@ -291,6 +308,37 @@ public interface mctlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitUnaryExp(mctlParser.UnaryExpContext ctx);
+<<<<<<< Updated upstream
+=======
+	/**
+	 * Visit a parse tree produced by the {@code equalNotExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEqualNotExp(mctlParser.EqualNotExpContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code parenExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParenExp(mctlParser.ParenExpContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code stringExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStringExp(mctlParser.StringExpContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code invExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInvExp(mctlParser.InvExpContext ctx);
+>>>>>>> Stashed changes
 	/**
 	 * Visit a parse tree produced by the {@code equalNotExp}
 	 * labeled alternative in {@link mctlParser#expression}.

@@ -8,16 +8,16 @@ block
     ;
 
 line
-    : declaration           #dec
-    | statement             #state
-    | COMMENT               #blank
-    | SEMI                  #blank
+    : declaration
+    | statement
+    | COMMENT
+    | SEMI
     ;
 
 declaration
-    : variableDeclaration SEMI   #varDec
-    | function                   #funcDec
-    | structDeclaration          #structDec
+    : variableDeclaration SEMI
+    | function
+    | structDeclaration
     ;
 
 variableDeclaration
@@ -39,12 +39,12 @@ id
     ;
 
 statement
-    : if                #ifState
-    | repeat            #repeatState
-    | assignment SEMI   #assState
-    | invoke SEMI       #invState
-    | Stop SEMI         #stop
-    | return SEMI       #returnState
+    : if
+    | repeat
+    | assignment SEMI
+    | invoke SEMI
+    | Stop SEMI
+    | return SEMI
     ;
 
 return
@@ -107,8 +107,8 @@ expression
     ;
 
 returnType
-    : variableType  #varReturn
-    | Nothing       #nothing
+    : variableType
+    | Nothing
     ;
 
 variableType
@@ -116,10 +116,10 @@ variableType
     ;
 
 baseVariableType
-    : Boolean   #boolBase
-    | String    #stringBase
-    | Number    #numBase
-    | ID        #idBase
+    : Boolean
+    | String
+    | Number
+    | ID
     ;
 
 boolean

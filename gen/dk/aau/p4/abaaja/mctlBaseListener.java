@@ -156,6 +156,33 @@ public class mctlBaseListener implements mctlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitIdStruct(mctlParser.IdStructContext ctx) { }
+<<<<<<< Updated upstream
+=======
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIdArray(mctlParser.IdArrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIdArray(mctlParser.IdArrayContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterIdVar(mctlParser.IdVarContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitIdVar(mctlParser.IdVarContext ctx) { }
+>>>>>>> Stashed changes
 	/**
 	 * {@inheritDoc}
 	 *
@@ -516,6 +543,57 @@ public class mctlBaseListener implements mctlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitUnaryExp(mctlParser.UnaryExpContext ctx) { }
+<<<<<<< Updated upstream
+=======
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEqualNotExp(mctlParser.EqualNotExpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEqualNotExp(mctlParser.EqualNotExpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterParenExp(mctlParser.ParenExpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitParenExp(mctlParser.ParenExpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterStringExp(mctlParser.StringExpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitStringExp(mctlParser.StringExpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterInvExp(mctlParser.InvExpContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInvExp(mctlParser.InvExpContext ctx) { }
+>>>>>>> Stashed changes
 	/**
 	 * {@inheritDoc}
 	 *

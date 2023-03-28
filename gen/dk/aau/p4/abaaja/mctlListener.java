@@ -141,6 +141,33 @@ public interface mctlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitIdStruct(mctlParser.IdStructContext ctx);
+<<<<<<< Updated upstream
+=======
+	/**
+	 * Enter a parse tree produced by the {@code idArray}
+	 * labeled alternative in {@link mctlParser#id}.
+	 * @param ctx the parse tree
+	 */
+	void enterIdArray(mctlParser.IdArrayContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code idArray}
+	 * labeled alternative in {@link mctlParser#id}.
+	 * @param ctx the parse tree
+	 */
+	void exitIdArray(mctlParser.IdArrayContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code idVar}
+	 * labeled alternative in {@link mctlParser#id}.
+	 * @param ctx the parse tree
+	 */
+	void enterIdVar(mctlParser.IdVarContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code idVar}
+	 * labeled alternative in {@link mctlParser#id}.
+	 * @param ctx the parse tree
+	 */
+	void exitIdVar(mctlParser.IdVarContext ctx);
+>>>>>>> Stashed changes
 	/**
 	 * Enter a parse tree produced by the {@code idArray}
 	 * labeled alternative in {@link mctlParser#id}.
@@ -485,6 +512,57 @@ public interface mctlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitUnaryExp(mctlParser.UnaryExpContext ctx);
+<<<<<<< Updated upstream
+=======
+	/**
+	 * Enter a parse tree produced by the {@code equalNotExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterEqualNotExp(mctlParser.EqualNotExpContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code equalNotExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitEqualNotExp(mctlParser.EqualNotExpContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code parenExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterParenExp(mctlParser.ParenExpContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code parenExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitParenExp(mctlParser.ParenExpContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code stringExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterStringExp(mctlParser.StringExpContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code stringExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitStringExp(mctlParser.StringExpContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code invExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterInvExp(mctlParser.InvExpContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code invExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitInvExp(mctlParser.InvExpContext ctx);
+>>>>>>> Stashed changes
 	/**
 	 * Enter a parse tree produced by the {@code equalNotExp}
 	 * labeled alternative in {@link mctlParser#expression}.
