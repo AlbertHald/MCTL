@@ -126,11 +126,6 @@ boolean
     : (True|False)
     ;
 
-
-
-WS: [ \n\t\r]+ -> skip;
-COMMENT: '#{' .*? '}' -> skip;
-
 EQUAL: '==';
 NOTEQUAL: '!=';
 LESS: '<';
@@ -181,3 +176,5 @@ Repeat: 'repeat';
 ID: [a-zA-Z_] [a-zA-Z0-9_]*;
 NUMBER: [0-9]+('.'[0-9]*)?;
 
+COMMENT: '#{' .*? '}' -> skip;
+WS: [ \n\t\r]+ -> skip;
