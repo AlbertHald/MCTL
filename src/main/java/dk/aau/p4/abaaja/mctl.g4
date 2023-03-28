@@ -8,16 +8,16 @@ block
     ;
 
 line
-    : declaration
-    | statement
-    | COMMENT
-    | SEMI
+    : declaration           #dec
+    | statement             #state
+    | COMMENT               #blank
+    | SEMI                  #blank
     ;
 
 declaration
-    : variableDeclaration SEMI
-    | function
-    | structDeclaration
+    : variableDeclaration SEMI   #varDec
+    | function                   #funcDec
+    | structDeclaration          #structDec
     ;
 
 variableDeclaration
@@ -33,17 +33,18 @@ structBlock
     ;
 
 id
-    : ID DOT id
-    | ID (LSQR expression RSQR)*
+    : ID DOT id                     #idStruct
+    | ID (LSQR expression RSQR)+    #idArray
+    | ID                            #idVar
     ;
 
 statement
-    : if
-    | repeat
-    | assignment SEMI
-    | invoke SEMI
-    | Stop SEMI
-    | return SEMI
+    : if                #ifState
+    | repeat            #repeatState
+    | assignment SEMI   #assState
+    | invoke SEMI       #invState
+    | Stop SEMI         #stop
+    | return SEMI       #returnState
     ;
 
 return
@@ -67,13 +68,13 @@ repeat
     ;
 
 assignment
-    : id ASSIGN expression
-    | id PLUS PLUS
+    : id ASSIGN expression #exprAss
+    | id PLUS PLUS         #incrAss
     ;
 
 invoke
-    : ID LPAR (actualParameters)? RPAR
-    | (ID | STRING) DOT (Add|IndexesOf|SubString|SubList) LPAR actualParameters RPAR
+    : ID LPAR (actualParameters)? RPAR                                                  #funcInv
+    | (ID | STRING) DOT (Add|IndexesOf|SubString|SubList) LPAR actualParameters RPAR    #prodInv
     ;
 
 formalParameters
@@ -89,25 +90,25 @@ actualParameters
     ;
 
 expression
-    : invoke
-    | LPAR expression RPAR
-    | (NOT|MINUS|PLUS) expression
-    | LPAR variableType RPAR expression
-    | boolean
-    | NUMBER
-    | id
-    | STRING
-    | expression (MULTIPLY|DIVIDE|MODULO) expression
-    | expression (PLUS|MINUS) expression
-    | expression (LESS|LESSEQUAL|GREATER|GREATEREQUAL) expression
-    | expression (EQUAL|NOTEQUAL) expression
-    | expression And expression
-    | expression Or expression
+    : invoke                                                        #invExp
+    | LPAR expression RPAR                                          #parenExp
+    | (NOT|MINUS|PLUS) expression                                   #unaryExp
+    | LPAR variableType RPAR expression                             #typecast
+    | boolean                                                       #boolExp
+    | NUMBER                                                        #numberExp
+    | id                                                            #idExp
+    | STRING                                                        #stringExp
+    | expression (MULTIPLY|DIVIDE|MODULO) expression                #mulDivModExp
+    | expression (PLUS|MINUS) expression                            #plusMinusExp
+    | expression (LESS|LESSEQUAL|GREATER|GREATEREQUAL) expression   #lessGreatExp
+    | expression (EQUAL|NOTEQUAL) expression                        #equalNotExp
+    | expression And expression                                     #andExp
+    | expression Or expression                                      #orExp
     ;
 
 returnType
-    : variableType
-    | Nothing
+    : variableType  #varReturn
+    | Nothing       #nothing
     ;
 
 variableType
@@ -115,10 +116,10 @@ variableType
     ;
 
 baseVariableType
-    : Boolean
-    | String
-    | Number
-    | ID
+    : Boolean   #boolBase
+    | String    #stringBase
+    | Number    #numBase
+    | ID        #idBase
     ;
 
 boolean
