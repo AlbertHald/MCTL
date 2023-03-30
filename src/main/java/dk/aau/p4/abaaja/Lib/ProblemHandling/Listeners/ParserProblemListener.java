@@ -25,7 +25,26 @@ public class ParserProblemListener extends BaseErrorListener {
         CommonTokenStream tokens = (CommonTokenStream)recognizer.getInputStream();
         Token offendingToken = (Token) offendingSymbol;
 
-        problemCollection.addProblem(ProblemType.ERROR_PARSER, "The following token did not parse: "+ offendingToken.getText(), line);
+        // Get input stream and split at newline character
+        String totalTokenStream = tokens.getTokenSource().getInputStream().toString();
+        String[] lines = totalTokenStream.split("\n");
+
+        // Get problematic line
+        int problematicLineIndex = offendingToken.getLine() - 1;
+        String problematicLine = lines[problematicLineIndex];
+
+        int tokenLength = offendingToken.getStopIndex() - offendingToken.getStartIndex();
+        int tokenEnd = charPositionInLine + tokenLength + 1;
+
+        // Create line with highlighted error
+        String tempLine = problematicLine.substring(0, charPositionInLine);
+        tempLine += "  >>" + problematicLine.substring(charPositionInLine, tokenEnd) + "<<  ";
+        tempLine += problematicLine.substring(tokenEnd, problematicLine.length());
+
+        // Format message string
+        String errorMessage = String.format("Parse error at Line %d, Character %d: %s", line, charPositionInLine, tempLine);
+
+        problemCollection.addProblem(ProblemType.ERROR_PARSER, errorMessage, line, charPositionInLine, tokenEnd);
     }
 
 }

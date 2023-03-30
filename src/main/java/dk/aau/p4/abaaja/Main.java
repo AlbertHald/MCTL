@@ -18,14 +18,25 @@ public class Main {
         ProblemCollection problemCollection = new ProblemCollection();
 
         // Parse test CharStream
-        ParseTree tree = syntaxPhase( CharStreams.fromString("variable test: NUMBER \n test = 2; \n if(true){}"), problemCollection);
+        ParseTree tree = syntaxPhase( CharStreams.fromString("variable test: NUMBER; \n test = 2<;344; \n if(true){}"), problemCollection);
 
-        // Prints parse errors
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println(problem.getMessage());
+        if (!problemCollection.getHasErrors()) {
+            // Continue parsing here
+        }
+        else {
+            // Prints parse errors
+            for (Problem problem : problemCollection.getProblems()) {
+                System.out.println(problem.getMessage());
+            }
         }
     }
 
+    /**
+     * Method for parsing a given CharStream
+     * @param inputStream
+     * @param problemCollection
+     * @return ParseTree
+     */
     private static ParseTree syntaxPhase(CharStream inputStream, ProblemCollection problemCollection) {
         //Scans the source code
         mctlLexer lexer = new mctlLexer(inputStream);
