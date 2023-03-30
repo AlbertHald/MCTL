@@ -1,4 +1,4 @@
-package dk.aau.p4.abaaja.Lib.Errors;
+package dk.aau.p4.abaaja.Lib.ProblemHandling;
 
 /**
  * Enumerator for errors and warnings.

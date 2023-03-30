@@ -1,4 +1,4 @@
-package dk.aau.p4.abaaja.Lib.Errors;
+package dk.aau.p4.abaaja.Lib.ProblemHandling;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package dk.aau.p4.abaaja.Lib.Errors;
+package dk.aau.p4.abaaja.Lib.ProblemHandling;
 
 /**
  * Instances of this class corresponds to a single error or warning.
