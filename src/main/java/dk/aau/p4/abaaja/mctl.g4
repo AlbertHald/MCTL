@@ -1,17 +1,9 @@
 grammar mctl;
 
-mctl: (line)*;
-
+mctl: (declaration | statement | COMMENT | SEMI)* EOF;
 
 block
-    : LCURL (line)* RCURL
-    ;
-
-line
-    : declaration
-    | statement
-    | COMMENT
-    | SEMI
+    : LCURL (declaration | statement | COMMENT | SEMI)* RCURL
     ;
 
 declaration
