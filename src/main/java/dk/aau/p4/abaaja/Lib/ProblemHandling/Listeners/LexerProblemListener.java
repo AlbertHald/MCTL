@@ -25,6 +25,7 @@ public class LexerProblemListener extends BaseErrorListener {
                             RecognitionException e) {
 
         // TODO: Implement proper error messages
-        System.out.println(e.toString());
+        problemCollection.addProblem(ProblemType.ERROR_LEXER, msg, line);
+
     }
 }

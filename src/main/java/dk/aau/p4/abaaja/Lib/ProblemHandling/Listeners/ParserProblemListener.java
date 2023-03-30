@@ -21,13 +21,11 @@ public class ParserProblemListener extends BaseErrorListener {
                             int charPositionInLine,
                             String msg,
                             RecognitionException e) {
-
         // TODO: Implement proper error messages
         CommonTokenStream tokens = (CommonTokenStream)recognizer.getInputStream();
         Token offendingToken = (Token) offendingSymbol;
 
-        System.out.println(tokens.getTokenSource().getInputStream().toString());
-        System.out.println(offendingToken.toString());
+        problemCollection.addProblem(ProblemType.ERROR_PARSER, "The following token did not parse: "+ offendingToken.getText(), line);
     }
 
 }

@@ -5,11 +5,10 @@ package dk.aau.p4.abaaja.Lib.ProblemHandling;
  */
 public enum ProblemType {
     /*
-    E: Error, W: Warning
     Add errors and warnings here:
      */
-    ERROR_1("E1"),
-    ERROR_2("E2");
+    ERROR_PARSER("ERROR_PARSER"),
+    ERROR_LEXER("ERROR_LEXER");
 
     private final String errorType;
 
@@ -17,7 +16,7 @@ public enum ProblemType {
         this.errorType = type;
     }
 
-    public String getError() {
+    public String getProblemString() {
         return errorType;
     }
 }
