@@ -179,13 +179,6 @@ public class mctlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements m
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPlusMinusExp(mctlParser.PlusMinusExpContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
 	@Override public T visitNumberExp(mctlParser.NumberExpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -200,7 +193,21 @@ public class mctlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements m
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitCompExp(mctlParser.CompExpContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitBoolExp(mctlParser.BoolExpContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitAddExp(mctlParser.AddExpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -214,14 +221,14 @@ public class mctlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements m
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitLessGreatExp(mctlParser.LessGreatExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitTypecast(mctlParser.TypecastContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitTypecast(mctlParser.TypecastContext ctx) { return visitChildren(ctx); }
+	@Override public T visitEqualExp(mctlParser.EqualExpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -235,13 +242,6 @@ public class mctlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements m
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitMulDivModExp(mctlParser.MulDivModExpContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
 	@Override public T visitUnaryExp(mctlParser.UnaryExpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -249,14 +249,14 @@ public class mctlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements m
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitEqualNotExp(mctlParser.EqualNotExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitParenExp(mctlParser.ParenExpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitParenExp(mctlParser.ParenExpContext ctx) { return visitChildren(ctx); }
+	@Override public T visitMulExp(mctlParser.MulExpContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

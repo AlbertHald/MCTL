@@ -252,18 +252,6 @@ public interface mctlListener extends ParseTreeListener {
 	 */
 	void exitActualParameters(mctlParser.ActualParametersContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code plusMinusExp}
-	 * labeled alternative in {@link mctlParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterPlusMinusExp(mctlParser.PlusMinusExpContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code plusMinusExp}
-	 * labeled alternative in {@link mctlParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitPlusMinusExp(mctlParser.PlusMinusExpContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code numberExp}
 	 * labeled alternative in {@link mctlParser#expression}.
 	 * @param ctx the parse tree
@@ -288,6 +276,18 @@ public interface mctlListener extends ParseTreeListener {
 	 */
 	void exitAndExp(mctlParser.AndExpContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code compExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterCompExp(mctlParser.CompExpContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code compExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitCompExp(mctlParser.CompExpContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code boolExp}
 	 * labeled alternative in {@link mctlParser#expression}.
 	 * @param ctx the parse tree
@@ -299,6 +299,18 @@ public interface mctlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitBoolExp(mctlParser.BoolExpContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code addExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterAddExp(mctlParser.AddExpContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code addExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitAddExp(mctlParser.AddExpContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code orExp}
 	 * labeled alternative in {@link mctlParser#expression}.
@@ -312,18 +324,6 @@ public interface mctlListener extends ParseTreeListener {
 	 */
 	void exitOrExp(mctlParser.OrExpContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code lessGreatExp}
-	 * labeled alternative in {@link mctlParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterLessGreatExp(mctlParser.LessGreatExpContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code lessGreatExp}
-	 * labeled alternative in {@link mctlParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitLessGreatExp(mctlParser.LessGreatExpContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code typecast}
 	 * labeled alternative in {@link mctlParser#expression}.
 	 * @param ctx the parse tree
@@ -335,6 +335,18 @@ public interface mctlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitTypecast(mctlParser.TypecastContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code equalExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterEqualExp(mctlParser.EqualExpContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code equalExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitEqualExp(mctlParser.EqualExpContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code idExp}
 	 * labeled alternative in {@link mctlParser#expression}.
@@ -348,18 +360,6 @@ public interface mctlListener extends ParseTreeListener {
 	 */
 	void exitIdExp(mctlParser.IdExpContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code mulDivModExp}
-	 * labeled alternative in {@link mctlParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterMulDivModExp(mctlParser.MulDivModExpContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code mulDivModExp}
-	 * labeled alternative in {@link mctlParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitMulDivModExp(mctlParser.MulDivModExpContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code unaryExp}
 	 * labeled alternative in {@link mctlParser#expression}.
 	 * @param ctx the parse tree
@@ -372,18 +372,6 @@ public interface mctlListener extends ParseTreeListener {
 	 */
 	void exitUnaryExp(mctlParser.UnaryExpContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code equalNotExp}
-	 * labeled alternative in {@link mctlParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterEqualNotExp(mctlParser.EqualNotExpContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code equalNotExp}
-	 * labeled alternative in {@link mctlParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitEqualNotExp(mctlParser.EqualNotExpContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code parenExp}
 	 * labeled alternative in {@link mctlParser#expression}.
 	 * @param ctx the parse tree
@@ -395,6 +383,18 @@ public interface mctlListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitParenExp(mctlParser.ParenExpContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code mulExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterMulExp(mctlParser.MulExpContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code mulExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitMulExp(mctlParser.MulExpContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code stringExp}
 	 * labeled alternative in {@link mctlParser#expression}.
