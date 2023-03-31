@@ -48,5 +48,5 @@ public abstract class BaseNode {
      * Accept method to make visitor visit the specific Node // TODO: Confirm this?
      * @param visitor
      */
-    public abstract void accept(INodeVisitor visitor);
+    //public abstract void accept(INodeVisitor visitor);
 }
