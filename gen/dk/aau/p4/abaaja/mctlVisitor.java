@@ -156,13 +156,6 @@ public interface mctlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitActualParameters(mctlParser.ActualParametersContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code plusMinusExp}
-	 * labeled alternative in {@link mctlParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPlusMinusExp(mctlParser.PlusMinusExpContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code numberExp}
 	 * labeled alternative in {@link mctlParser#expression}.
 	 * @param ctx the parse tree
@@ -177,12 +170,26 @@ public interface mctlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAndExp(mctlParser.AndExpContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code compExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCompExp(mctlParser.CompExpContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code boolExp}
 	 * labeled alternative in {@link mctlParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitBoolExp(mctlParser.BoolExpContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code addExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAddExp(mctlParser.AddExpContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code orExp}
 	 * labeled alternative in {@link mctlParser#expression}.
@@ -191,19 +198,19 @@ public interface mctlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitOrExp(mctlParser.OrExpContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code lessGreatExp}
-	 * labeled alternative in {@link mctlParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLessGreatExp(mctlParser.LessGreatExpContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code typecast}
 	 * labeled alternative in {@link mctlParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitTypecast(mctlParser.TypecastContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code equalExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEqualExp(mctlParser.EqualExpContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code idExp}
 	 * labeled alternative in {@link mctlParser#expression}.
@@ -212,13 +219,6 @@ public interface mctlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIdExp(mctlParser.IdExpContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code mulDivModExp}
-	 * labeled alternative in {@link mctlParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMulDivModExp(mctlParser.MulDivModExpContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code unaryExp}
 	 * labeled alternative in {@link mctlParser#expression}.
 	 * @param ctx the parse tree
@@ -226,19 +226,19 @@ public interface mctlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitUnaryExp(mctlParser.UnaryExpContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code equalNotExp}
-	 * labeled alternative in {@link mctlParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitEqualNotExp(mctlParser.EqualNotExpContext ctx);
-	/**
 	 * Visit a parse tree produced by the {@code parenExp}
 	 * labeled alternative in {@link mctlParser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitParenExp(mctlParser.ParenExpContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code mulExp}
+	 * labeled alternative in {@link mctlParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMulExp(mctlParser.MulExpContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code stringExp}
 	 * labeled alternative in {@link mctlParser#expression}.

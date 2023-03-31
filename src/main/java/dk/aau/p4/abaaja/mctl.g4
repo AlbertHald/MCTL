@@ -8,7 +8,7 @@ block
 
 line
     : declaration
-    | statement 
+    | statement
     | COMMENT
     | SEMI;
 
