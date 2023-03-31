@@ -90,10 +90,10 @@ expression
     | NUMBER                                                        #numberExp
     | id                                                            #idExp
     | STRING                                                        #stringExp
-    | expression (MULTIPLY|DIVIDE|MODULO) expression                #mulDivModExp
-    | expression (PLUS|MINUS) expression                            #plusMinusExp
-    | expression (LESS|LESSEQUAL|GREATER|GREATEREQUAL) expression   #lessGreatExp
-    | expression (EQUAL|NOTEQUAL) expression                        #equalNotExp
+    | expression (MULTIPLY|DIVIDE|MODULO) expression                #mulExp
+    | expression (PLUS|MINUS) expression                            #addExp
+    | expression (LESS|LESSEQUAL|GREATER|GREATEREQUAL) expression   #compExp
+    | expression (EQUAL|NOTEQUAL) expression                        #equalExp
     | expression And expression                                     #andExp
     | expression Or expression                                      #orExp
     ;
