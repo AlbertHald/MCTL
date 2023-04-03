@@ -1,6 +1,7 @@
 package dk.aau.p4.abaaja;
 
 // Antlr imports
+import dk.aau.p4.abaaja.Lib.Visitors.AstVisitor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -18,10 +19,11 @@ public class Main {
         ProblemCollection problemCollection = new ProblemCollection();
 
         // Parse test CharStream
-        ParseTree tree = syntaxPhase( CharStreams.fromString("variable test: NUMBER; \n test = 2<;344; \n if(true){}"), problemCollection);
+        ParseTree tree = syntaxPhase( CharStreams.fromString("variable test: NUMBER; \n test = 2344; \n if(true){}"), problemCollection);
 
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here
+            tree.accept(new AstVisitor());
         }
         else {
             // Prints parse errors
