@@ -1,6 +1,7 @@
 package dk.aau.p4.abaaja.Lib.Nodes;
 
 import java.util.List;
+import dk.aau.p4.abaaja.Lib.Visitors.INodeVisitor;
 
 public class FuncDecNode extends DecNode {
     //Private variables

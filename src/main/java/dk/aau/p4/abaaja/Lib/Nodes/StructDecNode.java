@@ -1,10 +1,8 @@
 package dk.aau.p4.abaaja.Lib.Nodes;
 
-public class NumberTypeNode extends TypeNode {
+import dk.aau.p4.abaaja.Lib.Visitors.INodeVisitor;
 
-    public String get_type() {
-        return "NUMBER";
-    }
+public class StructDecNode extends DecNode {
 
     @Override
     public void accept(INodeVisitor visitor) {

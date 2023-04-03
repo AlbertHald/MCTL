@@ -3,6 +3,8 @@ package dk.aau.p4.abaaja.Lib.Nodes;
 import java.util.List;
 import java.util.ArrayList;
 
+import dk.aau.p4.abaaja.Lib.Visitors.INodeVisitor;
+
 public abstract class BaseNode {
     /**
      * Get / Set methods for private variables
