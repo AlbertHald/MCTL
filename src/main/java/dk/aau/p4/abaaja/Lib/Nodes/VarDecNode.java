@@ -1,7 +1,8 @@
 package dk.aau.p4.abaaja.Lib.Nodes;
 
-public class VarDecNode extends DecNode {
+import dk.aau.p4.abaaja.Lib.Visitors.INodeVisitor;
 
+public class VarDecNode extends DecNode {
     private String _id;
     private TypeNode _type;
 
