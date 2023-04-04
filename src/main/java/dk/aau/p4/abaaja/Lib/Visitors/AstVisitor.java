@@ -27,18 +27,16 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
 
         return visitChildren(ctx);
     }
-
+    
     @Override public BaseNode visitLine(mctlParser.LineContext ctx) { return visitChildren(ctx); }
     @Override public BaseNode visitDeclaration(mctlParser.DeclarationContext ctx) { return visitChildren(ctx); }
 
     @Override public BaseNode visitVariableDeclaration(mctlParser.VariableDeclarationContext ctx) {
-        // Get tokens
-        ParseTree[] children = ctx.children.toArray(ParseTree[]::new);
-
+        // Set id of the variable node
         VarDecNode varDecNode = new VarDecNode();
         varDecNode.set_varDecId(ctx.ID().getText());
 
-        // Switch Case on the variable type
+        // Get variable type
         BaseNode varTypeNode = visit(ctx.variableType());
 
         if (varTypeNode instanceof TypeNode) {
@@ -49,16 +47,28 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitStructDeclaration(mctlParser.StructDeclarationContext ctx) {
-        System.out.println("StructDeclaration:   " + ctx.getText());
+        StructDecNode structDecNode = new StructDecNode();
 
-        return visitChildren(ctx);
+        // Set struct ID
+        structDecNode.set_structDecId(ctx.ID().getText());
+
+        // Iterate over variable declarations
+        for (ParseTree child: ctx.structBlock().variableDeclaration()) {
+            BaseNode tempNode = visit(child);
+
+            if (tempNode instanceof VarDecNode) {
+                structDecNode.add_declaration((VarDecNode) tempNode);
+            }
+            else {
+                // TODO: Potentially implement error?
+            }
+        }
+
+        return structDecNode;
     }
 
-    @Override public BaseNode visitStructBlock(mctlParser.StructBlockContext ctx) {
-        System.out.println("StructBlock:   " + ctx.getText());
-
-        return visitChildren(ctx);
-    }
+    // TODO: Bliver vist ikke brugt
+    @Override public BaseNode visitStructBlock(mctlParser.StructBlockContext ctx) { return visitChildren(ctx); }
 
     @Override public BaseNode visitIdStruct(mctlParser.IdStructContext ctx) {
         System.out.println("IDStruct:   " + ctx.getText());
