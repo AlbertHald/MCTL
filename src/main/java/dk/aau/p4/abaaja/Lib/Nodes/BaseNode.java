@@ -15,6 +15,7 @@ public abstract class BaseNode {
     public void set_children(List<BaseNode> _children) {
         this._children = _children;
     }
+    public void add_child(BaseNode child) { this._children.add(child); }
 
     public int get_lineNumber() {
         return _lineNumber;

@@ -3,14 +3,23 @@ package dk.aau.p4.abaaja.Lib.Visitors;
 import dk.aau.p4.abaaja.mctlBaseVisitor;
 import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.mctlParser;
+import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 public class AstVisitor extends mctlBaseVisitor<BaseNode> {
-
     @Override public BaseNode visitMctl(mctlParser.MctlContext ctx) {
-        System.out.println("MCTL:   " + ctx.getText());
+        MctlNode program = new MctlNode();
 
-        return visitChildren(ctx);
+        // Create array of ParseTree objects representing each line
+        for (ParseTree child : ctx.children.toArray(ParseTree[]::new)) {
+            // Check if the line is an instance of CommonToken (Removing EOF and other unimportant characters).
+            if (child.getPayload() instanceof CommonToken) {
+                continue;
+            }
+            program.add_child(visit(child));
+        }
+
+        return program;
     }
 
     @Override public BaseNode visitBlock(mctlParser.BlockContext ctx) {
