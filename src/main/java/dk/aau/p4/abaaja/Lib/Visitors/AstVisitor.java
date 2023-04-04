@@ -28,20 +28,22 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return visitChildren(ctx);
     }
 
-    @Override public BaseNode visitLine(mctlParser.LineContext ctx) {
-        System.out.println("Line:   " + ctx.getText());
-
-        return visitChildren(ctx);
-    }
-
-    @Override public BaseNode visitDeclaration(mctlParser.DeclarationContext ctx) {
-        System.out.println("Declaration:   " + ctx.getText());
-
-        return visitChildren(ctx);
-    }
+    @Override public BaseNode visitLine(mctlParser.LineContext ctx) { return visitChildren(ctx); }
+    @Override public BaseNode visitDeclaration(mctlParser.DeclarationContext ctx) { return visitChildren(ctx); }
 
     @Override public BaseNode visitVariableDeclaration(mctlParser.VariableDeclarationContext ctx) {
-        System.out.println("VariableDeclaration:   " + ctx.getText());
+        // Get tokens
+        ParseTree[] children = ctx.children.toArray(ParseTree[]::new);
+
+        VarDecNode varDecNode = new VarDecNode();
+        varDecNode.set_varDecId(ctx.ID().getText());
+
+        // Switch Case on the variable type
+        BaseNode varTypeNode = visit(ctx.variableType());
+
+        if (varTypeNode instanceof TypeNode) {
+            varDecNode.set_varDecType((TypeNode) varTypeNode);
+        }
 
         return visitChildren(ctx);
     }
@@ -245,9 +247,31 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitVariableType(mctlParser.VariableTypeContext ctx) {
-        System.out.println("VariableType:   " + ctx.getText());
+        TypeNode typeNode;
 
-        return visitChildren(ctx);
+        // Determine the type
+        switch (ctx.baseVariableType().getText()) {
+            case "NUMBER":
+                typeNode = new NumTypeNode();
+                break;
+            case "STRING":
+                typeNode = new StringTypeNode();
+                break;
+            case "BOOLEAN":
+                typeNode = new BoolTypeNode();
+                break;
+            case "NOTHING":
+                typeNode = new NothingTypeNode();
+                break;
+            default:
+                typeNode = new IDTypeNode();
+                typeNode.set_type(ctx.baseVariableType().getText());
+        }
+
+        // Calculate and set the array degree
+        typeNode.set_arrayDegree(ctx.LSQR().size());
+
+        return typeNode;
     }
 
     @Override public BaseNode visitBaseVariableType(mctlParser.BaseVariableTypeContext ctx) {
