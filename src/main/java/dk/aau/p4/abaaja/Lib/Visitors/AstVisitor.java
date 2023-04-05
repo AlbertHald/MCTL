@@ -6,6 +6,8 @@ import dk.aau.p4.abaaja.mctlParser;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.beans.Expression;
+
 public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitMctl(mctlParser.MctlContext ctx) {
         MctlNode program = new MctlNode();
@@ -88,11 +90,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return visitChildren(ctx);
     }
 
-    @Override public BaseNode visitStatement(mctlParser.StatementContext ctx) {
-        System.out.println("Statement:   " + ctx.getText());
-
-        return visitChildren(ctx);
-    }
+    @Override public BaseNode visitStatement(mctlParser.StatementContext ctx) { return visitChildren(ctx); }
 
     @Override public BaseNode visitReturn(mctlParser.ReturnContext ctx) {
         System.out.println("Return:   " + ctx.getText());
@@ -130,16 +128,34 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitIf(mctlParser.IfContext ctx) {
-        System.out.println("If:   " + ctx.getText());
+        IfStateNode ifStateNode = new IfStateNode();
 
-        return visitChildren(ctx);
+        // Set Expression List
+        for (ParseTree child : ctx.ifLiteral()) {
+            BaseNode tempExpNode = visit(child);
+            if (tempExpNode instanceof ExpNode) {
+                ifStateNode.add_expChild((ExpNode) tempExpNode);
+            }
+            else {
+                // TODO: Potentially implement error handling?
+            }
+        }
+
+        // Set Block List
+        for (ParseTree child : ctx.block()) {
+            BaseNode tempBlockNode = visit(child);
+            if (tempBlockNode instanceof BlockNode) {
+                ifStateNode.add_blockChild((BlockNode) tempBlockNode);
+            }
+            else {
+                // TODO: Potentially implement error handling?
+            }
+        }
+
+        return ifStateNode;
     }
 
-    @Override public BaseNode visitIfLiteral(mctlParser.IfLiteralContext ctx) {
-        System.out.println("IfLiteral:   " + ctx.getText());
-
-        return visitChildren(ctx);
-    }
+    @Override public BaseNode visitIfLiteral(mctlParser.IfLiteralContext ctx) { return visit(ctx.expression()); }
 
     @Override public BaseNode visitRepeat(mctlParser.RepeatContext ctx) {
         System.out.println("Repeat:   " + ctx.getText());
