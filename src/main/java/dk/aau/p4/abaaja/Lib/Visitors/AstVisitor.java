@@ -5,6 +5,10 @@ import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.mctlParser;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.w3c.dom.Node;
+
+import java.awt.geom.Point2D;
+import java.lang.reflect.Type;
 
 import java.beans.Expression;
 
@@ -158,9 +162,28 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitIfLiteral(mctlParser.IfLiteralContext ctx) { return visit(ctx.expression()); }
 
     @Override public BaseNode visitRepeat(mctlParser.RepeatContext ctx) {
+        RepeatStateNode repeatStateNode = new RepeatStateNode();
+
+
+        BaseNode repeatExpNode = visit(ctx.expression());
+
+        if (repeatExpNode instanceof ExpNode) {
+            repeatStateNode.set_repeatExp((ExpNode) repeatExpNode);
+        } else{
+            //TODO ERROR
+        }
+
+        BaseNode repeatBlock = visit(ctx.block());
+
+        if (repeatBlock instanceof BlockNode) {
+            repeatStateNode.set_expBlock((BlockNode) repeatBlock);
+        }else{
+            //TODO ERROR
+        }
+
         System.out.println("Repeat:   " + ctx.getText());
 
-        return visitChildren(ctx);
+        return repeatStateNode;
     }
 
     @Override public BaseNode visitExprAss(mctlParser.ExprAssContext ctx) {
