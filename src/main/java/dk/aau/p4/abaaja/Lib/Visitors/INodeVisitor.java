@@ -21,7 +21,7 @@ public interface INodeVisitor {
     void visit(InvokeNode node);
     void visit(ReturnNode node);
 
-    void visit(ParamNode node);
+    void visit(FormalParamNode node);
     void visit(StopNode node);
     void visit(TypeNode node);
 

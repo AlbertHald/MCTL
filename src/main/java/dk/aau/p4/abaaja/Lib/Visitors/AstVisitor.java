@@ -27,14 +27,14 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
 
         return visitChildren(ctx);
     }
-    
+
     @Override public BaseNode visitLine(mctlParser.LineContext ctx) { return visitChildren(ctx); }
     @Override public BaseNode visitDeclaration(mctlParser.DeclarationContext ctx) { return visitChildren(ctx); }
 
     @Override public BaseNode visitVariableDeclaration(mctlParser.VariableDeclarationContext ctx) {
         // Set id of the variable node
         VarDecNode varDecNode = new VarDecNode();
-        varDecNode.set_varDecId(ctx.ID().getText());
+        varDecNode.set_id(ctx.ID().getText());
 
         // Get variable type
         BaseNode varTypeNode = visit(ctx.variableType());
@@ -50,7 +50,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         StructDecNode structDecNode = new StructDecNode();
 
         // Set struct ID
-        structDecNode.set_structDecId(ctx.ID().getText());
+        structDecNode.set_id(ctx.ID().getText());
 
         // Iterate over variable declarations
         for (ParseTree child: ctx.structBlock().variableDeclaration()) {
@@ -60,7 +60,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
                 structDecNode.add_declaration((VarDecNode) tempNode);
             }
             else {
-                // TODO: Potentially implement error?
+                // TODO: Potentially implement error handling?
             }
         }
 
@@ -101,9 +101,32 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitFunction(mctlParser.FunctionContext ctx) {
-        System.out.println("Function:   " + ctx.getText());
+        FuncDecNode funcDecNode = new FuncDecNode();
 
-        return visitChildren(ctx);
+        funcDecNode.set_id(ctx.ID().getText());
+
+        // Visit and add all parameter nodes
+        for (ParseTree child : ctx.formalParameters().formalParameter()) {
+            BaseNode parameter = visit(child);
+
+            if (parameter instanceof FormalParamNode) {
+                funcDecNode.add_param((FormalParamNode) parameter);
+            }
+            else {
+                // TODO: Potentially implement error handling?
+            }
+        }
+
+        // Visit the block node
+        BaseNode tempBlockNode = visit(ctx.block());
+        if (tempBlockNode instanceof BlockNode) {
+            funcDecNode.set_funcBlock((BlockNode) tempBlockNode);
+        }
+        else {
+            // TODO: Potentially implement error handling?
+        }
+
+        return funcDecNode;
     }
 
     @Override public BaseNode visitIf(mctlParser.IfContext ctx) {
@@ -150,14 +173,23 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
 
     @Override public BaseNode visitFormalParameters(mctlParser.FormalParametersContext ctx) {
         System.out.println("FormalParameters:   " + ctx.getText());
-
         return visitChildren(ctx);
     }
 
     @Override public BaseNode visitFormalParameter(mctlParser.FormalParameterContext ctx) {
-        System.out.println("FormalParameter:   " + ctx.getText());
+        FormalParamNode formalParamNode = new FormalParamNode();
 
-        return visitChildren(ctx);
+        formalParamNode.set_id(ctx.ID().getText());
+
+        // Set type
+        BaseNode tempTypeNode = visit(ctx.variableType());
+        if (tempTypeNode instanceof TypeNode) {
+            formalParamNode.set_type((TypeNode) tempTypeNode);
+        } else {
+            // TODO: Potentially implement error handling?
+        }
+
+        return formalParamNode;
     }
 
     @Override public BaseNode visitActualParameters(mctlParser.ActualParametersContext ctx) {

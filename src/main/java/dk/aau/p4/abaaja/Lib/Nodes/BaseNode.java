@@ -24,20 +24,11 @@ public abstract class BaseNode {
         this._lineNumber = _lineNumber;
     }
 
-    public String get_type() {
-        return _type;
-    }
-    public void set_type(String _type) {
-        this._type = _type;
-    }
-
     /**
      * Private variables
      */
     private int _lineNumber = 0;
     private List<BaseNode> _children = new ArrayList<>();
-    private String _type;
-
 
     /**
      * Method for returning the unique hash code for the specific instance
