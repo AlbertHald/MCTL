@@ -1338,18 +1338,6 @@ public class mctlParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class InvokeContext extends ParserRuleContext {
-		public InvokeContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_invoke; }
-	 
-		public InvokeContext() { }
-		public void copyFrom(InvokeContext ctx) {
-			super.copyFrom(ctx);
-		}
-	}
-	@SuppressWarnings("CheckReturnValue")
-	public static class FuncInvContext extends InvokeContext {
 		public TerminalNode ID() { return getToken(mctlParser.ID, 0); }
 		public TerminalNode LPAR() { return getToken(mctlParser.LPAR, 0); }
 		public TerminalNode RPAR() { return getToken(mctlParser.RPAR, 0); }
@@ -1360,18 +1348,21 @@ public class mctlParser extends Parser {
 		public ActualParametersContext actualParameters() {
 			return getRuleContext(ActualParametersContext.class,0);
 		}
-		public FuncInvContext(InvokeContext ctx) { copyFrom(ctx); }
+		public InvokeContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_invoke; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof mctlListener ) ((mctlListener)listener).enterFuncInv(this);
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).enterInvoke(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof mctlListener ) ((mctlListener)listener).exitFuncInv(this);
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).exitInvoke(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof mctlVisitor ) return ((mctlVisitor<? extends T>)visitor).visitFuncInv(this);
+			if ( visitor instanceof mctlVisitor ) return ((mctlVisitor<? extends T>)visitor).visitInvoke(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -1381,7 +1372,6 @@ public class mctlParser extends Parser {
 		enterRule(_localctx, 30, RULE_invoke);
 		int _la;
 		try {
-			_localctx = new FuncInvContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(189);

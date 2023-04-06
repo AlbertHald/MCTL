@@ -78,6 +78,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitIdStruct(mctlParser.IdStructContext ctx) {
         IDStructNode idStructNode = new IDStructNode();
 
+        // Add the two individual ID's
         for (ParseTree child : ctx.id()) {
             BaseNode tempIdNode = visit(child);
             if (tempIdNode instanceof IDExpNode) {
@@ -118,6 +119,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitIdVar(mctlParser.IdVarContext ctx) {
+        // Create an ID node and add its id
         ActualIDExpNode actualIDExpNode = new ActualIDExpNode();
         actualIDExpNode.set_ID(ctx.getText());
 
@@ -222,12 +224,6 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
 
     @Override public BaseNode visitIncrAss(mctlParser.IncrAssContext ctx) {
         System.out.println("IncrAss:   " + ctx.getText());
-
-        return visitChildren(ctx);
-    }
-
-    @Override public BaseNode visitFuncInv(mctlParser.FuncInvContext ctx) {
-        System.out.println("FuncInv:   " + ctx.getText());
 
         return visitChildren(ctx);
     }

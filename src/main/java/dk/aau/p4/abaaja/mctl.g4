@@ -71,7 +71,7 @@ assignment
     ;
 
 invoke
-    : (id DOT)? ID LPAR (actualParameters)? RPAR     #funcInv
+    : (id DOT)? ID LPAR (actualParameters)? RPAR
     ;
 
 formalParameters

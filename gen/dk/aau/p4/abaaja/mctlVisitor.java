@@ -124,12 +124,11 @@ public interface mctlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIncrAss(mctlParser.IncrAssContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code funcInv}
-	 * labeled alternative in {@link mctlParser#invoke}.
+	 * Visit a parse tree produced by {@link mctlParser#invoke}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitFuncInv(mctlParser.FuncInvContext ctx);
+	T visitInvoke(mctlParser.InvokeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link mctlParser#formalParameters}.
 	 * @param ctx the parse tree

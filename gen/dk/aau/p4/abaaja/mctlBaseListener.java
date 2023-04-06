@@ -233,13 +233,13 @@ public class mctlBaseListener implements mctlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFuncInv(mctlParser.FuncInvContext ctx) { }
+	@Override public void enterInvoke(mctlParser.InvokeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFuncInv(mctlParser.FuncInvContext ctx) { }
+	@Override public void exitInvoke(mctlParser.InvokeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

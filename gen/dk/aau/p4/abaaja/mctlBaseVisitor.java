@@ -144,7 +144,7 @@ public class mctlBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements m
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitFuncInv(mctlParser.FuncInvContext ctx) { return visitChildren(ctx); }
+	@Override public T visitInvoke(mctlParser.InvokeContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

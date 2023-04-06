@@ -198,17 +198,15 @@ public interface mctlListener extends ParseTreeListener {
 	 */
 	void exitIncrAss(mctlParser.IncrAssContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code funcInv}
-	 * labeled alternative in {@link mctlParser#invoke}.
+	 * Enter a parse tree produced by {@link mctlParser#invoke}.
 	 * @param ctx the parse tree
 	 */
-	void enterFuncInv(mctlParser.FuncInvContext ctx);
+	void enterInvoke(mctlParser.InvokeContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code funcInv}
-	 * labeled alternative in {@link mctlParser#invoke}.
+	 * Exit a parse tree produced by {@link mctlParser#invoke}.
 	 * @param ctx the parse tree
 	 */
-	void exitFuncInv(mctlParser.FuncInvContext ctx);
+	void exitInvoke(mctlParser.InvokeContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link mctlParser#formalParameters}.
 	 * @param ctx the parse tree
