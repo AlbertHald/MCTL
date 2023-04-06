@@ -228,6 +228,10 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return visitChildren(ctx);
     }
 
+    @Override public BaseNode visitInvoke(mctlParser.InvokeContext ctx) {
+        return visitChildren(ctx);
+    }
+
     @Override public BaseNode visitFormalParameters(mctlParser.FormalParametersContext ctx) {
         System.out.println("FormalParameters:   " + ctx.getText());
         return visitChildren(ctx);
