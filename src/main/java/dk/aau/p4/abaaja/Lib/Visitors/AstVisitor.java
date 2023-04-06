@@ -310,9 +310,19 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitOrExp(mctlParser.OrExpContext ctx) {
-        System.out.println("OrExp:   " + ctx.getText());
+        OrExpNode orExpNode = new OrExpNode();
 
-        return visitChildren(ctx);
+        // Iterate over the two individual expressions of the or expression
+        for (ParseTree child : ctx.expression()) {
+            BaseNode tempExprNode = visit(child);
+            if (tempExprNode instanceof ExpNode) {
+                orExpNode.add_child((ExpNode) tempExprNode);
+            } else {
+                // TODO: Potentially implement error handling?
+            }
+        }
+
+        return orExpNode;
     }
 
     @Override public BaseNode visitTypecast(mctlParser.TypecastContext ctx) {
@@ -363,9 +373,27 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitUnaryExp(mctlParser.UnaryExpContext ctx) {
-        System.out.println("UnaryExp:   " + ctx.getText());
+        UnaryExpNode unaryExpNode = new UnaryExpNode();
 
-        return visitChildren(ctx);
+        // Add operator to node
+        if (ctx.op.getType() == mctlParser.PLUS) { unaryExpNode.set_operator(mctlParser.PLUS); }
+        else if (ctx.op.getType() == mctlParser.MINUS) { unaryExpNode.set_operator(mctlParser.MINUS); }
+        else if (ctx.op.getType() == mctlParser.NOT){ unaryExpNode.set_operator(mctlParser.NOT); }
+        else {
+            // TODO: Potentially implement error handling?
+        }
+
+        // control if the individual expressions of the comparison expression
+        ParseTree child = ctx.expression();
+        BaseNode tempNode = visit(child);
+
+        if (tempNode instanceof ExpNode) {
+            unaryExpNode.add_child((ExpNode) tempNode);
+        }
+        else {
+                // TODO: Potentially implement error handling?
+        }
+        return unaryExpNode;
     }
 
     @Override public BaseNode visitParenExp(mctlParser.ParenExpContext ctx) {
