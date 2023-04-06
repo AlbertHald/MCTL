@@ -191,35 +191,55 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return ifStateNode;
     }
 
+    // TODO: POSSIBLY REMOVE THIS? NOT IN USE
     @Override public BaseNode visitIfLiteral(mctlParser.IfLiteralContext ctx) { return visit(ctx.expression()); }
 
     @Override public BaseNode visitRepeat(mctlParser.RepeatContext ctx) {
         RepeatStateNode repeatStateNode = new RepeatStateNode();
 
-
+        // Visit and add the repeat expression
         BaseNode repeatExpNode = visit(ctx.expression());
 
         if (repeatExpNode instanceof ExpNode) {
             repeatStateNode.set_repeatExp((ExpNode) repeatExpNode);
         } else{
-            //TODO ERROR
+            //TODO: ERROR
         }
 
+        // Visit and add the block to the repeat node
         BaseNode repeatBlock = visit(ctx.block());
 
         if (repeatBlock instanceof BlockNode) {
             repeatStateNode.set_expBlock((BlockNode) repeatBlock);
         }else{
-            //TODO ERROR
+            //TODO: ERROR
         }
 
         return repeatStateNode;
     }
 
     @Override public BaseNode visitExprAss(mctlParser.ExprAssContext ctx) {
-        System.out.println("ExprAss:   " + ctx.getText());
+        AssStateNode assStateNode = new AssStateNode();
 
-        return visitChildren(ctx);
+        // Visit and add the id node
+        BaseNode tempIdNode = visit(ctx.id());
+        if (tempIdNode instanceof IDExpNode) {
+            assStateNode.set_assignId((IDExpNode) tempIdNode);
+        }
+        else {
+            // TODO: ERROR
+        }
+
+        // Visit and add the expression node
+        BaseNode tempExprNode = visit(ctx.expression());
+        if (tempExprNode instanceof ExpNode) {
+            assStateNode.set_assignExp((IDExpNode) tempExprNode);
+        }
+        else {
+            // TODO: ERROR
+        }
+
+        return assStateNode;
     }
 
     @Override public BaseNode visitIncrAss(mctlParser.IncrAssContext ctx) {
