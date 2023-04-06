@@ -230,7 +230,6 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitActualParameters(mctlParser.ActualParametersContext ctx) {
-        System.out.println("ActualParameters:   " + ctx.getText());
 
         return visitChildren(ctx);
     }
@@ -264,7 +263,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         CompExpNode compExpNode = new CompExpNode();
 
         // Add the comparison operator
-        compExpNode.set_compOperator(ctx.children.toArray()[1].toString());
+        compExpNode.set_compOperator(ctx.op.getText());
 
         // Iterate over the two individual expressions of the comparison expression
         for (ParseTree child : ctx.expression()) {
@@ -280,15 +279,34 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitBoolExp(mctlParser.BoolExpContext ctx) {
-        System.out.println("BoolExp:   " + ctx.getText());
+        BoolExpNode boolExpNode = new BoolExpNode();
+        boolExpNode.set_result(Boolean.parseBoolean(ctx.getText()));
 
-        return visitChildren(ctx);
+        return boolExpNode;
     }
 
     @Override public BaseNode visitAddExp(mctlParser.AddExpContext ctx) {
-        System.out.println("AddExp:   " + ctx.getText());
+        AddExpNode addExpNode = new AddExpNode();
 
-        return visitChildren(ctx);
+        // Add operator to node
+        if (ctx.op.getType() == mctlParser.PLUS) { addExpNode.set_operator(mctlParser.PLUS); }
+        else if (ctx.op.getType() == mctlParser.MINUS) { addExpNode.set_operator(mctlParser.MINUS); }
+        else {
+            // TODO: Potentially implement error handling?
+        }
+
+        // Iterate over the two individual expressions of the comparison expression
+        for (ParseTree child : ctx.expression()) {
+            BaseNode tempNode = visit(child);
+            if (tempNode instanceof ExpNode) {
+                addExpNode.add_child((ExpNode) tempNode);
+            }
+            else {
+                // TODO: Potentially implement error handling?
+            }
+        }
+
+        return addExpNode;
     }
 
     @Override public BaseNode visitOrExp(mctlParser.OrExpContext ctx) {
@@ -298,21 +316,50 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitTypecast(mctlParser.TypecastContext ctx) {
-        System.out.println("Typecast:   " + ctx.getText());
+        TypecastExpNode typecastExpNode = new TypecastExpNode();
 
-        return visitChildren(ctx);
+        BaseNode tempTypeNode = visit(ctx.variableType());
+        BaseNode tempExprNode = visit(ctx.expression());
+
+        if (tempTypeNode instanceof TypeNode && tempExprNode instanceof ExpNode) {
+            typecastExpNode.set_typeNode((TypeNode) tempTypeNode);
+            typecastExpNode.set_expression_node((ExpNode) tempExprNode);
+        }
+        else {
+            // TODO: Potentially implement error handling?
+        }
+
+        return typecastExpNode;
     }
 
     @Override public BaseNode visitEqualExp(mctlParser.EqualExpContext ctx) {
-        System.out.println("EqualExp:   " + ctx.getText());
+        EqualExpNode equalExpNode = new EqualExpNode();
 
-        return visitChildren(ctx);
+        // Add operator to node
+        if (ctx.op.getType() == mctlParser.EQUAL) { equalExpNode.set_operator(mctlParser.EQUAL); }
+        else if (ctx.op.getType() == mctlParser.NOTEQUAL) { equalExpNode.set_operator(mctlParser.NOTEQUAL); }
+        else {
+            // TODO: Potentially implement error handling?
+        }
+
+        // Iterate over the two individual expressions of the equality expression
+        for (ParseTree child : ctx.expression()) {
+            BaseNode tempExpr = visit(child);
+            if (tempExpr instanceof ExpNode) {
+                equalExpNode.add_child((ExpNode) tempExpr);
+            }
+            else {
+                // TODO: Potentially implement error handling?
+            }
+        }
+
+        return equalExpNode;
     }
 
     @Override public BaseNode visitIdExp(mctlParser.IdExpContext ctx) {
-        System.out.println("IdExp:   " + ctx.getText());
+        IDExpNode idExpNode = new IDExpNode();
 
-        return visitChildren(ctx);
+        return idExpNode;
     }
 
     @Override public BaseNode visitUnaryExp(mctlParser.UnaryExpContext ctx) {
@@ -387,7 +434,6 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
 
     @Override public BaseNode visitBoolean(mctlParser.BooleanContext ctx) {
         System.out.println("Boolean:   " + ctx.getText());
-
         return visitChildren(ctx);
     }
 }

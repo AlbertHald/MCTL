@@ -1720,6 +1720,7 @@ public class mctlParser extends Parser {
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class CompExpContext extends ExpressionContext {
+		public Token op;
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
@@ -1767,6 +1768,7 @@ public class mctlParser extends Parser {
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class AddExpContext extends ExpressionContext {
+		public Token op;
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
@@ -1841,6 +1843,7 @@ public class mctlParser extends Parser {
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class EqualExpContext extends ExpressionContext {
+		public Token op;
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
@@ -1886,6 +1889,7 @@ public class mctlParser extends Parser {
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class UnaryExpContext extends ExpressionContext {
+		public Token op;
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
@@ -1931,6 +1935,7 @@ public class mctlParser extends Parser {
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class MulExpContext extends ExpressionContext {
+		public Token op;
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
 		}
@@ -2042,9 +2047,10 @@ public class mctlParser extends Parser {
 				_ctx = _localctx;
 				_prevctx = _localctx;
 				setState(230);
+				((UnaryExpContext)_localctx).op = _input.LT(1);
 				_la = _input.LA(1);
 				if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 16789504L) != 0) ) {
-				_errHandler.recoverInline(this);
+					((UnaryExpContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 				}
 				else {
 					if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -2126,9 +2132,10 @@ public class mctlParser extends Parser {
 						setState(243);
 						if (!(precpred(_ctx, 6))) throw new FailedPredicateException(this, "precpred(_ctx, 6)");
 						setState(244);
+						((MulExpContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 3584L) != 0) ) {
-						_errHandler.recoverInline(this);
+							((MulExpContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
 							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -2146,9 +2153,10 @@ public class mctlParser extends Parser {
 						setState(246);
 						if (!(precpred(_ctx, 5))) throw new FailedPredicateException(this, "precpred(_ctx, 5)");
 						setState(247);
+						((AddExpContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==MINUS || _la==PLUS) ) {
-						_errHandler.recoverInline(this);
+							((AddExpContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
 							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -2166,9 +2174,10 @@ public class mctlParser extends Parser {
 						setState(249);
 						if (!(precpred(_ctx, 4))) throw new FailedPredicateException(this, "precpred(_ctx, 4)");
 						setState(250);
+						((CompExpContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 120L) != 0) ) {
-						_errHandler.recoverInline(this);
+							((CompExpContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
 							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -2186,9 +2195,10 @@ public class mctlParser extends Parser {
 						setState(252);
 						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
 						setState(253);
+						((EqualExpContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==EQUAL || _la==NOTEQUAL) ) {
-						_errHandler.recoverInline(this);
+							((EqualExpContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
 							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;

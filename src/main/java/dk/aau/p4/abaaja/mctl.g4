@@ -88,20 +88,20 @@ actualParameters
     ;
 
 expression
-    : invoke                                                        #invExp
-    | LPAR expression RPAR                                          #parenExp
-    | (NOT|MINUS|PLUS) expression                                   #unaryExp
-    | LPAR variableType RPAR expression                             #typecast
-    | boolean                                                       #boolExp
-    | NUMBER                                                        #numberExp
-    | id                                                            #idExp
-    | STRING                                                        #stringExp
-    | expression (MULTIPLY|DIVIDE|MODULO) expression                #mulExp
-    | expression (PLUS|MINUS) expression                            #addExp
-    | expression (LESS|LESSEQUAL|GREATER|GREATEREQUAL) expression   #compExp
-    | expression (EQUAL|NOTEQUAL) expression                        #equalExp
-    | expression And expression                                     #andExp
-    | expression Or expression                                      #orExp
+    : invoke                                                           #invExp
+    | LPAR expression RPAR                                             #parenExp
+    | op=(NOT|MINUS|PLUS) expression                                   #unaryExp
+    | LPAR variableType RPAR expression                                #typecast
+    | boolean                                                          #boolExp
+    | NUMBER                                                           #numberExp
+    | id                                                               #idExp
+    | STRING                                                           #stringExp
+    | expression op=(MULTIPLY|DIVIDE|MODULO) expression                #mulExp
+    | expression op=(PLUS|MINUS) expression                            #addExp
+    | expression op=(LESS|LESSEQUAL|GREATER|GREATEREQUAL) expression   #compExp
+    | expression op=(EQUAL|NOTEQUAL) expression                        #equalExp
+    | expression And expression                                        #andExp
+    | expression Or expression                                         #orExp
     ;
 
 returnType
