@@ -10,8 +10,6 @@ import org.w3c.dom.Node;
 import java.awt.geom.Point2D;
 import java.lang.reflect.Type;
 
-import java.beans.Expression;
-
 public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitMctl(mctlParser.MctlContext ctx) {
         MctlNode program = new MctlNode();
@@ -29,7 +27,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitBlock(mctlParser.BlockContext ctx) {
-        System.out.println("Block:   " + ctx.getText());
+        // TODO: Implement this
 
         return visitChildren(ctx);
     }
@@ -238,21 +236,47 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitNumberExp(mctlParser.NumberExpContext ctx) {
-        System.out.println("NumberExp:   " + ctx.getText());
+        NumExpNode numExpNode = new NumExpNode();
 
-        return visitChildren(ctx);
+        String stringFormattedNumber = ctx.getText();
+        numExpNode.set_result(stringFormattedNumber.contains(".") ? Double.parseDouble(stringFormattedNumber) : Integer.parseInt(stringFormattedNumber));
+
+        return numExpNode;
     }
 
     @Override public BaseNode visitAndExp(mctlParser.AndExpContext ctx) {
-        System.out.println("AndExp:   " + ctx.getText());
+        AndExpNode andExpNode = new AndExpNode();
 
-        return visitChildren(ctx);
+        // Iterate over the two individual expressions of the and expression
+        for (ParseTree child : ctx.expression()) {
+            BaseNode tempExprNode = visit(child);
+            if (tempExprNode instanceof ExpNode) {
+                andExpNode.add_child((ExpNode) tempExprNode);
+            } else {
+                // TODO: Potentially implement error handling?
+            }
+        }
+
+        return andExpNode;
     }
 
     @Override public BaseNode visitCompExp(mctlParser.CompExpContext ctx) {
-        System.out.println("VisitCompExp:   " + ctx.getText());
+        CompExpNode compExpNode = new CompExpNode();
 
-        return visitChildren(ctx);
+        // Add the comparison operator
+        compExpNode.set_compOperator(ctx.children.toArray()[1].toString());
+
+        // Iterate over the two individual expressions of the comparison expression
+        for (ParseTree child : ctx.expression()) {
+            BaseNode tempExprNode = visit(child);
+            if (tempExprNode instanceof ExpNode) {
+                compExpNode.add_child((ExpNode) tempExprNode);
+            } else {
+                // TODO: Potentially implement error handling?
+            }
+        }
+
+        return compExpNode;
     }
 
     @Override public BaseNode visitBoolExp(mctlParser.BoolExpContext ctx) {

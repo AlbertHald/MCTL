@@ -3,16 +3,20 @@ package dk.aau.p4.abaaja.Lib.Nodes;
 import dk.aau.p4.abaaja.Lib.Visitors.INodeVisitor;
 
 public class CompExpNode extends ExpNode {
+    private boolean _result;
+    private String _compOperator;
 
     public boolean get_result() {
         return _result;
     }
-
     public void set_result(boolean result) {
         this._result = result;
     }
 
-    private boolean _result;
+    public String get_compOperator() {
+        return _compOperator;
+    }
+    public void set_compOperator(String compOperator) { this._compOperator = _compOperator; }
 
     @Override
     public void accept(INodeVisitor visitor) {
