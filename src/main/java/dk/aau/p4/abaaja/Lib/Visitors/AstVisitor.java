@@ -76,13 +76,32 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitStructBlock(mctlParser.StructBlockContext ctx) { return visitChildren(ctx); }
 
     @Override public BaseNode visitIdStruct(mctlParser.IdStructContext ctx) {
-        System.out.println("IDStruct:  " + ctx.getText());
+        IDStructNode idStructNode = new IDStructNode();
 
-        return visitChildren(ctx);
+        for (ParseTree child : ctx.id()) {
+            BaseNode tempIdNode = visit(child);
+            if (tempIdNode instanceof IDExpNode) {
+                idStructNode.add_child((IDExpNode) tempIdNode);
+            }
+            else {
+                // TODO: Potentially implement error handling?
+            }
+        }
+
+        return idStructNode;
     }
 
     @Override public BaseNode visitIdArray(mctlParser.IdArrayContext ctx) {
         IDArrayExpNode idArrayExpNode = new IDArrayExpNode();
+
+        // Add the ID
+        BaseNode tempIdNode = visit(ctx.id());
+        if (tempIdNode instanceof IDExpNode) {
+            idArrayExpNode.add_child((IDExpNode) tempIdNode);
+        }
+        else {
+            // TODO: Potentially implement error handling?
+        }
 
         // Visit and add all expression nodes
         for (ParseTree child : ctx.expression()) {
@@ -95,7 +114,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             }
         }
 
-        return visitChildren(ctx);
+        return idArrayExpNode;
     }
 
     @Override public BaseNode visitIdVar(mctlParser.IdVarContext ctx) {
