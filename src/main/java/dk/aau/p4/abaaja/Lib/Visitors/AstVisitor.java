@@ -76,21 +76,33 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitStructBlock(mctlParser.StructBlockContext ctx) { return visitChildren(ctx); }
 
     @Override public BaseNode visitIdStruct(mctlParser.IdStructContext ctx) {
-        System.out.println("IDStruct:   " + ctx.getText());
+        System.out.println("IDStruct:  " + ctx.getText());
 
         return visitChildren(ctx);
     }
 
     @Override public BaseNode visitIdArray(mctlParser.IdArrayContext ctx) {
-        System.out.println("IdArray:   " + ctx.getText());
+        IDArrayExpNode idArrayExpNode = new IDArrayExpNode();
+
+        // Visit and add all expression nodes
+        for (ParseTree child : ctx.expression()) {
+            BaseNode tempNode = visit(child);
+            if (tempNode instanceof ExpNode) {
+                idArrayExpNode.add_child((ExpNode) tempNode);
+            }
+            else {
+                // TODO: Potentially implement error handling?
+            }
+        }
 
         return visitChildren(ctx);
     }
 
     @Override public BaseNode visitIdVar(mctlParser.IdVarContext ctx) {
-        System.out.println("IdVar:   " + ctx.getText());
+        ActualIDExpNode actualIDExpNode = new ActualIDExpNode();
+        actualIDExpNode.set_ID(ctx.getText());
 
-        return visitChildren(ctx);
+        return actualIDExpNode;
     }
 
     @Override public BaseNode visitStatement(mctlParser.StatementContext ctx) { return visitChildren(ctx); }
@@ -101,7 +113,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return visitChildren(ctx);
     }
 
-    @Override public BaseNode visitFunction(mctlParser.FunctionContext ctx) {
+    @Override public BaseNode visitFunctionDeclaration(mctlParser.FunctionDeclarationContext ctx) {
         FuncDecNode funcDecNode = new FuncDecNode();
 
         funcDecNode.set_id(ctx.ID().getText());
@@ -201,12 +213,6 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return visitChildren(ctx);
     }
 
-    @Override public BaseNode visitProdInv(mctlParser.ProdInvContext ctx) {
-        System.out.println("ProdInv:   " + ctx.getText());
-
-        return visitChildren(ctx);
-    }
-
     @Override public BaseNode visitFormalParameters(mctlParser.FormalParametersContext ctx) {
         System.out.println("FormalParameters:   " + ctx.getText());
         return visitChildren(ctx);
@@ -233,7 +239,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return visitChildren(ctx);
     }
 
-    @Override public BaseNode visitNumberExp(mctlParser.NumberExpContext ctx) {
+    @Override public BaseNode visitNumberExpr(mctlParser.NumberExprContext ctx) {
         NumExpNode numExpNode = new NumExpNode();
 
         String stringFormattedNumber = ctx.getText();
@@ -242,7 +248,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return numExpNode;
     }
 
-    @Override public BaseNode visitAndExp(mctlParser.AndExpContext ctx) {
+    @Override public BaseNode visitAndExpr(mctlParser.AndExprContext ctx) {
         AndExpNode andExpNode = new AndExpNode();
 
         // Iterate over the two individual expressions of the and expression
@@ -258,7 +264,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return andExpNode;
     }
 
-    @Override public BaseNode visitCompExp(mctlParser.CompExpContext ctx) {
+    @Override public BaseNode visitCompExpr(mctlParser.CompExprContext ctx) {
         CompExpNode compExpNode = new CompExpNode();
 
         // Add the comparison operator
@@ -277,14 +283,14 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return compExpNode;
     }
 
-    @Override public BaseNode visitBoolExp(mctlParser.BoolExpContext ctx) {
+    @Override public BaseNode visitBoolExpr(mctlParser.BoolExprContext ctx) {
         BoolExpNode boolExpNode = new BoolExpNode();
         boolExpNode.set_result(Boolean.parseBoolean(ctx.getText()));
 
         return boolExpNode;
     }
 
-    @Override public BaseNode visitAddExp(mctlParser.AddExpContext ctx) {
+    @Override public BaseNode visitAddExpr(mctlParser.AddExprContext ctx) {
         AddExpNode addExpNode = new AddExpNode();
 
         // Add operator to node
@@ -308,8 +314,8 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return addExpNode;
     }
 
-    @Override public BaseNode visitOrExp(mctlParser.OrExpContext ctx) {
-        OrExpNode orExpNode = new OrExpNode();
+    @Override public BaseNode visitOrExpr(mctlParser.OrExprContext ctx) {
+            OrExpNode orExpNode = new OrExpNode();
 
         // Iterate over the two individual expressions of the or expression
         for (ParseTree child : ctx.expression()) {
@@ -341,7 +347,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return typecastExpNode;
     }
 
-    @Override public BaseNode visitEqualExp(mctlParser.EqualExpContext ctx) {
+    @Override public BaseNode visitEqualExpr(mctlParser.EqualExprContext ctx) {
         EqualExpNode equalExpNode = new EqualExpNode();
 
         // Add operator to node
@@ -365,13 +371,14 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return equalExpNode;
     }
 
-    @Override public BaseNode visitIdExp(mctlParser.IdExpContext ctx) {
+    @Override public BaseNode visitIdExpr(mctlParser.IdExprContext ctx) {
         IDExpNode idExpNode = new IDExpNode();
+        idExpNode.add_child(visitChildren(ctx));
 
         return idExpNode;
     }
-
-    @Override public BaseNode visitUnaryExp(mctlParser.UnaryExpContext ctx) {
+    
+    @Override public BaseNode visitUnaryExpr(mctlParser.UnaryExprContext ctx) {
         UnaryExpNode unaryExpNode = new UnaryExpNode();
 
         // Add operator to node
@@ -395,13 +402,13 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return unaryExpNode;
     }
 
-    @Override public BaseNode visitParenExp(mctlParser.ParenExpContext ctx) {
+    @Override public BaseNode visitParenExpr(mctlParser.ParenExprContext ctx) {
         System.out.println("ParenExp:   " + ctx.getText());
 
         return visitChildren(ctx);
     }
 
-    @Override public BaseNode visitMulExp(mctlParser.MulExpContext ctx) {
+    @Override public BaseNode visitMulExpr(mctlParser.MulExprContext ctx) {
         System.out.println("MulExp:   " + ctx.getText());
         MulExpNode mulExpNode = new MulExpNode();
 
@@ -427,13 +434,13 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return visitChildren(ctx);
     }
 
-    @Override public BaseNode visitStringExp(mctlParser.StringExpContext ctx) {
+    @Override public BaseNode visitStringExpr(mctlParser.StringExprContext ctx) {
         System.out.println("StringExp:   " + ctx.getText());
 
         return visitChildren(ctx);
     }
 
-    @Override public BaseNode visitInvExp(mctlParser.InvExpContext ctx) {
+    @Override public BaseNode visitInvExpr(mctlParser.InvExprContext ctx) {
         System.out.println("InvExp:   " + ctx.getText());
 
         return visitChildren(ctx);
