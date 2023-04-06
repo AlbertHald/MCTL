@@ -23,6 +23,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             program.add_child(visit(child));
         }
 
+
         return program;
     }
 
@@ -178,8 +179,6 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         }else{
             //TODO ERROR
         }
-
-        System.out.println("Repeat:   " + ctx.getText());
 
         return repeatStateNode;
     }
@@ -376,6 +375,26 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
 
     @Override public BaseNode visitMulExp(mctlParser.MulExpContext ctx) {
         System.out.println("MulExp:   " + ctx.getText());
+        MulExpNode mulExpNode = new MulExpNode();
+
+
+        // Add operator to node
+        if (ctx.op.getType() == mctlParser.MULTIPLY) { mulExpNode.set_operator(mctlParser.MULTIPLY); }
+        else if (ctx.op.getType() == mctlParser.DIVIDE) { mulExpNode.set_operator(mctlParser.DIVIDE); }
+        else if (ctx.op.getType() == mctlParser.MODULO) { mulExpNode.set_operator(mctlParser.MODULO);
+        } else {
+            // TODO: Potentially implement error handling?
+        }
+
+        for (ParseTree child : ctx.expression()) {
+            BaseNode tempExpr = visit(child);
+            if (tempExpr instanceof ExpNode) {
+                mulExpNode.add_child((ExpNode) tempExpr);
+            }
+            else {
+                // TODO: Potentially implement error handling?
+            }
+        }
 
         return visitChildren(ctx);
     }
