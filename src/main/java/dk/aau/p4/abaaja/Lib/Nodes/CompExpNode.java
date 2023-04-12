@@ -4,7 +4,7 @@ import dk.aau.p4.abaaja.Lib.Visitors.INodeVisitor;
 
 public class CompExpNode extends ExpNode {
     private boolean _result;
-    private String _compOperator;
+    private int _compOperator;
 
     public boolean get_result() {
         return _result;
@@ -13,10 +13,10 @@ public class CompExpNode extends ExpNode {
         this._result = result;
     }
 
-    public String get_compOperator() {
+    public int get_compOperator() {
         return _compOperator;
     }
-    public void set_compOperator(String compOperator) { this._compOperator = _compOperator; }
+    public void set_compOperator(int compOperator) { this._compOperator = _compOperator; }
 
     @Override
     public void accept(INodeVisitor visitor) {
