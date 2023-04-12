@@ -281,7 +281,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             // TODO: ERROR
         }
 
-        return visitChildren(ctx);
+        return assStateNode;
     }
 
     @Override public BaseNode visitInvoke(mctlParser.InvokeContext ctx) {
