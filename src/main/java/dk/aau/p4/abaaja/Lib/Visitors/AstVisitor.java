@@ -442,7 +442,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
 
     @Override public BaseNode visitIdExpr(mctlParser.IdExprContext ctx) {
         IDExpNode idExpNode = new IDExpNode();
-        idExpNode.add_child(visitChildren(ctx));
+        idExpNode.set_ID(ctx.getText());
 
         return idExpNode;
     }
