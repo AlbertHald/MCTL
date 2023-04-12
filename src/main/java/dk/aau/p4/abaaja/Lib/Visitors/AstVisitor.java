@@ -280,7 +280,21 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitInvoke(mctlParser.InvokeContext ctx) {
-        return visitChildren(ctx);
+        InvokeNode invokeNode = new InvokeNode();
+        IDExpNode idExpNode = new IDExpNode();
+
+        idExpNode.set_ID(ctx.ID().getText());
+        invokeNode.set_invokeId(idExpNode);
+
+        for(ParseTree child: ctx.actualParameters().expression()) {
+            BaseNode node = visit(child);
+            if(node instanceof ExpNode){
+                invokeNode.add_paramExp((ExpNode) node);
+            }else{
+                // TODO: Potentially implement error handling?
+            }
+        }
+        return invokeNode;
     }
 
     @Override public BaseNode visitFormalParameters(mctlParser.FormalParametersContext ctx) {
@@ -290,7 +304,9 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitFormalParameter(mctlParser.FormalParameterContext ctx) {
         FormalParamNode formalParamNode = new FormalParamNode();
 
-        formalParamNode.set_id(ctx.ID().getText());
+        IDExpNode idExpNode = new IDExpNode();
+        idExpNode.set_ID(ctx.ID().getText());
+        formalParamNode.set_id(idExpNode);
 
         // Set type
         BaseNode tempTypeNode = visit(ctx.variableType());
