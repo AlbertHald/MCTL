@@ -516,9 +516,9 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitStringExpr(mctlParser.StringExprContext ctx) {
-        System.out.println("StringExp:   " + ctx.getText());
-
-        return visitChildren(ctx);
+        StringExpNode stringExpNode = new StringExpNode();
+        stringExpNode.set_result(ctx.getText());
+        return stringExpNode;
     }
 
     @Override public BaseNode visitInvExpr(mctlParser.InvExprContext ctx) {
