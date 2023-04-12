@@ -130,8 +130,17 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
 
     @Override public BaseNode visitReturn(mctlParser.ReturnContext ctx) {
         System.out.println("Return:   " + ctx.getText());
+        ReturnNode returnNode = new ReturnNode();
 
-        return visitChildren(ctx);
+        BaseNode expNode = visit(ctx.expression());
+
+        if (expNode instanceof ExpNode) {
+            returnNode.set_returnExp((ExpNode) expNode);
+        } else{
+            //TODO: ERROR
+        }
+
+        return returnNode;
     }
 
     @Override public BaseNode visitFunctionDeclaration(mctlParser.FunctionDeclarationContext ctx) {
