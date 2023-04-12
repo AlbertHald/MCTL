@@ -19,14 +19,22 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             program.add_child(visit(child));
         }
 
-
         return program;
     }
 
     @Override public BaseNode visitBlock(mctlParser.BlockContext ctx) {
-        // TODO: Implement this
+        BlockNode blockNode = new BlockNode();
 
-        return visitChildren(ctx);
+        for (ParseTree child : ctx.line()) {
+            BaseNode tempNode = visit(child);
+            if (tempNode instanceof LineNode) {
+                blockNode.add_line((LineNode) tempNode);
+            } else {
+                // TODO: Possibly implement error handling
+            }
+        }
+
+        return blockNode;
     }
 
     @Override public BaseNode visitLine(mctlParser.LineContext ctx) { return visitChildren(ctx); }
