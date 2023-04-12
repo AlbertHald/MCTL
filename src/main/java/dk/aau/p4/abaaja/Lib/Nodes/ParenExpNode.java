@@ -7,7 +7,6 @@ public class ParenExpNode extends ExpNode {
     public ExpNode get_contained_node() {
         return _node;
     }
-
     public void set_contained_node(ExpNode node) {
         this._node = node;
     }

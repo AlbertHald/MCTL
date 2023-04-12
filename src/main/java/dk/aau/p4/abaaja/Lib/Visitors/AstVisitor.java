@@ -487,11 +487,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return unaryExpNode;
     }
 
-    @Override public BaseNode visitParenExpr(mctlParser.ParenExprContext ctx) {
-        System.out.println("ParenExp:   " + ctx.getText());
-
-        return visitChildren(ctx);
-    }
+    @Override public BaseNode visitParenExpr(mctlParser.ParenExprContext ctx) { return visit(ctx.expression()); }
 
     @Override public BaseNode visitMulExpr(mctlParser.MulExprContext ctx) {
         System.out.println("MulExp:   " + ctx.getText());
