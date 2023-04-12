@@ -5,10 +5,6 @@ import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.mctlParser;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.w3c.dom.Node;
-
-import java.awt.geom.Point2D;
-import java.lang.reflect.Type;
 
 public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitMctl(mctlParser.MctlContext ctx) {
