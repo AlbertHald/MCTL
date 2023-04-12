@@ -495,7 +495,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return unaryExpNode;
     }
 
-    @Override public BaseNode visitParenExpr(mctlParser.ParenExprContext ctx) {return visitChildren(ctx);}
+    @Override public BaseNode visitParenExpr(mctlParser.ParenExprContext ctx) { return visit(ctx.expression()); }
 
     @Override public BaseNode visitMulExpr(mctlParser.MulExprContext ctx) {
         System.out.println("MulExp:   " + ctx.getText());
@@ -530,12 +530,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitInvExpr(mctlParser.InvExprContext ctx) { return visit(ctx.invoke()); }
-
-    @Override public BaseNode visitReturnType(mctlParser.ReturnTypeContext ctx) {
-        System.out.println("ReturnType:   " + ctx.getText());
-
-        return visitChildren(ctx);
-    }
+    @Override public BaseNode visitReturnType(mctlParser.ReturnTypeContext ctx) { return visitChildren(ctx); }
 
     @Override public BaseNode visitVariableType(mctlParser.VariableTypeContext ctx) {
         TypeNode typeNode;
@@ -563,16 +558,5 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         typeNode.set_arrayDegree(ctx.LSQR().size());
 
         return typeNode;
-    }
-
-    @Override public BaseNode visitBaseVariableType(mctlParser.BaseVariableTypeContext ctx) {
-        System.out.println("BaseVariableType:   " + ctx.getText());
-
-        return visitChildren(ctx);
-    }
-
-    @Override public BaseNode visitBoolean(mctlParser.BooleanContext ctx) {
-        System.out.println("Boolean:   " + ctx.getText());
-        return visitChildren(ctx);
     }
 }
