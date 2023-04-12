@@ -134,6 +134,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
 
         BaseNode expNode = visit(ctx.expression());
 
+        //set the return expression
         if (expNode instanceof ExpNode) {
             returnNode.set_returnExp((ExpNode) expNode);
         } else{
