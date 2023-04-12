@@ -243,7 +243,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         // Visit and add the expression node
         BaseNode tempExprNode = visit(ctx.expression());
         if (tempExprNode instanceof ExpNode) {
-            assStateNode.set_assignExp((IDExpNode) tempExprNode);
+            assStateNode.set_assignExp((ExpNode) tempExprNode);
         }
         else {
             // TODO: ERROR
@@ -253,7 +253,33 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitIncrAss(mctlParser.IncrAssContext ctx) {
-        System.out.println("IncrAss:   " + ctx.getText());
+        AssStateNode assStateNode = new AssStateNode();
+
+        // Visit and add the id node
+        BaseNode tempIdNode = visit(ctx.id());
+        if (tempIdNode instanceof IDExpNode) {
+            IDExpNode idExpNode = (IDExpNode) tempIdNode;
+            assStateNode.set_assignId((IDExpNode) idExpNode);
+
+            // Add operator to node
+            AddExpNode addExpNode = new AddExpNode();
+            if (ctx.op.getType() == mctlParser.INCREMENT) { addExpNode.set_operator(mctlParser.PLUS); }
+            else if (ctx.op.getType() == mctlParser.DECREMENT) { addExpNode.set_operator(mctlParser.MINUS); }
+            else {
+                // TODO: Potentially implement error handling?
+            }
+
+            // Create num node with the integer value 1
+            NumExpNode numExpNode = new NumExpNode();
+            numExpNode.set_result(1);
+
+            addExpNode.add_child(idExpNode);
+            addExpNode.add_child(numExpNode);
+
+        }
+        else {
+            // TODO: ERROR
+        }
 
         return visitChildren(ctx);
     }
@@ -263,7 +289,6 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitFormalParameters(mctlParser.FormalParametersContext ctx) {
-        System.out.println("FormalParameters:   " + ctx.getText());
         return visitChildren(ctx);
     }
 

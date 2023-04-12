@@ -66,8 +66,8 @@ repeat
     ;
 
 assignment
-    : id ASSIGN expression #exprAss
-    | id PLUS PLUS         #incrAss
+    : id ASSIGN expression              #exprAss
+    | id op=(INCREMENT | DECREMENT)     #incrAss
     ;
 
 invoke
@@ -135,6 +135,8 @@ COMMA:',';
 MULTIPLY: '*';
 DIVIDE:'/';
 MODULO:'%';
+DECREMENT: '--';
+INCREMENT: '++';
 MINUS: '-';
 PLUS: '+';
 ASSIGN: '=';
