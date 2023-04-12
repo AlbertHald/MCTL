@@ -19,7 +19,7 @@ public class Main {
         ProblemCollection problemCollection = new ProblemCollection();
 
         // Parse test CharStream
-        ParseTree tree = syntaxPhase( CharStreams.fromString("struct TEST {variable bing: NUMBER,variable bong: STRING} \n hest(muhh,ko);  "), problemCollection);
+        ParseTree tree = syntaxPhase( CharStreams.fromString("struct TEST {variable bing: NUMBER,variable bong: STRING} \n hest(200,ko);  "), problemCollection);
 
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here
