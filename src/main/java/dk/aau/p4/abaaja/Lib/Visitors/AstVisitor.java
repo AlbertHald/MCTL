@@ -76,9 +76,6 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return structDecNode;
     }
 
-    // TODO: Bliver vist ikke brugt
-    @Override public BaseNode visitStructBlock(mctlParser.StructBlockContext ctx) { return visitChildren(ctx); }
-
     @Override public BaseNode visitIdStruct(mctlParser.IdStructContext ctx) {
         IDStructNode idStructNode = new IDStructNode();
 
@@ -164,6 +161,15 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             }
         }
 
+        // Visit the return type node
+        BaseNode tempReturnTypeNode = visit(ctx.returnType());
+        if (tempReturnTypeNode instanceof TypeNode) {
+            funcDecNode.set_returnType((TypeNode) tempReturnTypeNode);
+        }
+        else {
+            // TODO: Potentially implement error handling?
+        }
+
         // Visit the block node
         BaseNode tempBlockNode = visit(ctx.block());
         if (tempBlockNode instanceof BlockNode) {
@@ -203,9 +209,6 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
 
         return ifStateNode;
     }
-
-    // TODO: POSSIBLY REMOVE THIS? NOT IN USE
-    @Override public BaseNode visitIfLiteral(mctlParser.IfLiteralContext ctx) { return visit(ctx.expression()); }
 
     @Override public BaseNode visitRepeat(mctlParser.RepeatContext ctx) {
         RepeatStateNode repeatStateNode = new RepeatStateNode();
@@ -305,10 +308,6 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return invokeNode;
     }
 
-    @Override public BaseNode visitFormalParameters(mctlParser.FormalParametersContext ctx) {
-        return visitChildren(ctx);
-    }
-
     @Override public BaseNode visitFormalParameter(mctlParser.FormalParameterContext ctx) {
         FormalParamNode formalParamNode = new FormalParamNode();
 
@@ -325,11 +324,6 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         }
 
         return formalParamNode;
-    }
-
-    @Override public BaseNode visitActualParameters(mctlParser.ActualParametersContext ctx) {
-        // TODO: maybe fix
-        return visitChildren(ctx);
     }
 
     @Override public BaseNode visitNumberExpr(mctlParser.NumberExprContext ctx) {
