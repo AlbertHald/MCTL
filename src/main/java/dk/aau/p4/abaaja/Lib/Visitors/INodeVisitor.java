@@ -21,7 +21,7 @@ public interface INodeVisitor {
     void visit(InvokeNode node);
     void visit(ReturnNode node);
 
-    void visit(ParamNode node);
+    void visit(FormalParamNode node);
     void visit(StopNode node);
     void visit(TypeNode node);
 
@@ -36,7 +36,10 @@ public interface INodeVisitor {
     void visit(TypecastExpNode node);
     void visit(UnaryExpNode node);
 
+    void visit(IDArrayExpNode node);
     void visit(IDExpNode node);
+    void visit(ActualIDExpNode node);
+    void visit(IDStructNode node);
     void visit(IDTypeNode node);
     void visit(BoolExpNode node);
     void visit(BoolTypeNode node);

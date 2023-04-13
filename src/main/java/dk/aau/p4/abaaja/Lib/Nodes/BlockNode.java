@@ -14,6 +14,8 @@ public class BlockNode extends BaseNode {
     public void set_line(List<LineNode> line) {
         this._line = line;
     }
+    public void add_line(LineNode line) { this._line.add(line); }
+
     @Override
     public void accept(INodeVisitor visitor) {
         visitor.visit(this);

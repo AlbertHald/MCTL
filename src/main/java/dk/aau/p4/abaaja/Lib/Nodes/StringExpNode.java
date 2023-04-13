@@ -7,7 +7,6 @@ public class StringExpNode extends ExpNode {
     public String get_result() {
         return _result;
     }
-
     public void set_result(String result) {
         this._result = result;
     }

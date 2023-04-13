@@ -14,7 +14,7 @@ line
 
 declaration
     : variableDeclaration SEMI
-    | function
+    | functionDeclaration
     | structDeclaration
     ;
 
@@ -31,9 +31,9 @@ structBlock
     ;
 
 id
-    : ID DOT id                     #idStruct
-    | ID (LSQR expression RSQR)+    #idArray
-    | ID                            #idVar
+    : ID                                    #idVar
+    | id DOT id                             #idStruct
+    | id (LSQR expression RSQR)+            #idArray
     ;
 
 statement
@@ -49,7 +49,7 @@ return
     : Return expression
     ;
 
-function
+functionDeclaration
     : To ID LPAR (formalParameters)? RPAR COLON returnType block
     ;
 
@@ -66,13 +66,12 @@ repeat
     ;
 
 assignment
-    : id ASSIGN expression #exprAss
-    | id PLUS PLUS         #incrAss
+    : id ASSIGN expression              #exprAss
+    | id op=(INCREMENT | DECREMENT)     #incrAss
     ;
 
 invoke
-    : ID LPAR (actualParameters)? RPAR                                                  #funcInv
-    | (ID | STRING) DOT (Add|IndexesOf|SubString|SubList) LPAR actualParameters RPAR    #prodInv
+    : (id DOT)? ID LPAR (actualParameters)? RPAR
     ;
 
 formalParameters
@@ -88,20 +87,20 @@ actualParameters
     ;
 
 expression
-    : invoke                                                        #invExp
-    | LPAR expression RPAR                                          #parenExp
-    | (NOT|MINUS|PLUS) expression                                   #unaryExp
-    | LPAR variableType RPAR expression                             #typecast
-    | boolean                                                       #boolExp
-    | NUMBER                                                        #numberExp
-    | id                                                            #idExp
-    | STRING                                                        #stringExp
-    | expression (MULTIPLY|DIVIDE|MODULO) expression                #mulExp
-    | expression (PLUS|MINUS) expression                            #addExp
-    | expression (LESS|LESSEQUAL|GREATER|GREATEREQUAL) expression   #compExp
-    | expression (EQUAL|NOTEQUAL) expression                        #equalExp
-    | expression And expression                                     #andExp
-    | expression Or expression                                      #orExp
+    : invoke                                                           #invExpr
+    | LPAR expression RPAR                                             #parenExpr
+    | op=(NOT|MINUS|PLUS) expression                                   #unaryExpr
+    | LPAR variableType RPAR expression                                #typecast
+    | boolean                                                          #boolExpr
+    | NUMBER                                                           #numberExpr
+    | id                                                               #idExpr
+    | STRING                                                           #stringExpr
+    | expression op=(MULTIPLY|DIVIDE|MODULO) expression                #mulExpr
+    | expression op=(PLUS|MINUS) expression                            #addExpr
+    | expression op=(LESS|LESSEQUAL|GREATER|GREATEREQUAL) expression   #compExpr
+    | expression op=(EQUAL|NOTEQUAL) expression                        #equalExpr
+    | expression And expression                                        #andExpr
+    | expression Or expression                                         #orExpr
     ;
 
 returnType
@@ -136,6 +135,8 @@ COMMA:',';
 MULTIPLY: '*';
 DIVIDE:'/';
 MODULO:'%';
+DECREMENT: '--';
+INCREMENT: '++';
 MINUS: '-';
 PLUS: '+';
 ASSIGN: '=';
