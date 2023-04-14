@@ -4,6 +4,8 @@ package dk.aau.p4.abaaja.Lib.Symbols;
 public class HashMapEntry {
     private String _name;
     private String _type;
+    private int _dimension;
+
 
     public String get_name() {
         return _name;
@@ -11,6 +13,10 @@ public class HashMapEntry {
 
     public String get_type() {
         return _type;
+    }
+
+    public int get_dimension() {
+        return _dimension;
     }
 
     public void set_name(String _name) {
