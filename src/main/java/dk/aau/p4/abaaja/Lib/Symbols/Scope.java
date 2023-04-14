@@ -9,6 +9,10 @@ public class Scope {
     private String _name;
     private Scope _parent;
 
+    //Constructor
+    public Scope(String name) {
+        this._name = name;
+    }
     //Getters and setters
     public String get_Name() {
         return _name;
