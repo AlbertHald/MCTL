@@ -1,6 +1,7 @@
 package dk.aau.p4.abaaja;
 
 // Antlr imports
+import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Visitors.AstVisitor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
@@ -23,7 +24,14 @@ public class Main {
 
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here
-            tree.accept(new AstVisitor());
+            tree.accept(new AstVisitor(problemCollection));
+
+            // Testing for errors
+            for (Problem problem : problemCollection.getProblems()) {
+                if (problem.getProblemType() == ProblemType.ERROR_AST_BUILDER) {
+                    System.out.println(problem.getMessage());
+                }
+            }
         }
         else {
             // Prints parse errors
