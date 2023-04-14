@@ -8,7 +8,8 @@ public enum ProblemType {
     Add errors and warnings here:
      */
     ERROR_PARSER("ERROR_PARSER"),
-    ERROR_LEXER("ERROR_LEXER");
+    ERROR_LEXER("ERROR_LEXER"),
+    ERROR_AST_BUILDER("ERROR_AST_BUILDER");
 
     private final String errorType;
 

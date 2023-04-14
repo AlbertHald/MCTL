@@ -1,12 +1,29 @@
 package dk.aau.p4.abaaja.Lib.Visitors;
 
-import dk.aau.p4.abaaja.mctlBaseVisitor;
-import dk.aau.p4.abaaja.Lib.Nodes.*;
-import dk.aau.p4.abaaja.mctlParser;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
+import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
+import dk.aau.p4.abaaja.mctlBaseVisitor;
+import dk.aau.p4.abaaja.Lib.Nodes.*;
+import dk.aau.p4.abaaja.mctlParser;
+
 public class AstVisitor extends mctlBaseVisitor<BaseNode> {
+    private ProblemCollection problemCollection;
+
+    public AstVisitor(ProblemCollection problemCollection) {
+        this.problemCollection = problemCollection;
+    }
+
+    private void addProblem(ParserRuleContext ctx, String message) {
+        problemCollection.addProblem(ProblemType.ERROR_AST_BUILDER,
+                message != "" ? message : "The AST builder encountered an unexpected error at line: " + ctx.start.getLine(),
+                ctx.start.getLine());
+    }
+
+
     @Override public BaseNode visitMctl(mctlParser.MctlContext ctx) {
         MctlNode program = new MctlNode();
         program.set_lineNumber(ctx.start.getLine());
@@ -32,7 +49,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             if (tempNode instanceof LineNode) {
                 blockNode.add_line((LineNode) tempNode);
             } else {
-                // TODO: Possibly implement error handling
+                addProblem(ctx, "");
             }
         }
 
@@ -55,7 +72,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             varDecNode.set_varDecType((TypeNode) varTypeNode);
         }
 
-        return visitChildren(ctx);
+        return varDecNode;
     }
 
     @Override public BaseNode visitStructDeclaration(mctlParser.StructDeclarationContext ctx) {
@@ -73,7 +90,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
                 structDecNode.add_declaration((VarDecNode) tempNode);
             }
             else {
-                // TODO: Potentially implement error handling?
+                addProblem(ctx, "");
             }
         }
 
@@ -91,7 +108,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
                 idStructNode.add_child((IDExpNode) tempIdNode);
             }
             else {
-                // TODO: Potentially implement error handling?
+                addProblem(ctx, "");
             }
         }
 
@@ -108,7 +125,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             idArrayExpNode.add_child((IDExpNode) tempIdNode);
         }
         else {
-            // TODO: Potentially implement error handling?
+            addProblem(ctx, "");
         }
 
         // Visit and add all expression nodes
@@ -118,7 +135,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
                 idArrayExpNode.add_child((ExpNode) tempNode);
             }
             else {
-                // TODO: Potentially implement error handling?
+                addProblem(ctx, "");
             }
         }
 
@@ -146,7 +163,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         if (expNode instanceof ExpNode) {
             returnNode.set_returnExp((ExpNode) expNode);
         } else{
-            //TODO: ERROR
+            addProblem(ctx, "");
         }
 
         return returnNode;
@@ -166,7 +183,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
                 funcDecNode.add_param((FormalParamNode) parameter);
             }
             else {
-                // TODO: Potentially implement error handling?
+                addProblem(ctx, "");
             }
         }
 
@@ -176,7 +193,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             funcDecNode.set_returnType((TypeNode) tempReturnTypeNode);
         }
         else {
-            // TODO: Potentially implement error handling?
+            addProblem(ctx, "");
         }
 
         // Visit the block node
@@ -185,7 +202,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             funcDecNode.set_funcBlock((BlockNode) tempBlockNode);
         }
         else {
-            // TODO: Potentially implement error handling?
+            addProblem(ctx, "");
         }
 
         return funcDecNode;
@@ -202,7 +219,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
                 ifStateNode.add_expChild((ExpNode) tempExpNode);
             }
             else {
-                // TODO: Potentially implement error handling?
+                addProblem(ctx, "");
             }
         }
 
@@ -213,7 +230,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
                 ifStateNode.add_blockChild((BlockNode) tempBlockNode);
             }
             else {
-                // TODO: Potentially implement error handling?
+                addProblem(ctx, "");
             }
         }
 
@@ -229,7 +246,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         if (repeatExpNode instanceof ExpNode) {
             repeatStateNode.set_repeatExp((ExpNode) repeatExpNode);
         } else{
-            //TODO: ERROR
+            addProblem(ctx, "");
         }
 
         // Visit and add the block to the repeat node
@@ -237,7 +254,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         if (repeatBlock instanceof BlockNode) {
             repeatStateNode.set_expBlock((BlockNode) repeatBlock);
         }else{
-            //TODO: ERROR
+            addProblem(ctx, "");
         }
 
         return repeatStateNode;
@@ -253,7 +270,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             assStateNode.set_assignId((IDExpNode) tempIdNode);
         }
         else {
-            // TODO: ERROR
+            addProblem(ctx, "");
         }
 
         // Visit and add the expression node
@@ -262,7 +279,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             assStateNode.set_assignExp((ExpNode) tempExprNode);
         }
         else {
-            // TODO: ERROR
+            addProblem(ctx, "");
         }
 
         return assStateNode;
@@ -284,7 +301,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             if (ctx.op.getType() == mctlParser.INCREMENT) { addExpNode.set_operator(mctlParser.PLUS); }
             else if (ctx.op.getType() == mctlParser.DECREMENT) { addExpNode.set_operator(mctlParser.MINUS); }
             else {
-                // TODO: Potentially implement error handling?
+                addProblem(ctx, "");
             }
 
             // Create num node with the integer value 1
@@ -297,7 +314,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
 
         }
         else {
-            // TODO: ERROR
+            addProblem(ctx, "");addProblem(ctx, "");
         }
 
         return assStateNode;
@@ -318,7 +335,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             if(node instanceof ExpNode){
                 invokeNode.add_paramExp((ExpNode) node);
             }else{
-                // TODO: Potentially implement error handling?
+                addProblem(ctx, "");
             }
         }
         return invokeNode;
@@ -338,7 +355,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         if (tempTypeNode instanceof TypeNode) {
             formalParamNode.set_type((TypeNode) tempTypeNode);
         } else {
-            // TODO: Potentially implement error handling?
+            addProblem(ctx, "");
         }
 
         return formalParamNode;
@@ -364,7 +381,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             if (tempExprNode instanceof ExpNode) {
                 andExpNode.add_child((ExpNode) tempExprNode);
             } else {
-                // TODO: Potentially implement error handling?
+                addProblem(ctx, "");
             }
         }
 
@@ -384,7 +401,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             if (tempExprNode instanceof ExpNode) {
                 compExpNode.add_child((ExpNode) tempExprNode);
             } else {
-                // TODO: Potentially implement error handling?
+                addProblem(ctx, "");
             }
         }
 
@@ -407,7 +424,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         if (ctx.op.getType() == mctlParser.PLUS) { addExpNode.set_operator(mctlParser.PLUS); }
         else if (ctx.op.getType() == mctlParser.MINUS) { addExpNode.set_operator(mctlParser.MINUS); }
         else {
-            // TODO: Potentially implement error handling?
+            addProblem(ctx, "");
         }
 
         // Iterate over the two individual expressions of the comparison expression
@@ -417,7 +434,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
                 addExpNode.add_child((ExpNode) tempNode);
             }
             else {
-                // TODO: Potentially implement error handling?
+                addProblem(ctx, "");
             }
         }
 
@@ -434,7 +451,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             if (tempExprNode instanceof ExpNode) {
                 orExpNode.add_child((ExpNode) tempExprNode);
             } else {
-                // TODO: Potentially implement error handling?
+                addProblem(ctx, "");
             }
         }
 
@@ -453,7 +470,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             typecastExpNode.set_expression_node((ExpNode) tempExprNode);
         }
         else {
-            // TODO: Potentially implement error handling?
+            addProblem(ctx, "");
         }
 
         return typecastExpNode;
@@ -467,7 +484,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         if (ctx.op.getType() == mctlParser.EQUAL) { equalExpNode.set_operator(mctlParser.EQUAL); }
         else if (ctx.op.getType() == mctlParser.NOTEQUAL) { equalExpNode.set_operator(mctlParser.NOTEQUAL); }
         else {
-            // TODO: Potentially implement error handling?
+            addProblem(ctx, "");
         }
 
         // Iterate over the two individual expressions of the equality expression
@@ -477,7 +494,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
                 equalExpNode.add_child((ExpNode) tempExpr);
             }
             else {
-                // TODO: Potentially implement error handling?
+                addProblem(ctx, "");
             }
         }
 
@@ -501,7 +518,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         else if (ctx.op.getType() == mctlParser.MINUS) { unaryExpNode.set_operator(mctlParser.MINUS); }
         else if (ctx.op.getType() == mctlParser.NOT){ unaryExpNode.set_operator(mctlParser.NOT); }
         else {
-            // TODO: Potentially implement error handling?
+            addProblem(ctx, "");
         }
 
         // control if the individual expressions of the comparison expression
@@ -511,7 +528,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             unaryExpNode.add_child((ExpNode) tempNode);
         }
         else {
-                // TODO: Potentially implement error handling?
+            addProblem(ctx, "");
         }
         return unaryExpNode;
     }
@@ -527,7 +544,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         else if (ctx.op.getType() == mctlParser.DIVIDE) { mulExpNode.set_operator(mctlParser.DIVIDE); }
         else if (ctx.op.getType() == mctlParser.MODULO) { mulExpNode.set_operator(mctlParser.MODULO);
         } else {
-            // TODO: Potentially implement error handling?
+            addProblem(ctx, "");
         }
 
         for (ParseTree child : ctx.expression()) {
@@ -536,11 +553,11 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
                 mulExpNode.add_child((ExpNode) tempExpr);
             }
             else {
-                // TODO: Potentially implement error handling?
+                addProblem(ctx, "");
             }
         }
 
-        return visitChildren(ctx);
+        return mulExpNode;
     }
 
     @Override public BaseNode visitStringExpr(mctlParser.StringExprContext ctx) {
