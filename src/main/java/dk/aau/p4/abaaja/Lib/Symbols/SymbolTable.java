@@ -1,8 +1,5 @@
 package dk.aau.p4.abaaja.Lib.Symbols;
 
-import java.util.HashMap;
-import java.util.Stack;
-
 public class SymbolTable {
     private Scope _currentScope;
     private final Scope _globalScope;
@@ -61,7 +58,7 @@ public class SymbolTable {
     }
 
     //Search symbol in scope
-    public HashMapEntry SearchSymbol(String symbol) {
+    public Symbol SearchSymbol(String symbol) {
         Scope scope = _currentScope;
 
         do {
@@ -72,7 +69,7 @@ public class SymbolTable {
         return null;
     }
 
-    public void InsertSymbol(String symbol, HashMapEntry Attribute) {
-        _currentScope.set_symbols(symbol, Attribute);
+    public void InsertSymbol(String symbolName, Symbol symbol) {
+        _currentScope.set_symbols(symbolName, symbol);
     }
 }

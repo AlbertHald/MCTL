@@ -1,7 +1,7 @@
 package dk.aau.p4.abaaja.Lib.Symbols;
 
 //Symbol table entries
-public class HashMapEntry {
+public class Symbol {
     private String _name;
     private String _type;
     private int _dimension;

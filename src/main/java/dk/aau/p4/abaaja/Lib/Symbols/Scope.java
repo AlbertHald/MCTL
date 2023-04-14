@@ -6,7 +6,7 @@ import java.util.HashMap;
 public class Scope {
 
     //A hashmap of symbols in the scope.
-    private HashMap<String, HashMapEntry> _symbols = new HashMap<>();
+    private final HashMap<String, Symbol> _symbols = new HashMap<>();
     private String _name;
     private Scope _parent;
 
@@ -31,11 +31,11 @@ public class Scope {
         this._parent = _parent;
     }
 
-    public HashMap<String, HashMapEntry> get_Symbols() {
+    public HashMap<String, Symbol> get_Symbols() {
         return _symbols;
     }
 
-    public void set_Symbols(String symbolName, HashMapEntry entry) {
+    public void set_Symbols(String symbolName, Symbol entry) {
         _symbols.put(symbolName, entry);
     }
 
@@ -51,7 +51,7 @@ public class Scope {
         this._children.add(child);
     }
 
-    public void set_symbols(String symbol, HashMapEntry Attribute) {
+    public void set_symbols(String symbol, Symbol Attribute) {
         this._symbols.put(symbol, Attribute);
     }
 }
