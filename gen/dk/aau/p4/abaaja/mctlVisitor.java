@@ -23,35 +23,32 @@ public interface mctlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBlock(mctlParser.BlockContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link mctlParser#line}.
+	 * Visit a parse tree produced by the {@code varDecl}
+	 * labeled alternative in {@link mctlParser#declaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLine(mctlParser.LineContext ctx);
+	T visitVarDecl(mctlParser.VarDeclContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link mctlParser#declaration}.
+	 * Visit a parse tree produced by the {@code functionDeclaration}
+	 * labeled alternative in {@link mctlParser#declaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitDeclaration(mctlParser.DeclarationContext ctx);
+	T visitFunctionDeclaration(mctlParser.FunctionDeclarationContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code structDeclaration}
+	 * labeled alternative in {@link mctlParser#declaration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructDeclaration(mctlParser.StructDeclarationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link mctlParser#variableDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitVariableDeclaration(mctlParser.VariableDeclarationContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link mctlParser#structDeclaration}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStructDeclaration(mctlParser.StructDeclarationContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link mctlParser#structBlock}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitStructBlock(mctlParser.StructBlockContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code idArray}
 	 * labeled alternative in {@link mctlParser#id}.
@@ -85,12 +82,6 @@ public interface mctlVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitReturn(mctlParser.ReturnContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link mctlParser#functionDeclaration}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFunctionDeclaration(mctlParser.FunctionDeclarationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link mctlParser#if}.
 	 * @param ctx the parse tree

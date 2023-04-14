@@ -1,6 +1,8 @@
 package dk.aau.p4.abaaja;
 
 // Antlr imports
+import dk.aau.p4.abaaja.Lib.Nodes.BaseNode;
+import dk.aau.p4.abaaja.Lib.Nodes.MctlNode;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Visitors.AstVisitor;
 import org.antlr.v4.runtime.CharStream;
@@ -20,17 +22,18 @@ public class Main {
         ProblemCollection problemCollection = new ProblemCollection();
 
         // Parse test CharStream
-        ParseTree tree = syntaxPhase( CharStreams.fromString("struct TEST {variable bing: NUMBER,variable bong: STRING} \n hest(200,ko);\nvariable ko : BOOLEAN;;"), problemCollection);
+        ParseTree tree = syntaxPhase( CharStreams.fromString("struct TEST {variable bing: NUMBER,variable bong: STRING} variable bong: NUMBER; hest(200,ko);\nvariable ko : BOOLEAN;;"), problemCollection);
 
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here
-            tree.accept(new AstVisitor(problemCollection));
+            MctlNode concreteNode = (MctlNode) tree.accept(new AstVisitor(problemCollection));
+            for (BaseNode child : concreteNode.get_children()) {
+                System.out.println(child.get_lineNumber());
+            }
 
             // Testing for errors
             for (Problem problem : problemCollection.getProblems()) {
-                if (problem.getProblemType() == ProblemType.ERROR_AST_BUILDER) {
-                    System.out.println(problem.getMessage());
-                }
+                 System.out.println(problem.getMessage() + "Ass");
             }
         }
         else {

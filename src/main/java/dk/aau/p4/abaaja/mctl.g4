@@ -1,33 +1,19 @@
 grammar mctl;
 
-mctl: (line)* EOF;
+mctl: (declaration | statement | COMMENT | SEMI)* EOF;
 
 block
-    : LCURL (line)* RCURL
+    : LCURL (declaration | statement | COMMENT | SEMI)* RCURL
     ;
 
-line
-    : declaration
-    | statement
-    | COMMENT
-    | SEMI;
-
 declaration
-    : variableDeclaration SEMI
-    | functionDeclaration
-    | structDeclaration
+    : variableDeclaration SEMI                                                         #varDecl
+    | To ID LPAR (formalParameters)? RPAR COLON returnType block                       #functionDeclaration
+    | Struct ID LCURL variableDeclaration (COMMA variableDeclaration)* (COMMA)? RCURL  #structDeclaration
     ;
 
 variableDeclaration
     : Variable ID COLON variableType
-    ;
-
-structDeclaration
-    : Struct ID structBlock
-    ;
-
-structBlock
-    : LCURL variableDeclaration (COMMA variableDeclaration)* (COMMA)? RCURL
     ;
 
 id
@@ -37,7 +23,7 @@ id
     ;
 
 statement
-    : if
+    : if                                    
     | repeat
     | assignment SEMI
     | invoke SEMI
@@ -49,9 +35,6 @@ return
     : Return expression
     ;
 
-functionDeclaration
-    : To ID LPAR (formalParameters)? RPAR COLON returnType block
-    ;
 
 if
     : ifLiteral block (Else ifLiteral block)* (Else block)?

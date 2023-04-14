@@ -41,37 +41,25 @@ public class mctlBaseListener implements mctlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLine(mctlParser.LineContext ctx) { }
+	@Override public void enterVarDecl(mctlParser.VarDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLine(mctlParser.LineContext ctx) { }
+	@Override public void exitVarDecl(mctlParser.VarDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDeclaration(mctlParser.DeclarationContext ctx) { }
+	@Override public void enterFunctionDeclaration(mctlParser.FunctionDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitDeclaration(mctlParser.DeclarationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterVariableDeclaration(mctlParser.VariableDeclarationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitVariableDeclaration(mctlParser.VariableDeclarationContext ctx) { }
+	@Override public void exitFunctionDeclaration(mctlParser.FunctionDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -89,13 +77,13 @@ public class mctlBaseListener implements mctlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterStructBlock(mctlParser.StructBlockContext ctx) { }
+	@Override public void enterVariableDeclaration(mctlParser.VariableDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitStructBlock(mctlParser.StructBlockContext ctx) { }
+	@Override public void exitVariableDeclaration(mctlParser.VariableDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -156,18 +144,6 @@ public class mctlBaseListener implements mctlListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitReturn(mctlParser.ReturnContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterFunctionDeclaration(mctlParser.FunctionDeclarationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFunctionDeclaration(mctlParser.FunctionDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

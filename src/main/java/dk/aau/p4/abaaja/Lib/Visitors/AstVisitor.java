@@ -44,7 +44,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         BlockNode blockNode = new BlockNode();
         blockNode.set_lineNumber(ctx.start.getLine());
 
-        for (ParseTree child : ctx.line()) {
+        for (ParseTree child : ctx.children) {
             BaseNode tempNode = visit(child);
             if (tempNode instanceof LineNode) {
                 blockNode.add_line((LineNode) tempNode);
@@ -56,8 +56,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return blockNode;
     }
 
-    @Override public BaseNode visitLine(mctlParser.LineContext ctx) { return visitChildren(ctx); }
-    @Override public BaseNode visitDeclaration(mctlParser.DeclarationContext ctx) { return visitChildren(ctx); }
+    @Override public BaseNode visitVarDecl(mctlParser.VarDeclContext ctx) { return visitVariableDeclaration(ctx.variableDeclaration()); }
 
     @Override public BaseNode visitVariableDeclaration(mctlParser.VariableDeclarationContext ctx) {
         // Set id of the variable node
@@ -83,7 +82,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         structDecNode.set_id(ctx.ID().getText());
 
         // Iterate over variable declarations
-        for (ParseTree child: ctx.structBlock().variableDeclaration()) {
+        for (ParseTree child: ctx.variableDeclaration()) {
             BaseNode tempNode = visit(child);
 
             if (tempNode instanceof VarDecNode) {

@@ -23,6 +23,12 @@ public class ProblemCollection {
     /*
      * Add method for adding problems to the collection
      */
+    public void addProblem(Problem problem) {
+        problems.add(problem);
+
+        if (problem.getProblemType().getProblemString().startsWith("E") && !hasErrors) hasErrors = true;
+    }
+
     public void addProblem(ProblemType type, String message, int line) {
         problems.add(new Problem(type, message, line, 0, 0));
 
