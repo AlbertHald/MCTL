@@ -13,12 +13,21 @@ public class SymbolTable {
         _currentScope = _globalScope;
     }
 
-    public void OpenScope(){
+    public void createScope(String scopeName) throws Exception{
+        if(GlobalSearchScope(scopeName) != null)
+            throw new Exception("Scope already exists: " + scopeName);
 
+        Scope scope = new Scope(scopeName);
+        scope.set_parent(_currentScope);
+        _currentScope.add_child(scope);
+
+
+        _currentScope = scope;
     }
 
     public void CloseScope(){
-
+        if(_currentScope.get_Parent() != null)
+            _currentScope = _currentScope.get_Parent();
     }
 
     public void EnterScope(String scopeName) throws Exception{
@@ -51,11 +60,19 @@ public class SymbolTable {
         return _currentScope;
     }
 
-    public void EnterSymbol(HashMapEntry symbol){
+    //Search symbol in scope
+    public HashMapEntry SearchSymbol(String symbol) {
+        Scope scope = _currentScope;
 
+        do {
+            if(!scope.get_Symbols().isEmpty() && scope.get_Symbols().containsKey(symbol))
+                return scope.get_Symbols().get(symbol);
+        } while((scope = scope.get_Parent()) != null);
+
+        return null;
     }
 
-    public boolean DeclaredLocally() {
-        return true;
+    public void InsertSymbol(String symbol, HashMapEntry Attribute) {
+        _currentScope.set_symbols(symbol, Attribute);
     }
 }
