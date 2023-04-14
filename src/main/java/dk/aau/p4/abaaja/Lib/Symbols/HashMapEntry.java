@@ -25,4 +25,5 @@ public class HashMapEntry {
     public void set_type(String _type) {
         this._type = _type;
     }
+    public void set_dimension(int _dimension) { this._dimension = _dimension; }
 }
