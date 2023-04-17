@@ -28,7 +28,7 @@ public class Main {
             // Continue parsing here
             MctlNode concreteNode = (MctlNode) tree.accept(new AstVisitor(problemCollection));
             for (BaseNode child : concreteNode.get_children()) {
-                System.out.println(child.get_lineNumber());
+                System.out.println(child);
             }
 
             // Testing for errors

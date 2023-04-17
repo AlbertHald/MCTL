@@ -785,38 +785,135 @@ public class mctlParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class StatementContext extends ParserRuleContext {
-		public IfContext if_() {
-			return getRuleContext(IfContext.class,0);
-		}
-		public RepeatContext repeat() {
-			return getRuleContext(RepeatContext.class,0);
-		}
-		public AssignmentContext assignment() {
-			return getRuleContext(AssignmentContext.class,0);
-		}
-		public TerminalNode SEMI() { return getToken(mctlParser.SEMI, 0); }
-		public InvokeContext invoke() {
-			return getRuleContext(InvokeContext.class,0);
-		}
-		public TerminalNode Stop() { return getToken(mctlParser.Stop, 0); }
-		public ReturnContext return_() {
-			return getRuleContext(ReturnContext.class,0);
-		}
 		public StatementContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_statement; }
+	 
+		public StatementContext() { }
+		public void copyFrom(StatementContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class StopStatementContext extends StatementContext {
+		public TerminalNode Stop() { return getToken(mctlParser.Stop, 0); }
+		public TerminalNode SEMI() { return getToken(mctlParser.SEMI, 0); }
+		public StopStatementContext(StatementContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof mctlListener ) ((mctlListener)listener).enterStatement(this);
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).enterStopStatement(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof mctlListener ) ((mctlListener)listener).exitStatement(this);
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).exitStopStatement(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof mctlVisitor ) return ((mctlVisitor<? extends T>)visitor).visitStatement(this);
+			if ( visitor instanceof mctlVisitor ) return ((mctlVisitor<? extends T>)visitor).visitStopStatement(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class RepeatStatementContext extends StatementContext {
+		public RepeatContext repeat() {
+			return getRuleContext(RepeatContext.class,0);
+		}
+		public RepeatStatementContext(StatementContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).enterRepeatStatement(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).exitRepeatStatement(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof mctlVisitor ) return ((mctlVisitor<? extends T>)visitor).visitRepeatStatement(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class AssignmentStatementContext extends StatementContext {
+		public AssignmentContext assignment() {
+			return getRuleContext(AssignmentContext.class,0);
+		}
+		public TerminalNode SEMI() { return getToken(mctlParser.SEMI, 0); }
+		public AssignmentStatementContext(StatementContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).enterAssignmentStatement(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).exitAssignmentStatement(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof mctlVisitor ) return ((mctlVisitor<? extends T>)visitor).visitAssignmentStatement(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class InvokeStatementContext extends StatementContext {
+		public InvokeContext invoke() {
+			return getRuleContext(InvokeContext.class,0);
+		}
+		public TerminalNode SEMI() { return getToken(mctlParser.SEMI, 0); }
+		public InvokeStatementContext(StatementContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).enterInvokeStatement(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).exitInvokeStatement(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof mctlVisitor ) return ((mctlVisitor<? extends T>)visitor).visitInvokeStatement(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class IfStatementContext extends StatementContext {
+		public IfContext if_() {
+			return getRuleContext(IfContext.class,0);
+		}
+		public IfStatementContext(StatementContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).enterIfStatement(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).exitIfStatement(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof mctlVisitor ) return ((mctlVisitor<? extends T>)visitor).visitIfStatement(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class ReturnStatementContext extends StatementContext {
+		public ReturnContext return_() {
+			return getRuleContext(ReturnContext.class,0);
+		}
+		public TerminalNode SEMI() { return getToken(mctlParser.SEMI, 0); }
+		public ReturnStatementContext(StatementContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).enterReturnStatement(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).exitReturnStatement(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof mctlVisitor ) return ((mctlVisitor<? extends T>)visitor).visitReturnStatement(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -829,6 +926,7 @@ public class mctlParser extends Parser {
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,11,_ctx) ) {
 			case 1:
+				_localctx = new IfStatementContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(120);
@@ -836,6 +934,7 @@ public class mctlParser extends Parser {
 				}
 				break;
 			case 2:
+				_localctx = new RepeatStatementContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(121);
@@ -843,6 +942,7 @@ public class mctlParser extends Parser {
 				}
 				break;
 			case 3:
+				_localctx = new AssignmentStatementContext(_localctx);
 				enterOuterAlt(_localctx, 3);
 				{
 				setState(122);
@@ -852,6 +952,7 @@ public class mctlParser extends Parser {
 				}
 				break;
 			case 4:
+				_localctx = new InvokeStatementContext(_localctx);
 				enterOuterAlt(_localctx, 4);
 				{
 				setState(125);
@@ -861,6 +962,7 @@ public class mctlParser extends Parser {
 				}
 				break;
 			case 5:
+				_localctx = new StopStatementContext(_localctx);
 				enterOuterAlt(_localctx, 5);
 				{
 				setState(128);
@@ -870,6 +972,7 @@ public class mctlParser extends Parser {
 				}
 				break;
 			case 6:
+				_localctx = new ReturnStatementContext(_localctx);
 				enterOuterAlt(_localctx, 6);
 				{
 				setState(130);
@@ -1160,13 +1263,14 @@ public class mctlParser extends Parser {
 	}
 	@SuppressWarnings("CheckReturnValue")
 	public static class ExprAssContext extends AssignmentContext {
+		public Token op;
 		public IdContext id() {
 			return getRuleContext(IdContext.class,0);
 		}
-		public TerminalNode ASSIGN() { return getToken(mctlParser.ASSIGN, 0); }
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
 		}
+		public TerminalNode ASSIGN() { return getToken(mctlParser.ASSIGN, 0); }
 		public ExprAssContext(AssignmentContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
@@ -1221,7 +1325,7 @@ public class mctlParser extends Parser {
 				setState(164);
 				id(0);
 				setState(165);
-				match(ASSIGN);
+				((ExprAssContext)_localctx).op = match(ASSIGN);
 				setState(166);
 				expression(0);
 				}
@@ -2143,25 +2247,51 @@ public class mctlParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class ReturnTypeContext extends ParserRuleContext {
-		public VariableTypeContext variableType() {
-			return getRuleContext(VariableTypeContext.class,0);
-		}
-		public TerminalNode Nothing() { return getToken(mctlParser.Nothing, 0); }
 		public ReturnTypeContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_returnType; }
+	 
+		public ReturnTypeContext() { }
+		public void copyFrom(ReturnTypeContext ctx) {
+			super.copyFrom(ctx);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class ReturnTypeNothingContext extends ReturnTypeContext {
+		public TerminalNode Nothing() { return getToken(mctlParser.Nothing, 0); }
+		public ReturnTypeNothingContext(ReturnTypeContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof mctlListener ) ((mctlListener)listener).enterReturnType(this);
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).enterReturnTypeNothing(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof mctlListener ) ((mctlListener)listener).exitReturnType(this);
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).exitReturnTypeNothing(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof mctlVisitor ) return ((mctlVisitor<? extends T>)visitor).visitReturnType(this);
+			if ( visitor instanceof mctlVisitor ) return ((mctlVisitor<? extends T>)visitor).visitReturnTypeNothing(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+	@SuppressWarnings("CheckReturnValue")
+	public static class ReturnTypeVariableContext extends ReturnTypeContext {
+		public VariableTypeContext variableType() {
+			return getRuleContext(VariableTypeContext.class,0);
+		}
+		public ReturnTypeVariableContext(ReturnTypeContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).enterReturnTypeVariable(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof mctlListener ) ((mctlListener)listener).exitReturnTypeVariable(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof mctlVisitor ) return ((mctlVisitor<? extends T>)visitor).visitReturnTypeVariable(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2177,6 +2307,7 @@ public class mctlParser extends Parser {
 			case Number:
 			case Boolean:
 			case ID:
+				_localctx = new ReturnTypeVariableContext(_localctx);
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(255);
@@ -2184,6 +2315,7 @@ public class mctlParser extends Parser {
 				}
 				break;
 			case Nothing:
+				_localctx = new ReturnTypeNothingContext(_localctx);
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(256);

@@ -110,15 +110,77 @@ public interface mctlListener extends ParseTreeListener {
 	 */
 	void exitIdVar(mctlParser.IdVarContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link mctlParser#statement}.
+	 * Enter a parse tree produced by the {@code ifStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
 	 * @param ctx the parse tree
 	 */
-	void enterStatement(mctlParser.StatementContext ctx);
+	void enterIfStatement(mctlParser.IfStatementContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link mctlParser#statement}.
+	 * Exit a parse tree produced by the {@code ifStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
 	 * @param ctx the parse tree
 	 */
-	void exitStatement(mctlParser.StatementContext ctx);
+	void exitIfStatement(mctlParser.IfStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code repeatStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterRepeatStatement(mctlParser.RepeatStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code repeatStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitRepeatStatement(mctlParser.RepeatStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code assignmentStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssignmentStatement(mctlParser.AssignmentStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code assignmentStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssignmentStatement(mctlParser.AssignmentStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code invokeStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterInvokeStatement(mctlParser.InvokeStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code invokeStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitInvokeStatement(mctlParser.InvokeStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code stopStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterStopStatement(mctlParser.StopStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code stopStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitStopStatement(mctlParser.StopStatementContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code returnStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturnStatement(mctlParser.ReturnStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code returnStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturnStatement(mctlParser.ReturnStatementContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link mctlParser#return}.
 	 * @param ctx the parse tree
@@ -392,15 +454,29 @@ public interface mctlListener extends ParseTreeListener {
 	 */
 	void exitAndExpr(mctlParser.AndExprContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link mctlParser#returnType}.
+	 * Enter a parse tree produced by the {@code returnTypeVariable}
+	 * labeled alternative in {@link mctlParser#returnType}.
 	 * @param ctx the parse tree
 	 */
-	void enterReturnType(mctlParser.ReturnTypeContext ctx);
+	void enterReturnTypeVariable(mctlParser.ReturnTypeVariableContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link mctlParser#returnType}.
+	 * Exit a parse tree produced by the {@code returnTypeVariable}
+	 * labeled alternative in {@link mctlParser#returnType}.
 	 * @param ctx the parse tree
 	 */
-	void exitReturnType(mctlParser.ReturnTypeContext ctx);
+	void exitReturnTypeVariable(mctlParser.ReturnTypeVariableContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code returnTypeNothing}
+	 * labeled alternative in {@link mctlParser#returnType}.
+	 * @param ctx the parse tree
+	 */
+	void enterReturnTypeNothing(mctlParser.ReturnTypeNothingContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code returnTypeNothing}
+	 * labeled alternative in {@link mctlParser#returnType}.
+	 * @param ctx the parse tree
+	 */
+	void exitReturnTypeNothing(mctlParser.ReturnTypeNothingContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link mctlParser#variableType}.
 	 * @param ctx the parse tree

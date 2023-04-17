@@ -71,11 +71,47 @@ public interface mctlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIdVar(mctlParser.IdVarContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link mctlParser#statement}.
+	 * Visit a parse tree produced by the {@code ifStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitStatement(mctlParser.StatementContext ctx);
+	T visitIfStatement(mctlParser.IfStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code repeatStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRepeatStatement(mctlParser.RepeatStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code assignmentStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAssignmentStatement(mctlParser.AssignmentStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code invokeStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInvokeStatement(mctlParser.InvokeStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code stopStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStopStatement(mctlParser.StopStatementContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code returnStatement}
+	 * labeled alternative in {@link mctlParser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReturnStatement(mctlParser.ReturnStatementContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link mctlParser#return}.
 	 * @param ctx the parse tree
@@ -237,11 +273,19 @@ public interface mctlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAndExpr(mctlParser.AndExprContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link mctlParser#returnType}.
+	 * Visit a parse tree produced by the {@code returnTypeVariable}
+	 * labeled alternative in {@link mctlParser#returnType}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitReturnType(mctlParser.ReturnTypeContext ctx);
+	T visitReturnTypeVariable(mctlParser.ReturnTypeVariableContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code returnTypeNothing}
+	 * labeled alternative in {@link mctlParser#returnType}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReturnTypeNothing(mctlParser.ReturnTypeNothingContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link mctlParser#variableType}.
 	 * @param ctx the parse tree

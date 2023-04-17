@@ -23,12 +23,12 @@ id
     ;
 
 statement
-    : if                                    
-    | repeat
-    | assignment SEMI
-    | invoke SEMI
-    | Stop SEMI
-    | return SEMI
+    : if                                    #ifStatement
+    | repeat                                #repeatStatement
+    | assignment SEMI                       #assignmentStatement
+    | invoke SEMI                           #invokeStatement
+    | Stop SEMI                             #stopStatement
+    | return SEMI                           #returnStatement
     ;
 
 return
@@ -49,7 +49,7 @@ repeat
     ;
 
 assignment
-    : id ASSIGN expression              #exprAss
+    : id op=ASSIGN expression           #exprAss
     | id op=(INCREMENT | DECREMENT)     #incrAss
     ;
 
@@ -87,8 +87,8 @@ expression
     ;
 
 returnType
-    : variableType
-    | Nothing
+    : variableType                  #returnTypeVariable
+    | Nothing                       #returnTypeNothing
     ;
 
 variableType
