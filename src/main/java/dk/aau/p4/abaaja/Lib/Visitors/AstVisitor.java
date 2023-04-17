@@ -368,10 +368,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         FormalParamNode formalParamNode = new FormalParamNode();
         formalParamNode.set_lineNumber(ctx.start.getLine());
 
-        IDExpNode idExpNode = new IDExpNode();
-        idExpNode.set_lineNumber(ctx.start.getLine());
-        idExpNode.set_ID(ctx.ID().getText());
-        formalParamNode.set_id(idExpNode);
+        formalParamNode.set_id(ctx.ID().getText());
 
         // Set type
         BaseNode tempTypeNode = visit(ctx.variableType());
