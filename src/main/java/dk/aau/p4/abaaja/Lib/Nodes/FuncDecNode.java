@@ -1,5 +1,6 @@
 package dk.aau.p4.abaaja.Lib.Nodes;
 
+import java.util.ArrayList;
 import java.util.List;
 import dk.aau.p4.abaaja.Lib.Visitors.INodeVisitor;
 
@@ -16,7 +17,12 @@ public class FuncDecNode extends DecNode {
     public void set_paramList(List<FormalParamNode> paramList) {
         this._paramList = paramList;
     }
-    public void add_param(FormalParamNode paramNode) { this._paramList.add(paramNode); }
+    public void add_param(FormalParamNode paramNode) {
+        if (this._paramList == null) {
+            this._paramList = new ArrayList<FormalParamNode>();
+        }
+        this._paramList.add(paramNode);
+    }
 
     public BlockNode get_funcBlock() {
         return _funcBlock;
