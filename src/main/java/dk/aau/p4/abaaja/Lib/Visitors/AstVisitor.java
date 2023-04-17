@@ -9,6 +9,7 @@ import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.mctlBaseVisitor;
 import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.mctlParser;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     private ProblemCollection problemCollection;
@@ -45,6 +46,10 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         blockNode.set_lineNumber(ctx.start.getLine());
 
         for (ParseTree child : ctx.children) {
+            // Skips square brackets
+            if (child instanceof TerminalNode) { continue; }
+
+            // Add line to block
             BaseNode tempNode = visit(child);
             if (tempNode instanceof LineNode) {
                 blockNode.add_line((LineNode) tempNode);
@@ -173,14 +178,16 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         funcDecNode.set_id(ctx.ID().getText());
 
         // Visit and add all parameter nodes
-        for (ParseTree child : ctx.formalParameters().formalParameter()) {
-            BaseNode parameter = visit(child);
+        if (ctx.formalParameters() != null) {
+            for (ParseTree child : ctx.formalParameters().formalParameter()) {
+                BaseNode parameter = visit(child);
 
-            if (parameter instanceof FormalParamNode) {
-                funcDecNode.add_param((FormalParamNode) parameter);
-            }
-            else {
-                addProblem(ctx, "");
+                if (parameter instanceof FormalParamNode) {
+                    funcDecNode.add_param((FormalParamNode) parameter);
+                }
+                else {
+                    addProblem(ctx, "");
+                }
             }
         }
 

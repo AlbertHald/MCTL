@@ -22,19 +22,12 @@ public class Main {
         ProblemCollection problemCollection = new ProblemCollection();
 
         // Parse test CharStream
-        ParseTree tree = syntaxPhase( CharStreams.fromString("struct TEST {variable bing: NUMBER,variable bong: STRING} variable bong: NUMBER; hest(200,ko);\nvariable ko : BOOLEAN;;"), problemCollection);
+        //
+        ParseTree tree = syntaxPhase( CharStreams.fromString("to aa() : NUMBER { return 2; } \nstruct TEST {variable bing: NUMBER,variable bong: STRING} \nvariable bong: NUMBER; \nhest(200,ko); \nvariable ko : BOOLEAN;;"), problemCollection);
 
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here
             MctlNode concreteNode = (MctlNode) tree.accept(new AstVisitor(problemCollection));
-            for (BaseNode child : concreteNode.get_children()) {
-                System.out.println(child);
-            }
-
-            // Testing for errors
-            for (Problem problem : problemCollection.getProblems()) {
-                 System.out.println(problem.getMessage() + "Ass");
-            }
         }
         else {
             // Prints parse errors
