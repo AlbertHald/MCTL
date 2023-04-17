@@ -44,7 +44,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         BlockNode blockNode = new BlockNode();
         blockNode.set_lineNumber(ctx.start.getLine());
 
-        for (ParseTree child : ctx.line()) {
+        for (ParseTree child : ctx.children) {
             BaseNode tempNode = visit(child);
             if (tempNode instanceof LineNode) {
                 blockNode.add_line((LineNode) tempNode);
@@ -56,8 +56,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return blockNode;
     }
 
-    @Override public BaseNode visitLine(mctlParser.LineContext ctx) { return visitChildren(ctx); }
-    @Override public BaseNode visitDeclaration(mctlParser.DeclarationContext ctx) { return visitChildren(ctx); }
+    @Override public BaseNode visitVarDecl(mctlParser.VarDeclContext ctx) { return visitVariableDeclaration(ctx.variableDeclaration()); }
 
     @Override public BaseNode visitVariableDeclaration(mctlParser.VariableDeclarationContext ctx) {
         // Set id of the variable node
@@ -83,7 +82,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         structDecNode.set_id(ctx.ID().getText());
 
         // Iterate over variable declarations
-        for (ParseTree child: ctx.structBlock().variableDeclaration()) {
+        for (ParseTree child: ctx.variableDeclaration()) {
             BaseNode tempNode = visit(child);
 
             if (tempNode instanceof VarDecNode) {
@@ -151,8 +150,6 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return actualIDExpNode;
     }
 
-    @Override public BaseNode visitStatement(mctlParser.StatementContext ctx) { return visitChildren(ctx); }
-
     @Override public BaseNode visitReturn(mctlParser.ReturnContext ctx) {
         ReturnNode returnNode = new ReturnNode();
         returnNode.set_lineNumber(ctx.start.getLine());
@@ -208,12 +205,12 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return funcDecNode;
     }
 
-    @Override public BaseNode visitIf(mctlParser.IfContext ctx) {
+    @Override public BaseNode visitIfStatement(mctlParser.IfStatementContext ctx) {
         IfStateNode ifStateNode = new IfStateNode();
         ifStateNode.set_lineNumber(ctx.start.getLine());
 
         // Set Expression List
-        for (ParseTree child : ctx.ifLiteral()) {
+        for (ParseTree child : ctx.if_().ifLiteral()) {
             BaseNode tempExpNode = visit(child);
             if (tempExpNode instanceof ExpNode) {
                 ifStateNode.add_expChild((ExpNode) tempExpNode);
@@ -224,7 +221,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         }
 
         // Set Block List
-        for (ParseTree child : ctx.block()) {
+        for (ParseTree child : ctx.if_().block()) {
             BaseNode tempBlockNode = visit(child);
             if (tempBlockNode instanceof BlockNode) {
                 ifStateNode.add_blockChild((BlockNode) tempBlockNode);
@@ -237,12 +234,12 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return ifStateNode;
     }
 
-    @Override public BaseNode visitRepeat(mctlParser.RepeatContext ctx) {
+    @Override public BaseNode visitRepeatStatement(mctlParser.RepeatStatementContext ctx) {
         RepeatStateNode repeatStateNode = new RepeatStateNode();
         repeatStateNode.set_lineNumber(ctx.start.getLine());
 
         // Visit and add the repeat expression
-        BaseNode repeatExpNode = visit(ctx.expression());
+        BaseNode repeatExpNode = visit(ctx.repeat().expression());
         if (repeatExpNode instanceof ExpNode) {
             repeatStateNode.set_repeatExp((ExpNode) repeatExpNode);
         } else{
@@ -250,7 +247,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         }
 
         // Visit and add the block to the repeat node
-        BaseNode repeatBlock = visit(ctx.block());
+        BaseNode repeatBlock = visit(ctx.repeat().block());
         if (repeatBlock instanceof BlockNode) {
             repeatStateNode.set_expBlock((BlockNode) repeatBlock);
         }else{
@@ -258,6 +255,25 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         }
 
         return repeatStateNode;
+    }
+
+    @Override public BaseNode visitAssignmentStatement(mctlParser.AssignmentStatementContext ctx) {
+        return visit(ctx.assignment());
+    }
+
+    @Override public BaseNode visitInvokeStatement(mctlParser.InvokeStatementContext ctx) {
+        return visit(ctx.invoke());
+    }
+
+    @Override public BaseNode visitStopStatement(mctlParser.StopStatementContext ctx) {
+        StopNode stopNode = new StopNode();
+        stopNode.set_lineNumber(ctx.start.getLine());
+
+        return stopNode;
+    }
+
+    @Override public BaseNode visitReturnStatement(mctlParser.ReturnStatementContext ctx) {
+        return visitReturn(ctx.return_());
     }
 
     @Override public BaseNode visitExprAss(mctlParser.ExprAssContext ctx) {
@@ -569,7 +585,16 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitInvExpr(mctlParser.InvExprContext ctx) { return visit(ctx.invoke()); }
-    @Override public BaseNode visitReturnType(mctlParser.ReturnTypeContext ctx) { return visitChildren(ctx); }
+    @Override public BaseNode visitReturnTypeVariable(mctlParser.ReturnTypeVariableContext ctx) { return visit(ctx.variableType()); }
+
+    @Override public BaseNode visitReturnTypeNothing(mctlParser.ReturnTypeNothingContext ctx) {
+        NothingTypeNode nothingTypeNode = new NothingTypeNode();
+
+        // Set the line number
+        nothingTypeNode.set_lineNumber(ctx.start.getLine());
+
+        return nothingTypeNode;
+    }
 
     @Override public BaseNode visitVariableType(mctlParser.VariableTypeContext ctx) {
         TypeNode typeNode;
@@ -584,9 +609,6 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
                 break;
             case "BOOLEAN":
                 typeNode = new BoolTypeNode();
-                break;
-            case "NOTHING":
-                typeNode = new NothingTypeNode();
                 break;
             default:
                 typeNode = new IDTypeNode();

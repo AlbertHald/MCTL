@@ -1,33 +1,19 @@
 grammar mctl;
 
-mctl: (line)* EOF;
+mctl: (declaration | statement | COMMENT | SEMI)* EOF;
 
 block
-    : LCURL (line)* RCURL
+    : LCURL (declaration | statement | COMMENT | SEMI)* RCURL
     ;
 
-line
-    : declaration
-    | statement
-    | COMMENT
-    | SEMI;
-
 declaration
-    : variableDeclaration SEMI
-    | functionDeclaration
-    | structDeclaration
+    : variableDeclaration SEMI                                                         #varDecl
+    | To ID LPAR (formalParameters)? RPAR COLON returnType block                       #functionDeclaration
+    | Struct ID LCURL variableDeclaration (COMMA variableDeclaration)* (COMMA)? RCURL  #structDeclaration
     ;
 
 variableDeclaration
     : Variable ID COLON variableType
-    ;
-
-structDeclaration
-    : Struct ID structBlock
-    ;
-
-structBlock
-    : LCURL variableDeclaration (COMMA variableDeclaration)* (COMMA)? RCURL
     ;
 
 id
@@ -37,21 +23,18 @@ id
     ;
 
 statement
-    : if
-    | repeat
-    | assignment SEMI
-    | invoke SEMI
-    | Stop SEMI
-    | return SEMI
+    : if                                    #ifStatement
+    | repeat                                #repeatStatement
+    | assignment SEMI                       #assignmentStatement
+    | invoke SEMI                           #invokeStatement
+    | Stop SEMI                             #stopStatement
+    | return SEMI                           #returnStatement
     ;
 
 return
     : Return expression
     ;
 
-functionDeclaration
-    : To ID LPAR (formalParameters)? RPAR COLON returnType block
-    ;
 
 if
     : ifLiteral block (Else ifLiteral block)* (Else block)?
@@ -66,7 +49,7 @@ repeat
     ;
 
 assignment
-    : id ASSIGN expression              #exprAss
+    : id op=ASSIGN expression           #exprAss
     | id op=(INCREMENT | DECREMENT)     #incrAss
     ;
 
@@ -104,8 +87,8 @@ expression
     ;
 
 returnType
-    : variableType
-    | Nothing
+    : variableType                  #returnTypeVariable
+    | Nothing                       #returnTypeNothing
     ;
 
 variableType
