@@ -1,56 +1,56 @@
 package dk.aau.p4.abaaja.Lib.Symbols;
 
+import java.util.ArrayList;
+
 public class SymbolTable {
+
     private Scope _currentScope;
     private final Scope _globalScope;
+    private final ArrayList<Scope> _symboltable = new ArrayList<>();
 
 
     public SymbolTable(){
         _globalScope = new Scope("Global");
+        _symboltable.add(_globalScope);
         _currentScope = _globalScope;
     }
 
-    public void createScope(String scopeName) throws Exception{
-        if(GlobalSearchScope(scopeName) != null)
+    public void CreateScope(String scopeName) throws Exception {
+        if(SearchScope(scopeName) != null)
             throw new Exception("Scope already exists: " + scopeName);
 
         Scope scope = new Scope(scopeName);
         scope.set_parent(_currentScope);
-        _currentScope.add_child(scope);
-
+        _symboltable.add(scope);
 
         _currentScope = scope;
     }
 
     public void CloseScope(){
         if(_currentScope.get_Parent() != null)
-            _currentScope = _currentScope.get_Parent();
+
+            _symboltable.remove(_currentScope);
+            _currentScope = _symboltable.get(_symboltable.size() - 1);
+
     }
 
-    public void EnterScope(String scopeName) throws Exception{
-        Scope scope = GlobalSearchScope(scopeName);
+    public void EnterScope(String scopeName) throws Exception {
+        Scope scope = SearchScope(scopeName);
         if(scope == null)
             throw new Exception("Scope does not exist: " + scopeName);
 
         _currentScope = scope;
     }
 
-    public Scope SearchScope(String scopeName, Scope scope){
-        if (scope.get_Name().equals(scopeName))
-            return scope;
-
-        for ( Scope child : scope.get_children() ) {
-            Scope result = SearchScope(scopeName, child);
-            if (result != null)
-                return result;
-        }
-
-        return null;
-    }
-
     //A function that finds a scope (can return null if not found)
-    public Scope GlobalSearchScope(String scope) {
-        return this.SearchScope(scope, _globalScope);
+    public Scope SearchScope(String scopeName){
+
+        for (Scope scope : _symboltable) {
+            if(scope.get_Name().equals(scopeName)) {
+                return scope;
+            }
+        }
+        return null;
     }
 
     public Scope get_currentScope() {
@@ -62,8 +62,8 @@ public class SymbolTable {
         Scope scope = _currentScope;
 
         do {
-            if(!scope.get_Symbols().isEmpty() && scope.get_Symbols().containsKey(symbol))
-                return scope.get_Symbols().get(symbol);
+            if(!scope.get_symbols().isEmpty() && scope.get_symbols().containsKey(symbol))
+                return scope.get_symbols().get(symbol);
         } while((scope = scope.get_Parent()) != null);
 
         return null;

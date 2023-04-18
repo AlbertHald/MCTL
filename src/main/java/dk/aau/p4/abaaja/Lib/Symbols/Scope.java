@@ -10,12 +10,11 @@ public class Scope {
     private String _name;
     private Scope _parent;
 
-    private ArrayList<Scope> _children = new ArrayList<>();
-
     //Constructor
     public Scope(String name) {
         this._name = name;
     }
+
     //Getters and setters
     public String get_Name() {
         return _name;
@@ -31,27 +30,12 @@ public class Scope {
         this._parent = _parent;
     }
 
-    public HashMap<String, Symbol> get_Symbols() {
+    public HashMap<String, Symbol> get_symbols() {
         return _symbols;
     }
 
-    public void set_Symbols(String symbolName, Symbol entry) {
+    public void set_symbols(String symbolName, Symbol entry) {
         _symbols.put(symbolName, entry);
     }
 
-    public ArrayList<Scope> get_children() {
-        return _children;
-    }
-
-    public void set_children(ArrayList<Scope> _children) {
-        this._children = _children;
-    }
-
-    public void add_child(Scope child) {
-        this._children.add(child);
-    }
-
-    public void set_symbols(String symbol, Symbol Attribute) {
-        this._symbols.put(symbol, Attribute);
-    }
 }
