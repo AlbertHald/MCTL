@@ -1,6 +1,7 @@
 package dk.aau.p4.abaaja.VisitorTests;
 
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -12,6 +13,9 @@ import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.mctlParser;
 import dk.aau.p4.abaaja.Lib.Visitors.AstVisitor;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
+
+import java.util.ArrayList;
+import java.util.List;
 
 // TODO: Test ASTVisitor
 @Test()
@@ -163,6 +167,52 @@ public class AstBuilderUnitTests {
         NumExpNode numExpNode = (NumExpNode) astVisitor.visitNumberExpr(numberExprContext);
         boolean result = (numExpNode.get_result().intValue() == numberValue.intValue()) &&
                 (numExpNode.get_lineNumber() == lineNumber);
+
+        // Assert
+        Assert.assertTrue(result);
+    }
+
+    /**
+     * visitVariableType unit tests
+     */
+    @DataProvider
+    public Object[][] visitVariableTypeTestData() {
+        return new Object[][]{
+                {"NUMBER[]", 0, 0}, {"NUMBER[]", 10, 1}, {"NUMBER[][]", 100, 2},
+                {"STRING[]", 10, 0}, {"STRING[]", 110, 1}, {"STRING[][]", 1100, 2},
+                {"BOOLEAN[]", 10, 0}, {"BOOLEAN[]", 110, 1}, {"BOOLEAN[][]", 1100, 2},
+                {"STRUCTID[]", 10, 0}, {"testStructId[]", 110, 1}, {"struct_test_id[][]", 1100, 2},
+        };
+    }
+
+    // TODO: Possibly implement object type checking?
+    @Test(dataProvider = "visitVariableTypeTestData")
+    public void visitVariableType_ValidTypeInput_CreatesCorrectTypeNode(String variableTypeValue, int lineNumber, int arrayDegree) {
+        // Arrange - Create mocks
+        mctlParser.VariableTypeContext variableTypeContext = mock(mctlParser.VariableTypeContext.class);
+        mctlParser.BaseVariableTypeContext baseVariableTypeContext = mock(mctlParser.BaseVariableTypeContext.class);
+        Token start = mock(Token.class);
+
+        /* Mock the list og left square terminal nodes */
+        List<TerminalNode> terminalNodeList = new ArrayList<TerminalNode>();
+        for (int i = 0; i < arrayDegree; i++) {
+            terminalNodeList.add(mock(TerminalNode.class));
+        }
+
+        /* Mockito when() methods */
+        when(baseVariableTypeContext.getText()).thenReturn(variableTypeValue);
+
+        when(variableTypeContext.baseVariableType()).thenReturn(baseVariableTypeContext);
+        when(variableTypeContext.getStart()).thenReturn(start);
+        when(start.getLine()).thenReturn(lineNumber);
+
+        when(variableTypeContext.LSQR()).thenReturn(terminalNodeList);
+
+        // Act
+        TypeNode variableTypeNode = (TypeNode) astVisitor.visitVariableType(variableTypeContext);
+        boolean result = (variableTypeNode.get_type() == variableTypeValue) &&
+                (variableTypeNode.get_lineNumber() == lineNumber) &&
+                (variableTypeNode.get_arrayDegree() == arrayDegree);
 
         // Assert
         Assert.assertTrue(result);

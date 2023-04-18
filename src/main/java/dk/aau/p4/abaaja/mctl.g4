@@ -6,6 +6,7 @@ block
     : LCURL (declaration | statement | COMMENT | SEMI)* RCURL
     ;
 
+// Declaration productions for variables, functions, and structs
 declaration
     : variableDeclaration SEMI                                                         #varDecl
     | To ID LPAR (formalParameters)? RPAR COLON returnType block                       #functionDeclaration
@@ -16,12 +17,14 @@ variableDeclaration
     : Variable ID COLON variableType
     ;
 
+// Identifier productions
 id
     : ID                                    #idVar
     | id DOT id                             #idStruct
     | id (LSQR expression RSQR)+            #idArray
     ;
 
+// Statement productions
 statement
     : if                                    #ifStatement
     | repeat                                #repeatStatement
@@ -57,6 +60,7 @@ invoke
     : (id DOT)? ID LPAR (actualParameters)? RPAR
     ;
 
+// Parameter productions
 formalParameters
     : (formalParameter COMMA)* formalParameter (COMMA)?
     ;
@@ -69,6 +73,7 @@ actualParameters
     : (expression COMMA)* expression (COMMA)?
     ;
 
+// Expression productions sorted using the specified operator precedence
 expression
     : invoke                                                           #invExpr
     | LPAR expression RPAR                                             #parenExpr
