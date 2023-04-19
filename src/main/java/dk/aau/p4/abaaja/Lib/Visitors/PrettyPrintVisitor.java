@@ -188,7 +188,13 @@ public class PrettyPrintVisitor implements INodeVisitor{
         printNewline();
     }
     public void visit(ReturnNode node){
-        printIndented("return;");
+        BaseNode returnExp = node.get_returnExp();
+        printIndented("return");
+        if(returnExp != null){
+            print(" ");
+            returnExp.accept(this);
+        }
+        print(";");
         printNewline();
     }
 
