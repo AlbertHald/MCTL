@@ -1,7 +1,10 @@
 package dk.aau.p4.abaaja.VisitorTests;
 
+import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.mockito.Mock;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -213,6 +216,50 @@ public class AstBuilderUnitTests {
         boolean result = (variableTypeNode.get_type() == variableTypeValue) &&
                 (variableTypeNode.get_lineNumber() == lineNumber) &&
                 (variableTypeNode.get_arrayDegree() == arrayDegree);
+
+        // Assert
+        Assert.assertTrue(result);
+    }
+
+    /**
+     * visitVariableDelcartation unit tests
+     */
+    @DataProvider
+    public Object[][] visitVariableDeclarationIntegerTestData() {
+        return new Object[][] {
+                {"identifier2", "NUMBER", 1},
+                {"id_test", "STRING", 5},
+                {"id_unit_test", "STRING", 550},
+                {"id_test", "BOOLEAN", 999}
+        };
+    }
+
+    @Test(dataProvider = "visitVariableDeclarationIntegerTestData")
+    public void visitVariableDeclaration_ValidIntegerInput_SetsCorrectVariableType(String id, String type, int lineNumber) {
+        // Arrange - Create mocks
+        mctlParser.VariableTypeContext variableTypeContext = mock(mctlParser.VariableTypeContext.class);
+        mctlParser.VariableDeclarationContext variableDeclarationContext = mock(mctlParser.VariableDeclarationContext.class);
+        mctlParser.BaseVariableTypeContext baseVariableTypeContext = mock(mctlParser.BaseVariableTypeContext.class);
+        TerminalNode idMock = mock(TerminalNode.class);
+        Token start = mock(Token.class);
+
+        /* Mockito when() methods */
+        when(baseVariableTypeContext.getText()).thenReturn(type);
+
+        when(variableTypeContext.baseVariableType()).thenReturn(baseVariableTypeContext);
+        when(variableTypeContext.getStart()).thenReturn(start);
+        when(variableDeclarationContext.getStart()).thenReturn(start);
+        when(variableDeclarationContext.ID()).thenReturn(idMock);
+        when(variableDeclarationContext.variableType()).thenReturn(variableTypeContext);
+
+        when(idMock.getText()).thenReturn(id);
+        when(start.getLine()).thenReturn(lineNumber);
+
+        // Act
+        VarDecNode variableDeclarationNode = (VarDecNode) astVisitor.visitVariableDeclaration(variableDeclarationContext);
+        boolean result = (variableDeclarationNode.get_varDecType().get_type() == type) &&
+                (variableDeclarationNode.get_lineNumber() == lineNumber) &&
+                (variableDeclarationNode.get_id() == id);
 
         // Assert
         Assert.assertTrue(result);

@@ -23,11 +23,15 @@ public class Main {
 
         // Parse test CharStream
         //
-        ParseTree tree = syntaxPhase( CharStreams.fromString("to aa() : NUMBER { return true; } \nstruct TEST {variable bing: NUMBER,variable bong: STRING} \nvariable bong: NUMBER; \nhest(200,ko); \nvariable ko : BOOLEAN;  ko = true;"), problemCollection);
+        ParseTree tree = syntaxPhase( CharStreams.fromString("a[2]=2;"), problemCollection);
 
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here
             MctlNode concreteNode = (MctlNode) tree.accept(new AstVisitor(problemCollection));
+
+            for (Problem problem : problemCollection.getProblems()) {
+                System.out.println("Problem: " + problem.getMessage());
+            }
         }
         else {
             // Prints parse errors

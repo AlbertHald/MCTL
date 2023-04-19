@@ -70,7 +70,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         varDecNode.set_lineNumber(ctx.getStart().getLine());
 
         // Get variable type
-        BaseNode varTypeNode = visit(ctx.variableType());
+        BaseNode varTypeNode = visitVariableType(ctx.variableType());
 
         if (varTypeNode instanceof TypeNode) {
             varDecNode.set_varDecType((TypeNode) varTypeNode);
