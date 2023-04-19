@@ -6,7 +6,7 @@ import dk.aau.p4.abaaja.Lib.Visitors.INodeVisitor;
 
 public class FuncDecNode extends DecNode {
     //Private variables
-    private List<FormalParamNode> _paramList;
+    private final List<FormalParamNode> _paramList = new ArrayList<>();
     private BlockNode _funcBlock;
     private TypeNode _returnType;
 
@@ -14,13 +14,7 @@ public class FuncDecNode extends DecNode {
     public List<FormalParamNode> get_paramList() {
         return _paramList;
     }
-    public void set_paramList(List<FormalParamNode> paramList) {
-        this._paramList = paramList;
-    }
     public void add_param(FormalParamNode paramNode) {
-        if (this._paramList == null) {
-            this._paramList = new ArrayList<FormalParamNode>();
-        }
         this._paramList.add(paramNode);
     }
 
