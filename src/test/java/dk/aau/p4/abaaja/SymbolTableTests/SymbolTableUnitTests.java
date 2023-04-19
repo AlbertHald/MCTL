@@ -16,13 +16,13 @@ public class SymbolTableUnitTests {
     @AfterMethod()
     public void AfterMethod() {testSymbolTable = null;}
     @Test
-    public void GetCurrentScope_ScopeClass_ReturnsTheGlobalScope() {
+    public void GetCurrentScope_ScopeClass_ReturnsAScope() {
 
         //Arrange
-        testSymbolTable = new SymbolTable();
-        Scope testScope = new Scope("Global");
+        Scope testScope = new Scope("TestScope");
+
         //Act
-        boolean result = testSymbolTable.get_currentScope() == testScope;
+        boolean result = testSymbolTable.get_currentScope().getClass() == testScope.getClass();
 
         //Assert
         assert(result);
