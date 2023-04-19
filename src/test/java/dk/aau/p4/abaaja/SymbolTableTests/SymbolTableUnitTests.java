@@ -18,11 +18,8 @@ public class SymbolTableUnitTests {
     @Test
     public void GetCurrentScope_ScopeClass_ReturnsAScope() {
 
-        //Arrange
-        Scope testScope = new Scope("TestScope");
-
         //Act
-        boolean result = testSymbolTable.get_currentScope().getClass() == testScope.getClass();
+        boolean result = testSymbolTable.get_currentScope() instanceof Scope;
 
         //Assert
         assert(result);
