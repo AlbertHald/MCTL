@@ -16,9 +16,9 @@ public class SymbolTable {
     }
 
     public void CreateScope(String scopeName) throws Exception {
-        if(SearchScope(scopeName) != null)
+        if(SearchScope(scopeName) != null) {
             throw new Exception("Scope already exists: " + scopeName);
-
+        }
         Scope scope = new Scope(scopeName);
         scope.set_parent(_currentScope);
         _symboltable.add(scope);
@@ -31,7 +31,6 @@ public class SymbolTable {
 
             _symboltable.remove(_currentScope);
             _currentScope = _symboltable.get(_symboltable.size() - 1);
-
     }
 
     public void EnterScope(String scopeName) throws Exception {

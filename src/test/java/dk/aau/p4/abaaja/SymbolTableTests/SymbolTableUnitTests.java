@@ -25,4 +25,22 @@ public class SymbolTableUnitTests {
         assert(result);
     }
 
+    @Test
+    public void CreateScope_SetsToCurrentScope_CurrentScopeMustBeSameAsCreatedScopeName() {
+
+        //Arrange
+        String currentScopeName = "testScope";
+
+        //Act
+        try{
+            testSymbolTable.CreateScope("testScope");
+        } catch (Exception e) {
+            assert(false);
+        }
+        boolean result = testSymbolTable.get_currentScope().get_Name() == currentScopeName;
+
+        //Assert
+        assert (result);
+
+    }
 }
