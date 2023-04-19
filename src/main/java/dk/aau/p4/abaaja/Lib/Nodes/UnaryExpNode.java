@@ -6,7 +6,11 @@ public class UnaryExpNode extends ExpNode {
     private ExpNode _expression;
     private int _operator;
     private String _operatorLiteral;
-    public final int arity = 1;
+
+    @Override
+    public int get_arity(){
+        return 1;
+    }
 
     public ExpNode get_unaryExp(){
         return _expression;
