@@ -24,8 +24,15 @@ public interface INodeVisitor {
     void visit(FormalParamNode node);
     void visit(StopNode node);
     void visit(TypeNode node);
+    void visit(BoolTypeNode node);
+    void visit(NumTypeNode node);
+    void visit(StringTypeNode node);
+    void visit(NothingTypeNode node);
+    void visit(IDTypeNode node);
 
     void visit(ExpNode node);
+    void visit(UnaryExpNode node);
+    void visit(TypecastExpNode node);
     void visit(BinaryExpNode node);
     void visit(MulExpNode node);
     void visit(AddExpNode node);
@@ -33,21 +40,13 @@ public interface INodeVisitor {
     void visit(OrExpNode node);
     void visit(CompExpNode node);
     void visit(EqualExpNode node);
-    void visit(TypecastExpNode node);
-    void visit(UnaryExpNode node);
 
-    void visit(IDArrayExpNode node);
     void visit(IDExpNode node);
     void visit(ActualIDExpNode node);
+    void visit(IDArrayExpNode node);
     void visit(IDStructNode node);
-    void visit(IDTypeNode node);
     void visit(BoolExpNode node);
-    void visit(BoolTypeNode node);
     void visit(NumExpNode node);
-    void visit(NumTypeNode node);
     void visit(StringExpNode node);
-    void visit(StringTypeNode node);
-    
-    void visit(NothingTypeNode node);
 
 }
