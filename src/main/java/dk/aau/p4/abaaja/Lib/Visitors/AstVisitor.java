@@ -52,7 +52,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             // Add line to block
             BaseNode tempNode = visit(child);
             if (tempNode instanceof LineNode) {
-                blockNode.add_line((LineNode) tempNode);
+                blockNode.add_child((LineNode) tempNode);
             } else {
                 addProblem(ctx, "");
             }
