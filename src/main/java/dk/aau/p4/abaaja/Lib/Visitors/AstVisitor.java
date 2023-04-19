@@ -526,11 +526,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitIdExpr(mctlParser.IdExprContext ctx) {
-        IDExpNode idExpNode = new IDExpNode();
-        idExpNode.set_lineNumber(ctx.start.getLine());
-        idExpNode.set_ID(ctx.getText());
-
-        return idExpNode;
+        return(visit(ctx.id()));
     }
     
     @Override public BaseNode visitUnaryExpr(mctlParser.UnaryExprContext ctx) {
