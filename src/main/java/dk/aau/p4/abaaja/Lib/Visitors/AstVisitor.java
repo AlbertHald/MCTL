@@ -241,6 +241,10 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return ifStateNode;
     }
 
+    @Override public BaseNode visitIfLiteral(mctlParser.IfLiteralContext ctx) {
+        return visit(ctx.expression());
+    }
+
     @Override public BaseNode visitRepeatStatement(mctlParser.RepeatStatementContext ctx) {
         RepeatStateNode repeatStateNode = new RepeatStateNode();
         repeatStateNode.set_lineNumber(ctx.start.getLine());
