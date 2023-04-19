@@ -126,7 +126,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         // Add the ID
         BaseNode tempIdNode = visit(ctx.id());
         if (tempIdNode instanceof IDExpNode) {
-            idArrayExpNode.add_child((IDExpNode) tempIdNode);
+            idArrayExpNode.set_IDNode((IDExpNode) tempIdNode);
         }
         else {
             addProblem(ctx, "");
