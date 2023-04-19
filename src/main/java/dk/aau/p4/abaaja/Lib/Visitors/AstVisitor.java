@@ -399,6 +399,8 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         AndExpNode andExpNode = new AndExpNode();
         andExpNode.set_lineNumber(ctx.start.getLine());
 
+        andExpNode.set_operatorLiteral("and");
+
         // Iterate over the two individual expressions of the and expression
         for (ParseTree child : ctx.expression()) {
             BaseNode tempExprNode = visit(child);
@@ -469,6 +471,8 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitOrExpr(mctlParser.OrExprContext ctx) {
         OrExpNode orExpNode = new OrExpNode();
         orExpNode.set_lineNumber(ctx.start.getLine());
+
+        orExpNode.set_operatorLiteral("or");
 
         // Iterate over the two individual expressions of the or expression
         for (ParseTree child : ctx.expression()) {
