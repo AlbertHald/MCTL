@@ -5,7 +5,11 @@ import dk.aau.p4.abaaja.Lib.Visitors.INodeVisitor;
 public class BinaryExpNode extends ExpNode {
     private int _operator;
     private String _operatorLiteral;
-    public final int arity = 2;
+
+    @Override
+    public int get_arity() {
+        return 2;
+    }
 
     public int get_operator() { return _operator; }
     public void set_operator(int _operator) { this._operator = _operator; }
