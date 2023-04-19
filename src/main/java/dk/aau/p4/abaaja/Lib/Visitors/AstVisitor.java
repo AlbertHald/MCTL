@@ -417,7 +417,8 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         compExpNode.set_lineNumber(ctx.start.getLine());
 
         // Add the comparison operator
-        compExpNode.set_compOperator(ctx.op.getType());
+        compExpNode.set_operator(ctx.op.getType());
+        compExpNode.set_operatorLiteral(ctx.op.getText());
 
         // Iterate over the two individual expressions of the comparison expression
         for (ParseTree child : ctx.expression()) {
@@ -445,9 +446,9 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         addExpNode.set_lineNumber(ctx.start.getLine());
 
         // Add operator to node
-        if (ctx.op.getType() == mctlParser.PLUS) { addExpNode.set_operator(mctlParser.PLUS); }
-        else if (ctx.op.getType() == mctlParser.MINUS) { addExpNode.set_operator(mctlParser.MINUS); }
-        else {
+        addExpNode.set_operator(ctx.op.getType());
+        addExpNode.set_operatorLiteral(ctx.op.getText());
+        if (!(ctx.op.getType() == mctlParser.PLUS || ctx.op.getType() == mctlParser.MINUS)) {
             addProblem(ctx, "");
         }
 
@@ -505,9 +506,9 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         equalExpNode.set_lineNumber(ctx.start.getLine());
 
         // Add operator to node
-        if (ctx.op.getType() == mctlParser.EQUAL) { equalExpNode.set_operator(mctlParser.EQUAL); }
-        else if (ctx.op.getType() == mctlParser.NOTEQUAL) { equalExpNode.set_operator(mctlParser.NOTEQUAL); }
-        else {
+        equalExpNode.set_operator(ctx.op.getType());
+        equalExpNode.set_operatorLiteral(ctx.op.getText());
+        if (!(ctx.op.getType() == mctlParser.EQUAL || ctx.op.getType() == mctlParser.NOTEQUAL)) {
             addProblem(ctx, "");
         }
 
@@ -534,10 +535,9 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         unaryExpNode.set_lineNumber(ctx.start.getLine());
 
         // Add operator to node
-        if (ctx.op.getType() == mctlParser.PLUS) { unaryExpNode.set_operator(mctlParser.PLUS); }
-        else if (ctx.op.getType() == mctlParser.MINUS) { unaryExpNode.set_operator(mctlParser.MINUS); }
-        else if (ctx.op.getType() == mctlParser.NOT){ unaryExpNode.set_operator(mctlParser.NOT); }
-        else {
+        unaryExpNode.set_operator(ctx.op.getType());
+        unaryExpNode.set_operatorLiteral(ctx.op.getText());
+        if (!(ctx.op.getType() == mctlParser.PLUS || ctx.op.getType() == mctlParser.MINUS || ctx.op.getType() == mctlParser.NOT)) {
             addProblem(ctx, "");
         }
 
@@ -560,10 +560,9 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         mulExpNode.set_lineNumber(ctx.start.getLine());
 
         // Add operator to node
-        if (ctx.op.getType() == mctlParser.MULTIPLY) { mulExpNode.set_operator(mctlParser.MULTIPLY); }
-        else if (ctx.op.getType() == mctlParser.DIVIDE) { mulExpNode.set_operator(mctlParser.DIVIDE); }
-        else if (ctx.op.getType() == mctlParser.MODULO) { mulExpNode.set_operator(mctlParser.MODULO);
-        } else {
+        mulExpNode.set_operator(ctx.op.getType());
+        mulExpNode.set_operatorLiteral(ctx.op.getText());
+        if (!(ctx.op.getType() == mctlParser.MULTIPLY || ctx.op.getType() == mctlParser.DIVIDE || ctx.op.getType() == mctlParser.MODULO)) {
             addProblem(ctx, "");
         }
 

@@ -26,13 +26,13 @@ public interface INodeVisitor {
     void visit(TypeNode node);
 
     void visit(ExpNode node);
+    void visit(BinaryExpNode node);
     void visit(MulExpNode node);
     void visit(AddExpNode node);
     void visit(AndExpNode node);
     void visit(OrExpNode node);
     void visit(CompExpNode node);
     void visit(EqualExpNode node);
-    void visit(ParenExpNode node);
     void visit(TypecastExpNode node);
     void visit(UnaryExpNode node);
 
