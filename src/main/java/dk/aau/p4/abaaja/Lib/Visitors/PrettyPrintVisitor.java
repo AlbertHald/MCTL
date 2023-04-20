@@ -274,8 +274,8 @@ public class PrettyPrintVisitor implements INodeVisitor{
         print(node.get_result() ? "true" : "false");
     }
     public void visit(NumExpNode node){
-        // TODO: Don't display trailing zero's. Example: id[7.0] -> id[7]
-        print(node.get_result().toString());
+        // The `replaceAll` removes unnecessary trailing zeroes from output
+        print(node.get_result().toString().replaceAll("\\.?0*(?=$)", ""));
     }
     public void visit(StringExpNode node){
         print(node.get_result());
