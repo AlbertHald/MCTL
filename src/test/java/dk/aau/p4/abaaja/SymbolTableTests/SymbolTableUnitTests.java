@@ -11,11 +11,17 @@ import org.testng.annotations.Test;
 public class SymbolTableUnitTests {
     SymbolTable testSymbolTable;
 
-    @BeforeMethod
-    public void BeforeMethod() {testSymbolTable = new SymbolTable();}
+    //Methods are run before and after each test
+    //
+    @BeforeMethod()
+    public void BeforeMethod() {
+        testSymbolTable = new SymbolTable();
+    }
     @AfterMethod()
     public void AfterMethod() {testSymbolTable = null;}
-    @Test
+
+
+    @Test()
     public void GetCurrentScope_ScopeClass_ReturnsAScope() {
 
         //Act
@@ -25,22 +31,41 @@ public class SymbolTableUnitTests {
         assert(result);
     }
 
-    @Test
+    @Test()
     public void CreateScope_SetsToCurrentScope_CurrentScopeMustBeSameAsCreatedScopeName() {
 
         //Arrange
-        String currentScopeName = "testScope";
+        String expectedScopeName = "testScope";
 
         //Act
-        try{
+        try {
             testSymbolTable.CreateScope("testScope");
         } catch (Exception e) {
             assert(false);
         }
-        boolean result = testSymbolTable.get_currentScope().get_Name() == currentScopeName;
+        boolean result = testSymbolTable.get_currentScope().get_Name() == expectedScopeName;
 
         //Assert
         assert (result);
+    }
 
+    @Test()
+    public void CloseScope_WhenClosingScope_ThenCurrentScopeSetToPreviousInList() {
+        //Arrange
+        //Expected Name of scope:
+        String expectedScopeName = "Global";
+
+        try {
+            testSymbolTable.CreateScope("testScope");
+        } catch (Exception e) {
+            assert(false);
+        }
+        testSymbolTable.CloseScope();
+
+        //Act
+        boolean result = testSymbolTable.get_currentScope().get_Name() == expectedScopeName;
+
+        //Assert
+        assert(result);
     }
 }
