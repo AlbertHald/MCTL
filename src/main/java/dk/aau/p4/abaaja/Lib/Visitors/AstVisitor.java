@@ -52,7 +52,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             // Add line to block
             BaseNode tempNode = visit(child);
             if (tempNode instanceof LineNode) {
-                blockNode.add_line((LineNode) tempNode);
+                blockNode.add_child((LineNode) tempNode);
             } else {
                 addProblem(ctx, "");
             }
@@ -126,7 +126,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         // Add the ID
         BaseNode tempIdNode = visit(ctx.id());
         if (tempIdNode instanceof IDExpNode) {
-            idArrayExpNode.add_child((IDExpNode) tempIdNode);
+            idArrayExpNode.set_IDNode((IDExpNode) tempIdNode);
         }
         else {
             addProblem(ctx, "");
@@ -239,6 +239,10 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         }
 
         return ifStateNode;
+    }
+
+    @Override public BaseNode visitIfLiteral(mctlParser.IfLiteralContext ctx) {
+        return visit(ctx.expression());
     }
 
     @Override public BaseNode visitRepeatStatement(mctlParser.RepeatStatementContext ctx) {
@@ -395,6 +399,8 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         AndExpNode andExpNode = new AndExpNode();
         andExpNode.set_lineNumber(ctx.getStart().getLine());
 
+        andExpNode.set_operatorLiteral("and");
+
         // Iterate over the two individual expressions of the and expression
         for (ParseTree child : ctx.expression()) {
             BaseNode tempExprNode = visit(child);
@@ -413,7 +419,8 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         compExpNode.set_lineNumber(ctx.getStart().getLine());
 
         // Add the comparison operator
-        compExpNode.set_compOperator(ctx.op.getType());
+        compExpNode.set_operator(ctx.op.getType());
+        compExpNode.set_operatorLiteral(ctx.op.getText());
 
         // Iterate over the two individual expressions of the comparison expression
         for (ParseTree child : ctx.expression()) {
@@ -442,9 +449,9 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         addExpNode.set_lineNumber(ctx.getStart().getLine());
 
         // Add operator to node
-        if (ctx.op.getType() == mctlParser.PLUS) { addExpNode.set_operator(mctlParser.PLUS); }
-        else if (ctx.op.getType() == mctlParser.MINUS) { addExpNode.set_operator(mctlParser.MINUS); }
-        else {
+        addExpNode.set_operator(ctx.op.getType());
+        addExpNode.set_operatorLiteral(ctx.op.getText());
+        if (!(ctx.op.getType() == mctlParser.PLUS || ctx.op.getType() == mctlParser.MINUS)) {
             addProblem(ctx, "");
         }
 
@@ -465,6 +472,8 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitOrExpr(mctlParser.OrExprContext ctx) {
         OrExpNode orExpNode = new OrExpNode();
         orExpNode.set_lineNumber(ctx.getStart().getLine());
+
+        orExpNode.set_operatorLiteral("or");
 
         // Iterate over the two individual expressions of the or expression
         for (ParseTree child : ctx.expression()) {
@@ -502,9 +511,9 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         equalExpNode.set_lineNumber(ctx.getStart().getLine());
 
         // Add operator to node
-        if (ctx.op.getType() == mctlParser.EQUAL) { equalExpNode.set_operator(mctlParser.EQUAL); }
-        else if (ctx.op.getType() == mctlParser.NOTEQUAL) { equalExpNode.set_operator(mctlParser.NOTEQUAL); }
-        else {
+        equalExpNode.set_operator(ctx.op.getType());
+        equalExpNode.set_operatorLiteral(ctx.op.getText());
+        if (!(ctx.op.getType() == mctlParser.EQUAL || ctx.op.getType() == mctlParser.NOTEQUAL)) {
             addProblem(ctx, "");
         }
 
@@ -523,11 +532,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     }
 
     @Override public BaseNode visitIdExpr(mctlParser.IdExprContext ctx) {
-        IDExpNode idExpNode = new IDExpNode();
-        idExpNode.set_lineNumber(ctx.getStart().getLine());
-        idExpNode.set_ID(ctx.getText());
-
-        return idExpNode;
+        return(visit(ctx.id()));
     }
     
     @Override public BaseNode visitUnaryExpr(mctlParser.UnaryExprContext ctx) {
@@ -535,10 +540,9 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         unaryExpNode.set_lineNumber(ctx.getStart().getLine());
 
         // Add operator to node
-        if (ctx.op.getType() == mctlParser.PLUS) { unaryExpNode.set_operator(mctlParser.PLUS); }
-        else if (ctx.op.getType() == mctlParser.MINUS) { unaryExpNode.set_operator(mctlParser.MINUS); }
-        else if (ctx.op.getType() == mctlParser.NOT){ unaryExpNode.set_operator(mctlParser.NOT); }
-        else {
+        unaryExpNode.set_operator(ctx.op.getType());
+        unaryExpNode.set_operatorLiteral(ctx.op.getText());
+        if (!(ctx.op.getType() == mctlParser.PLUS || ctx.op.getType() == mctlParser.MINUS || ctx.op.getType() == mctlParser.NOT)) {
             addProblem(ctx, "");
         }
 
@@ -561,10 +565,9 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         mulExpNode.set_lineNumber(ctx.getStart().getLine());
 
         // Add operator to node
-        if (ctx.op.getType() == mctlParser.MULTIPLY) { mulExpNode.set_operator(mctlParser.MULTIPLY); }
-        else if (ctx.op.getType() == mctlParser.DIVIDE) { mulExpNode.set_operator(mctlParser.DIVIDE); }
-        else if (ctx.op.getType() == mctlParser.MODULO) { mulExpNode.set_operator(mctlParser.MODULO);
-        } else {
+        mulExpNode.set_operator(ctx.op.getType());
+        mulExpNode.set_operatorLiteral(ctx.op.getText());
+        if (!(ctx.op.getType() == mctlParser.MULTIPLY || ctx.op.getType() == mctlParser.DIVIDE || ctx.op.getType() == mctlParser.MODULO)) {
             addProblem(ctx, "");
         }
 

@@ -5,6 +5,7 @@ import dk.aau.p4.abaaja.Lib.Nodes.BaseNode;
 import dk.aau.p4.abaaja.Lib.Nodes.MctlNode;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Visitors.AstVisitor;
+import dk.aau.p4.abaaja.Lib.Visitors.PrettyPrintVisitor;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -28,10 +29,6 @@ public class Main {
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here
             MctlNode concreteNode = (MctlNode) tree.accept(new AstVisitor(problemCollection));
-
-            for (Problem problem : problemCollection.getProblems()) {
-                System.out.println("Problem: " + problem.getMessage());
-            }
         }
         else {
             // Prints parse errors
