@@ -282,7 +282,9 @@ public class PrettyPrintVisitor implements INodeVisitor{
     }
 
     /**
-     * Useless crap
+     * After a thorough evaluation of our current operations and needs, we have come to the difficult conclusion that the following classes are not necessary.
+     * Please know that this decision was not a reflection of their return types or other contributions to the parser.
+     * They have been valued members of this scope, and we appreciate all the hard work and bytes they have put in during their time here.
      */
     public void visit(DecNode node){
         printNewline();
