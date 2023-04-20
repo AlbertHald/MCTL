@@ -1,15 +1,13 @@
 package dk.aau.p4.abaaja.VisitorTests;
 
-import org.antlr.v4.runtime.CommonToken;
-import org.antlr.v4.runtime.Token;
+import dk.aau.p4.abaaja.mctlLexer;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
-import org.mockito.Mock;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 // Imports
 import dk.aau.p4.abaaja.Lib.Nodes.*;
@@ -26,52 +24,81 @@ public class AstBuilderUnitTests {
     private final AstVisitor astVisitor = new AstVisitor(new ProblemCollection());
 
     /**
+     * createParseTree method to create a parse tree using Antlr and returning it
+     * @param code
+     * @return Concrete Parse Tree
+     */
+    private ParseTree createParseTree(String code) {
+        // Create token stream based on string of code
+        mctlLexer lexer = new mctlLexer(CharStreams.fromString(code));
+        CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
+
+        // Create parse tree based on token stream
+        mctlParser parser = new mctlParser(commonTokenStream);
+        parser.setBuildParseTree(true);
+
+        return parser.mctl();
+    }
+
+
+    /**
      * visitBoolExpr unit test
      */
-    @Test()
-    public void visitBoolExpr_ValidInput_CreatesCorrectBooleanExpressionNode() {
+    @DataProvider
+    public Object[][] visitBoolExprTestData() {
+        return new Object[][] {
+                {"test = true;", true},
+                {"test = false;", false},
+        };
+    }
+
+    @Test(dataProvider = "visitBoolExprTestData")
+    public void visitBoolExpr_ValidInput_CreatesCorrectBooleanExpressionNode(String code, boolean booleanValue) {
         // Arrange
-        int lineNumber = 10;
-        Boolean booleanValue = true;
-
-        /* Create mocks */
-        mctlParser.BoolExprContext boolExprContext = mock(mctlParser.BoolExprContext.class);
-        Token start = mock(Token.class);
-
-        when(boolExprContext.getText()).thenReturn(booleanValue.toString());
-        when(boolExprContext.getStart()).thenReturn(start);
-        when(start.getLine()).thenReturn(lineNumber);
-
+        ParseTree parseTree = createParseTree(code);
 
         // Act
-        BoolExpNode boolExpNode = (BoolExpNode) astVisitor.visitBoolExpr(boolExprContext);
-        boolean result = (boolExpNode.get_result() == booleanValue) && (boolExpNode.get_lineNumber() == lineNumber);
+        /* Creates the following tree -> MctlNode - AssStateNode - IDExpNode , BoolExpNode */
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+        BoolExpNode boolExpNode = (BoolExpNode) assStateNode.get_assignExp();
+
+        boolean result =
+                (boolExpNode instanceof BoolExpNode) &&
+                (boolExpNode.get_result() == booleanValue);
 
         // Assert
         Assert.assertTrue(result);
     }
 
+
     /**
-     * visitStringExpr unit tests
+     * visitBoolExpr unit test
      */
-    @Test()
-    public void visitStringExpr_ValidInput_CreatesCorrectStringExpressionNode() {
+    @DataProvider
+    public Object[][] visitStringExprTestData() {
+        return new Object[][] {
+            {"test = \"This is a String\";", "\"This is a String\""},
+            {"test = \"1234 string 8078.,/()&\";", "\"1234 string 8078.,/()&\""},
+            {"test = \"\'Double Quoted String\'\";", "\"\'Double Quoted String\'\""},
+            {"test = \'Single Quoted String\';", "\'Single Quoted String\'"},
+            {"test = \"Newline: \n Carriage return: \r Tab: \t Backslash: \\ \";", "\"Newline: \n Carriage return: \r Tab: \t Backslash: \\ \""},
+            {"test = \"Unicode: \u03A9\u03B1\u03C6\u03C9\";", "\"Unicode: \u03A9\u03B1\u03C6\u03C9\""},
+        };
+    }
+
+    @Test(dataProvider = "visitStringExprTestData")
+    public void visitStringExpr_ValidInput_CreatesCorrectStringExpressionNode(String code, String stringValue) {
         // Arrange
-        int lineNumber = 10;
-        String stringValue = "unit test";
-
-        /* Create mocks */
-        mctlParser.StringExprContext stringExprContext = mock(mctlParser.StringExprContext.class);
-        Token start = mock(Token.class);
-
-        when(stringExprContext.getText()).thenReturn(stringValue);
-        when(stringExprContext.getStart()).thenReturn(start);
-        when(start.getLine()).thenReturn(lineNumber);
-
+        ParseTree parseTree = createParseTree(code);
 
         // Act
-        StringExpNode stringExpNode = (StringExpNode) astVisitor.visitStringExpr(stringExprContext);
-        boolean result = (stringExpNode.get_result() == stringValue) && (stringExpNode.get_lineNumber() == lineNumber);
+        /* Creates the following tree -> MctlNode - AssStateNode - IDExpNode , StringExpNode */
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+        StringExpNode stringExpNode = (StringExpNode) assStateNode.get_assignExp();
+
+        boolean result = (stringExpNode instanceof StringExpNode) && (stringExpNode.get_result().equals(stringValue));
 
         // Assert
         Assert.assertTrue(result);
@@ -83,25 +110,24 @@ public class AstBuilderUnitTests {
     @DataProvider
     public Object[][] visitIdExprTestData() {
         return new Object[][] {
-                {"myVar", 1}, {"x", 20}, {"abc", 3},
-                {"y", 4}, {"_foo", 500}, {"i", 60},
-                {"_123", 7}, {"j", 8000}, {"Bar", 9}
+                {"unitTest = myVar;", "myVar"}, {"unitTest = x;", "x"}, {"unitTest = abc;", "abc"},
+                {"unitTest = y;", "y"}, {"unitTest = _foo;", "_foo"}, {"unitTest = i;", "i"},
+                {"unitTest = _123;", "_123"}, {"unitTest = j;", "j"}, {"unitTest = Bar;", "Bar"},
         };
     }
 
     @Test(dataProvider = "visitIdExprTestData")
-    public void visitIdExpr_ValidInput_CreatesCorrectIdExpressionNode(String idValue, int lineNumber) {
-        // Arrange - Create mocks
-        mctlParser.IdExprContext idExprContext = mock(mctlParser.IdExprContext.class);
-        Token start = mock(Token.class);
-
-        when(idExprContext.getText()).thenReturn(idValue);
-        when(idExprContext.getStart()).thenReturn(start);
-        when(start.getLine()).thenReturn(lineNumber);
+    public void visitIdExpr_ValidInput_CreatesCorrectIdExpressionNode(String code, String stringValue) {
+        // Arrange
+        ParseTree parseTree = createParseTree(code);
 
         // Act
-        IDExpNode stringExpNode = (IDExpNode) astVisitor.visitIdExpr(idExprContext);
-        boolean result = (stringExpNode.get_ID() == idValue) && (stringExpNode.get_lineNumber() == lineNumber);
+        /* Creates the following tree -> MctlNode - AssStateNode - IDExpNode , IDExpNode */
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+        IDExpNode idExpNode = (IDExpNode) assStateNode.get_assignExp();
+
+        boolean result = (idExpNode instanceof IDExpNode) && (idExpNode.get_ID().equals(stringValue));
 
         // Assert
         Assert.assertTrue(result);
@@ -116,29 +142,26 @@ public class AstBuilderUnitTests {
     @DataProvider
     public Object[][] visitNumberExprDoubleTestData() {
         return new Object[][]{
-                {Double.parseDouble("1.2"), 1200}, {Double.parseDouble("0.0"), 1200},
-                {Double.parseDouble("15.3"), 1200}, {Double.parseDouble("10.7"), 25},
-                {Double.parseDouble("175.25"), 500}, {Double.parseDouble("1000.55"), 0},
-                {Double.parseDouble("5002.77"), 100}, {Double.parseDouble("10000.53"), 900},
-                {Double.parseDouble("12525.35"), 900}, {Double.parseDouble("1508.23"), 700},
-                {Double.parseDouble("20003.978"), 1100}
+                {"test = 0.0;", 0.0},
+                {"test = 1.0;", 1.0},
+                {"test = 1.0;", 1.0},
+                {"test = 1234.56789;", 1234.56789},
+                {"test = 9876.54321;", 9876.54321},
         };
     }
 
     @Test(dataProvider = "visitNumberExprDoubleTestData")
-    public void visitNumberExpr_ValidDoubleInput_CreatesCorrectNumberExpressionNode(Number numberValue, int lineNumber) {
-        // Arrange - Create mocks
-        mctlParser.NumberExprContext numberExprContext = mock(mctlParser.NumberExprContext.class);
-        Token start = mock(Token.class);
-
-        when(numberExprContext.getText()).thenReturn(numberValue.toString());
-        when(numberExprContext.getStart()).thenReturn(start);
-        when(start.getLine()).thenReturn(lineNumber);
+    public void visitNumberExpr_ValidDoubleInput_CreatesCorrectNumberExpressionNode(String code, Double doubleValue) {
+        // Arrange
+        ParseTree parseTree = createParseTree(code);
 
         // Act
-        NumExpNode numExpNode = (NumExpNode) astVisitor.visitNumberExpr(numberExprContext);
-        boolean result = (numExpNode.get_result().doubleValue() == numberValue.doubleValue()) &&
-                (numExpNode.get_lineNumber() == lineNumber);
+        /* Creates the following tree -> MctlNode - AssStateNode - IDExpNode , NumberExpNode */
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+        NumExpNode numExpNode = (NumExpNode) assStateNode.get_assignExp();
+
+        boolean result = (numExpNode instanceof NumExpNode) && (numExpNode.get_result().equals(doubleValue));
 
         // Assert
         Assert.assertTrue(result);
@@ -147,29 +170,26 @@ public class AstBuilderUnitTests {
     @DataProvider
     public Object[][] visitNumberExprIntTestData() {
         return new Object[][]{
-                {Integer.parseInt("1"), 1200}, {Integer.parseInt("0"), 1200},
-                {Integer.parseInt("15"), 1200}, {Integer.parseInt("10"), 25},
-                {Integer.parseInt("175"), 500}, {Integer.parseInt("1000"), 0},
-                {Integer.parseInt("5002"), 100}, {Integer.parseInt("10000"), 900},
-                {Integer.parseInt("12525"), 900}, {Integer.parseInt("1508"), 700},
-                {Integer.parseInt("20003"), 1100}
+                {"test = 0;", 0},
+                {"test = 1;", 1},
+                {"test = 12345;", 12345},
+                {"test = 67890;", 67890},
+                {"test = 2147483647;", 2147483647},
         };
     }
 
     @Test(dataProvider = "visitNumberExprIntTestData")
-    public void visitNumberExpr_ValidIntegerInput_CreatesCorrectNumberExpressionNode(Number numberValue, int lineNumber) {
-        // Arrange - Create mocks
-        mctlParser.NumberExprContext numberExprContext = mock(mctlParser.NumberExprContext.class);
-        Token start = mock(Token.class);
-
-        when(numberExprContext.getText()).thenReturn(numberValue.toString());
-        when(numberExprContext.getStart()).thenReturn(start);
-        when(start.getLine()).thenReturn(lineNumber);
+    public void visitNumberExpr_ValidIntegerInput_CreatesCorrectNumberExpressionNode(String code, int intValue) {
+        // Arrange
+        ParseTree parseTree = createParseTree(code);
 
         // Act
-        NumExpNode numExpNode = (NumExpNode) astVisitor.visitNumberExpr(numberExprContext);
-        boolean result = (numExpNode.get_result().intValue() == numberValue.intValue()) &&
-                (numExpNode.get_lineNumber() == lineNumber);
+        /* Creates the following tree -> MctlNode - AssStateNode - IDExpNode , NumberExpNode */
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+        NumExpNode numExpNode = (NumExpNode) assStateNode.get_assignExp();
+
+        boolean result = (numExpNode instanceof NumExpNode) && (numExpNode.get_result().equals(intValue));
 
         // Assert
         Assert.assertTrue(result);
@@ -181,41 +201,25 @@ public class AstBuilderUnitTests {
     @DataProvider
     public Object[][] visitVariableTypeTestData() {
         return new Object[][]{
-                {"NUMBER[]", 0, 0}, {"NUMBER[]", 10, 1}, {"NUMBER[][]", 100, 2},
-                {"STRING[]", 10, 0}, {"STRING[]", 110, 1}, {"STRING[][]", 1100, 2},
-                {"BOOLEAN[]", 10, 0}, {"BOOLEAN[]", 110, 1}, {"BOOLEAN[][]", 1100, 2},
-                {"STRUCTID[]", 10, 0}, {"testStructId[]", 110, 1}, {"struct_test_id[][]", 1100, 2},
+                {"variable test: NUMBER;", 0, "NUMBER"}, {"variable test: NUMBER[];", 1, "NUMBER"}, {"variable test: NUMBER[][];", 2, "NUMBER"},
+                {"variable test: STRING;", 0, "STRING"}, {"variable test: STRING[];", 1, "STRING"}, {"variable test: STRING[][];", 2, "STRING"},
+                {"variable test: BOOLEAN;", 0, "BOOLEAN"}, {"variable test: BOOLEAN[];", 1, "BOOLEAN"}, {"variable test: BOOLEAN[][];", 2, "BOOLEAN"},
+                {"variable test: STRUCTID;", 0, "STRUCTID"}, {"variable test: testStructId[];", 1, "testStructId"}, {"variable test: struct_test_id[][];", 2, "struct_test_id"},
         };
     }
-
-    // TODO: Possibly implement object type checking?
+    
     @Test(dataProvider = "visitVariableTypeTestData")
-    public void visitVariableType_ValidTypeInput_CreatesCorrectTypeNode(String variableTypeValue, int lineNumber, int arrayDegree) {
-        // Arrange - Create mocks
-        mctlParser.VariableTypeContext variableTypeContext = mock(mctlParser.VariableTypeContext.class);
-        mctlParser.BaseVariableTypeContext baseVariableTypeContext = mock(mctlParser.BaseVariableTypeContext.class);
-        Token start = mock(Token.class);
-
-        /* Mock the list og left square terminal nodes */
-        List<TerminalNode> terminalNodeList = new ArrayList<TerminalNode>();
-        for (int i = 0; i < arrayDegree; i++) {
-            terminalNodeList.add(mock(TerminalNode.class));
-        }
-
-        /* Mockito when() methods */
-        when(baseVariableTypeContext.getText()).thenReturn(variableTypeValue);
-
-        when(variableTypeContext.baseVariableType()).thenReturn(baseVariableTypeContext);
-        when(variableTypeContext.getStart()).thenReturn(start);
-        when(start.getLine()).thenReturn(lineNumber);
-
-        when(variableTypeContext.LSQR()).thenReturn(terminalNodeList);
+    public void visitVariableType_ValidTypeInput_CreatesCorrectTypeNode(String code, int arrayDegree, String expectedTypeNode) {
+        // Arrange
+        ParseTree parseTree = createParseTree(code);
 
         // Act
-        TypeNode variableTypeNode = (TypeNode) astVisitor.visitVariableType(variableTypeContext);
-        boolean result = (variableTypeNode.get_type() == variableTypeValue) &&
-                (variableTypeNode.get_lineNumber() == lineNumber) &&
-                (variableTypeNode.get_arrayDegree() == arrayDegree);
+        /* Creates the following tree -> MctlNode - VarDecNode - TypeNode */
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        VarDecNode varDecNode = (VarDecNode) mctlNode.get_children().get(0);
+        TypeNode typeNode = (TypeNode) varDecNode.get_varDecType();
+
+        boolean result = (typeNode.get_type().equals(expectedTypeNode)) && (typeNode.get_arrayDegree() == arrayDegree);
 
         // Assert
         Assert.assertTrue(result);
@@ -225,43 +229,63 @@ public class AstBuilderUnitTests {
      * visitVariableDelcartation unit tests
      */
     @DataProvider
-    public Object[][] visitVariableDeclarationIntegerTestData() {
+    public Object[][] visitVariableDeclarationTestData() {
         return new Object[][] {
-                {"identifier2", "NUMBER", 1},
-                {"id_test", "STRING", 5},
-                {"id_unit_test", "STRING", 550},
-                {"id_test", "BOOLEAN", 999}
+                {"variable identifier1: NUMBER;", "identifier1", "NUMBER", 0},
+                {"variable identifier2: STRING[];", "identifier2", "STRING", 1},
+                {"variable identifier3: BOOLEAN[][];", "identifier3", "BOOLEAN", 2},
+                {"variable identifier4: STRUCTTEST[][][];", "identifier4", "STRUCTTEST", 3}
         };
     }
 
-    @Test(dataProvider = "visitVariableDeclarationIntegerTestData")
-    public void visitVariableDeclaration_ValidIntegerInput_SetsCorrectVariableType(String id, String type, int lineNumber) {
-        // Arrange - Create mocks
-        mctlParser.VariableTypeContext variableTypeContext = mock(mctlParser.VariableTypeContext.class);
-        mctlParser.VariableDeclarationContext variableDeclarationContext = mock(mctlParser.VariableDeclarationContext.class);
-        mctlParser.BaseVariableTypeContext baseVariableTypeContext = mock(mctlParser.BaseVariableTypeContext.class);
-        TerminalNode idMock = mock(TerminalNode.class);
-        Token start = mock(Token.class);
-
-        /* Mockito when() methods */
-        when(baseVariableTypeContext.getText()).thenReturn(type);
-
-        when(variableTypeContext.baseVariableType()).thenReturn(baseVariableTypeContext);
-        when(variableTypeContext.getStart()).thenReturn(start);
-        when(variableDeclarationContext.getStart()).thenReturn(start);
-        when(variableDeclarationContext.ID()).thenReturn(idMock);
-        when(variableDeclarationContext.variableType()).thenReturn(variableTypeContext);
-
-        when(idMock.getText()).thenReturn(id);
-        when(start.getLine()).thenReturn(lineNumber);
+    @Test(dataProvider = "visitVariableDeclarationTestData")
+    public void visitVariableDeclaration_ValidInput_CreatesVariableDeclarationNode(String code, String expectedIdentifier, String expectedType, int arrayDegree) {
+        // Arrange
+        ParseTree parseTree = createParseTree(code);
 
         // Act
-        VarDecNode variableDeclarationNode = (VarDecNode) astVisitor.visitVariableDeclaration(variableDeclarationContext);
-        boolean result = (variableDeclarationNode.get_varDecType().get_type() == type) &&
-                (variableDeclarationNode.get_lineNumber() == lineNumber) &&
-                (variableDeclarationNode.get_id() == id);
+        /* Creates the following tree -> MctlNode - VarDecNode - TypeNode */
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        VarDecNode varDecNode = (VarDecNode) mctlNode.get_children().get(0);
+
+        boolean result = (varDecNode.get_id().equals(expectedIdentifier)) &&
+                (varDecNode.get_varDecType().get_arrayDegree() == arrayDegree) &&
+                (varDecNode.get_varDecType().get_type().equals(expectedType));
 
         // Assert
         Assert.assertTrue(result);
     }
+
+    /**
+     * visitStructDeclaration unit tests
+     */
+    @DataProvider
+    public Object[][] visitStructDeclarationIntegerTestData() {
+        return new Object[][] {
+                {"struct STRUCT1 {variable varID : NUMBER,}", "STRUCT1", "varID", "NUMBER"},
+                {"struct struct2 {variable variable_ID : STRING,}", "struct2", "variable_ID", "STRING"},
+                {"struct coordinate {variable x : NUMBER}", "coordinate", "x", "NUMBER"},
+                {"struct x_y_z {variable hasCoordinates : BOOLEAN}", "x_y_z", "hasCoordinates", "BOOLEAN"}
+        };
+    }
+
+    @Test(dataProvider = "visitStructDeclarationIntegerTestData")
+    public void visitStructDeclaration_ValidInput_CreatesStructDeclarationNode(String code, String structId, String varId, String varType) {
+        // Arrange
+        ParseTree parseTree = createParseTree(code);
+
+        // Act
+        /* Creates the following tree -> MctlNode - StructDecNode - VarDecNode */
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        StructDecNode structDecNode = (StructDecNode) mctlNode.get_children().get(0);
+        VarDecNode varDecNode = structDecNode.get_declarations().get(0);
+
+        boolean result = (structDecNode.get_id().equals(structId)) &&
+                (varDecNode.get_varDecType().get_type().equals(varType)) &&
+                (varDecNode.get_id().equals(varId));
+
+        // Assert
+        Assert.assertTrue(result);
+    }
+
 }

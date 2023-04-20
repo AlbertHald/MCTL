@@ -87,8 +87,8 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         structDecNode.set_id(ctx.ID().getText());
 
         // Iterate over variable declarations
-        for (ParseTree child: ctx.variableDeclaration()) {
-            BaseNode tempNode = visit(child);
+        for (mctlParser.VariableDeclarationContext child: ctx.variableDeclaration()) {
+            BaseNode tempNode = visitVariableDeclaration(child);
 
             if (tempNode instanceof VarDecNode) {
                 structDecNode.add_declaration((VarDecNode) tempNode);
@@ -390,7 +390,13 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         numExpNode.set_lineNumber(ctx.getStart().getLine());
 
         String stringFormattedNumber = ctx.getText();
-        numExpNode.set_result(stringFormattedNumber.contains(".") ? Double.parseDouble(stringFormattedNumber) : Integer.parseInt(stringFormattedNumber));
+
+        if (stringFormattedNumber.contains(".")) {
+            numExpNode.set_result(Double.parseDouble(stringFormattedNumber));
+        }
+        else {
+            numExpNode.set_result(Integer.parseInt(stringFormattedNumber));
+        }
 
         return numExpNode;
     }
