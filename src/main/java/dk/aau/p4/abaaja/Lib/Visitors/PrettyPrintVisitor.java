@@ -253,29 +253,31 @@ public class PrettyPrintVisitor implements INodeVisitor{
         if(node instanceof IDArrayExpNode){
             this.visit((IDArrayExpNode) node);
             return;
-        }
-        if(node instanceof IDStructNode){
+        }else if(node instanceof IDStructNode){
             this.visit((IDStructNode) node);
             return;
+        }else if(node instanceof ActualIDExpNode){
+            this.visit((ActualIDExpNode) node);
+            return;
         }
-        print(node.get_ID());
+
+        if(node.get_idNode() != null){
+            node.get_idNode().accept(this);
+        }
     }
     public void visit(IDArrayExpNode node){
-        node.get_IDNode().accept(this);
-        for (BaseNode child : node.get_children()) {
-            print("[");
-            child.accept(this);
-            print("]");
-        }
+        node.get_idNode().accept(this);
+        print("[");
+        node.get_accessor().accept(this);
+        print("]");
     }
     public void visit(IDStructNode node){
-        List<BaseNode> childList = node.get_children();
-        int numChildren = childList.size();
-
-        for (int i = 0; i < numChildren; i++) {
-            if(i > 0) print(".");
-            childList.get(i).accept(this);
-        }
+        node.get_idNode().accept(this);
+        print(".");
+        node.get_accessor().accept(this);
+    }
+    public void visit(ActualIDExpNode node){
+        print(node.get_id());
     }
     public void visit(BoolExpNode node){
         print(node.get_result() ? "true" : "false");
@@ -349,8 +351,5 @@ public class PrettyPrintVisitor implements INodeVisitor{
     }
     public void visit(EqualExpNode node){
         this.visit((BinaryExpNode) node);
-    }
-    public void visit(ActualIDExpNode node){
-        this.visit((ExpNode) node);
     }
 }
