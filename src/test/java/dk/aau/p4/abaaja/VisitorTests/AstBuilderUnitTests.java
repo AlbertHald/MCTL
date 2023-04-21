@@ -471,4 +471,28 @@ public class AstBuilderUnitTests {
         softAssert.assertTrue(returnNode.get_returnExp() instanceof IDExpNode);
         softAssert.assertAll();
     }
+
+    /**
+     * visitIdVar unit tests
+     */
+    @DataProvider
+    public Object[][] visitIdVarTestData() {
+        return new Object[][] {
+                {"var = 5;", "var"},
+                {"alsoVar = 8;", "alsoVar"},
+                {"anotherVar = \"Text!\";", "anotherVar"}
+        };
+    }
+
+    @Test(dataProvider = "visitIdVarTestData")
+    public void visitIdVar_ValidInput_CreatesActualIDExpNodeWithCorrectID(String code, String id) {
+        ParseTree parseTree = createParseTree(code);
+
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+        ActualIDExpNode actualIDExpNode = (ActualIDExpNode) assStateNode.get_assignId();
+
+        softAssert.assertTrue(actualIDExpNode.get_ID().equals(id));
+        softAssert.assertAll();
+    }
 }
