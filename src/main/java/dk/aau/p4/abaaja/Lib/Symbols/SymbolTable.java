@@ -68,7 +68,7 @@ public class SymbolTable {
         return null;
     }
 
-    public void InsertSymbol(String symbolName, Symbol symbol) {
-        _currentScope.set_symbols(symbolName, symbol);
+    public void InsertSymbol(Symbol symbol) {
+        _currentScope.set_symbols(symbol);
     }
 }

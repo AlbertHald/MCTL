@@ -7,10 +7,15 @@ public class Symbol {
     private int _dimension;
 
     public Symbol() {}
-    public Symbol(String type) {
+    public Symbol(String name) {
+        this._name = name;
+    }
+    public Symbol(String name, String type) {
+        this._name = type;
         this._type = type;
     }
-    public Symbol(String type, int dimension) {
+    public Symbol(String name, String type, int dimension) {
+        this._name = name;
         this._type = type;
         this._dimension = dimension;
     }
