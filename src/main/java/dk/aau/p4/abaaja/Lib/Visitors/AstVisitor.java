@@ -106,14 +106,20 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         idStructNode.set_lineNumber(ctx.start.getLine());
 
         // Add the two individual ID's
-        for (ParseTree child : ctx.id()) {
-            BaseNode tempIdNode = visit(child);
-            if (tempIdNode instanceof IDExpNode) {
-                idStructNode.add_child((IDExpNode) tempIdNode);
-            }
-            else {
-                addProblem(ctx, "");
-            }
+        BaseNode tempIDNode = visit(ctx.id().get(0));
+        if (tempIDNode instanceof IDExpNode) {
+            idStructNode.set_idNode((IDExpNode) tempIDNode);
+        }
+        else {
+            addProblem(ctx, "");
+        }
+
+        BaseNode tempAccessorNode = visit(ctx.id().get(1));
+        if (tempAccessorNode instanceof ExpNode) {
+            idStructNode.set_accessor((ExpNode) tempAccessorNode);
+        }
+        else {
+            addProblem(ctx, "");
         }
 
         return idStructNode;
@@ -126,21 +132,19 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         // Add the ID
         BaseNode tempIdNode = visit(ctx.id());
         if (tempIdNode instanceof IDExpNode) {
-            idArrayExpNode.set_IDNode((IDExpNode) tempIdNode);
+            idArrayExpNode.set_idNode((IDExpNode) tempIdNode);
         }
         else {
             addProblem(ctx, "");
         }
 
-        // Visit and add all expression nodes
-        for (ParseTree child : ctx.expression()) {
-            BaseNode tempNode = visit(child);
-            if (tempNode instanceof ExpNode) {
-                idArrayExpNode.add_child((ExpNode) tempNode);
-            }
-            else {
-                addProblem(ctx, "");
-            }
+        // Visit and add the expression node
+        BaseNode tempAccessorNode = visit(ctx.expression());
+        if (tempAccessorNode instanceof ExpNode) {
+            idArrayExpNode.set_accessor((ExpNode) tempAccessorNode);
+        }
+        else {
+            addProblem(ctx, "");
         }
 
         return idArrayExpNode;
@@ -149,7 +153,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitIdVar(mctlParser.IdVarContext ctx) {
         // Create an ID node and add its id
         ActualIDExpNode actualIDExpNode = new ActualIDExpNode();
-        actualIDExpNode.set_ID(ctx.getText());
+        actualIDExpNode.set_id(ctx.getText());
         actualIDExpNode.set_lineNumber(ctx.start.getLine());
 
         return actualIDExpNode;
@@ -320,18 +324,24 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         BaseNode tempIdNode = visit(ctx.id());
         if (tempIdNode instanceof IDExpNode) {
             IDExpNode idExpNode = (IDExpNode) tempIdNode;
-            assStateNode.set_assignId((IDExpNode) idExpNode);
+            assStateNode.set_assignId(idExpNode);
 
             // Add operator to node
             AddExpNode addExpNode = new AddExpNode();
             addExpNode.set_lineNumber(ctx.start.getLine());
-            if (ctx.op.getType() == mctlParser.INCREMENT) { addExpNode.set_operator(mctlParser.PLUS); }
-            else if (ctx.op.getType() == mctlParser.DECREMENT) { addExpNode.set_operator(mctlParser.MINUS); }
+            if (ctx.op.getType() == mctlParser.INCREMENT) {
+                addExpNode.set_operator(mctlParser.PLUS);
+                addExpNode.set_operatorLiteral("+");
+            }
+            else if (ctx.op.getType() == mctlParser.DECREMENT) {
+                addExpNode.set_operator(mctlParser.MINUS);
+                addExpNode.set_operatorLiteral("-");
+            }
             else {
                 addProblem(ctx, "");
             }
 
-            // Create num node with the integer value 1
+            // Set expression to id plus number node with value 1
             NumExpNode numExpNode = new NumExpNode();
             numExpNode.set_lineNumber(ctx.start.getLine());
             numExpNode.set_result(1);
@@ -339,9 +349,10 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             addExpNode.add_child(idExpNode);
             addExpNode.add_child(numExpNode);
 
+            assStateNode.set_assignExp(addExpNode);
         }
         else {
-            addProblem(ctx, "");addProblem(ctx, "");
+            addProblem(ctx, "");
         }
 
         return assStateNode;
@@ -354,7 +365,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         ActualIDExpNode actualIDExpNode = new ActualIDExpNode();
         actualIDExpNode.set_lineNumber(ctx.start.getLine());
 
-        actualIDExpNode.set_ID(ctx.ID().getText());
+        actualIDExpNode.set_id(ctx.ID().getText());
         funcInvokeNode.set_id(actualIDExpNode);
 
         if(ctx.actualParameters() != null) {
@@ -385,7 +396,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         ActualIDExpNode methodIDExpNode = new ActualIDExpNode();
         methodIDExpNode.set_lineNumber(ctx.start.getLine());
 
-        methodIDExpNode.set_ID(ctx.ID().getText());
+        methodIDExpNode.set_id(ctx.ID().getText());
         varMethodInvokeNode.set_id(methodIDExpNode);
 
         if(ctx.actualParameters() != null) {
@@ -414,7 +425,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         ActualIDExpNode methodIDExpNode = new ActualIDExpNode();
         methodIDExpNode.set_lineNumber(ctx.start.getLine());
 
-        methodIDExpNode.set_ID(ctx.ID().getText());
+        methodIDExpNode.set_id(ctx.ID().getText());
         stringMethodInvokeNode.set_id(methodIDExpNode);
 
         if(ctx.actualParameters() != null) {
@@ -595,7 +606,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitIdExpr(mctlParser.IdExprContext ctx) {
         return(visit(ctx.id()));
     }
-    
+
     @Override public BaseNode visitUnaryExpr(mctlParser.UnaryExprContext ctx) {
         UnaryExpNode unaryExpNode = new UnaryExpNode();
         unaryExpNode.set_lineNumber(ctx.start.getLine());

@@ -1,11 +1,11 @@
 package dk.aau.p4.abaaja.Lib.Nodes;
 
 public class IDArrayExpNode extends IDExpNode {
-    private IDExpNode _IDNode;
-    public void set_IDNode(IDExpNode IDNode){
-        this._IDNode = IDNode;
+    private ExpNode _accessor;
+    public ExpNode get_accessor(){
+        return this._accessor;
     }
-    public IDExpNode get_IDNode(){
-        return this._IDNode;
+    public void set_accessor(ExpNode accessor){
+        this._accessor = accessor;
     }
 }
