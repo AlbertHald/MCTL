@@ -40,6 +40,29 @@ public class AstBuilderUnitTests {
         return parser.mctl();
     }
 
+    /**
+     * Private method createParseTree unit tests
+     */
+    @DataProvider
+    public Object[][] createParseTreeTestData() {
+        return new Object[][] {
+                {"a = \"a\";"},
+                {"a = \"a\"; a = \"a\";"},
+                {"a = \"a\"; a = \"a\"; a = \"a\";"},
+        };
+    }
+
+    @Test(dataProvider = "createParseTreeTestData")
+    public void createParseTree_ValidInput_CreatesParseTree(String code) {
+        // Arrange
+        ParseTree parseTree = createParseTree(code);
+
+        // Act
+        boolean result = (parseTree != null);
+
+        // Assert
+        Assert.assertTrue(result);
+    }
 
     /**
      * visitBoolExpr unit test
@@ -207,7 +230,7 @@ public class AstBuilderUnitTests {
                 {"variable test: STRUCTID;", 0, "STRUCTID"}, {"variable test: testStructId[];", 1, "testStructId"}, {"variable test: struct_test_id[][];", 2, "struct_test_id"},
         };
     }
-    
+
     @Test(dataProvider = "visitVariableTypeTestData")
     public void visitVariableType_ValidTypeInput_CreatesCorrectTypeNode(String code, int arrayDegree, String expectedTypeNode) {
         // Arrange
