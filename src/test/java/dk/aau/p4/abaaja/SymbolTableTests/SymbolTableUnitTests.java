@@ -70,15 +70,6 @@ public class SymbolTableUnitTests {
     }
 
     @Test()
-    public void EnterScope_WhenEnteringScope_ThenCurrentScopeIsEnteredScope() {
-        //Arrange
-
-        //Act
-
-        //Assert
-    }
-
-    @Test()
     public void SearchScope_WhenSearching_ThenReturnSearchedScope() {
         //Arrange
 
@@ -89,12 +80,24 @@ public class SymbolTableUnitTests {
 
     @Test()
     public void SearchSymbol_WhenSearching_ThenReturnSearchedSymbol() {
+        //Arrange
 
+        //Act
+
+        //Assert
     }
 
     @Test()
     public void InsertSymbol_WhenInserted_ThenCurrentScopeContainsSymbol() {
 
-    }
+        String expectedSymbolName = "expectedName";
+        Symbol testSymbol = new Symbol();
 
+        testSymbolTable.InsertSymbol(expectedSymbolName, testSymbol);
+
+        boolean result = testSymbolTable.get_currentScope().get_symbols().containsKey(expectedSymbolName);
+
+        //Assert
+        assert(result);
+    }
 }

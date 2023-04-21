@@ -6,10 +6,16 @@ public class Symbol {
     private String _type;
     private int _dimension;
 
-
-    public String get_name() {
-        return _name;
+    public Symbol() {}
+    public Symbol(String type) {
+        this._type = type;
     }
+    public Symbol(String type, int dimension) {
+        this._type = type;
+        this._dimension = dimension;
+    }
+
+    public String get_name() {return _name; }
 
     public String get_type() {
         return _type;
