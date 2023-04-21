@@ -691,7 +691,7 @@ public class AstBuilderUnitTests {
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         TypecastExpNode typecastExpNode = (TypecastExpNode) assStateNode.get_assignExp();
 
-        softAssert.assertTrue(typecastExpNode.get_typeNode().get_type().equals(type));
+        softAssert.assertTrue(typecastExpNode.get_typeNode().get_type().equals(type), "Type");
         softAssert.assertAll();
     }
 }
