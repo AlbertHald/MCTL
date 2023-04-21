@@ -572,4 +572,29 @@ public class AstBuilderUnitTests {
         softAssert.assertTrue(funcDecNode.get_returnType().get_type().equals(type));
         softAssert.assertAll();
     }
+
+    /**
+     * visitMulExpr unit tests
+     */
+    @DataProvider
+    public Object[][] visitMulExprTestData() {
+        return new Object[][] {
+                {"test = 2 * 3;", "*"},
+                {"test = 10 / 3;", "/"},
+                {"test = 121 % 11;", "%"}
+        };
+    }
+
+    @Test(dataProvider = "visitMulExprTestData")
+    public void visitMulExpr_ValidInput_CreatesCorrectStringExpressionNode(String code, String operator) {
+        ParseTree parseTree = createParseTree(code);
+
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+        MulExpNode mulExpNode = (MulExpNode) assStateNode.get_assignExp();
+
+        softAssert.assertTrue(mulExpNode.get_operatorLiteral().equals(operator));
+        softAssert.assertTrue(mulExpNode.get_children().size() == 2);
+        softAssert.assertAll();
+    }
 }
