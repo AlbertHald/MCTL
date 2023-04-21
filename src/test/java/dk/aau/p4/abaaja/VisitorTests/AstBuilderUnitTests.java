@@ -622,4 +622,29 @@ public class AstBuilderUnitTests {
         softAssert.assertTrue(unaryExpNode.get_children().size() == 1);
         softAssert.assertAll();
     }
+
+
+    /**
+     * visitBlock unit tests
+     */
+    @DataProvider
+    public Object[][] visitBlockTestData() {
+        return new Object[][] {
+                {"if(true){}", 0},
+                {"if(true){id=val;id=val;}", 2},
+                {"if(true){id=val;id=val;id=val;}", 3},
+                {"if(true){id=val;id=val;id=val;id=val;}", 4},
+        };
+    }
+
+    @Test(dataProvider = "visitBlockTestData")
+    public void visitBlock_ValidInput_CreatesCorrectBlockNode(String code, int lines) {
+        ParseTree parseTree = createParseTree(code);
+
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        IfStateNode ifStateNode = (IfStateNode) mctlNode.get_children().get(0);
+
+        softAssert.assertTrue(ifStateNode.get_blockChildrenNode().get(0).get_children().size() == lines);
+        softAssert.assertAll();
+    }
 }
