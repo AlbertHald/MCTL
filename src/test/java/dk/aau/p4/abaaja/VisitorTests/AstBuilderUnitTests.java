@@ -646,8 +646,7 @@ public class AstBuilderUnitTests {
         softAssert.assertTrue(equalExpNode.get_children().size() == 2, "Children Size");
         softAssert.assertAll();
     }
-
-
+    
     /**
      * visitBlock unit tests
      */
