@@ -646,7 +646,7 @@ public class AstBuilderUnitTests {
         softAssert.assertTrue(equalExpNode.get_children().size() == 2, "Children Size");
         softAssert.assertAll();
     }
-    
+
     /**
      * visitBlock unit tests
      */
@@ -668,6 +668,30 @@ public class AstBuilderUnitTests {
         IfStateNode ifStateNode = (IfStateNode) mctlNode.get_children().get(0);
 
         softAssert.assertTrue(ifStateNode.get_blockChildrenNode().get(0).get_children().size() == lines, "Number of lines in block does not match the expected.");
+        softAssert.assertAll();
+    }
+    
+    /**
+     * visitTypecast unit tests
+     */
+    @DataProvider
+    public Object[][] visitTypecastTestData() {
+        return new Object[][] {
+                {"test = (NUMBER) var;", "NUMBER"},
+                {"test = (STRING) var;", "STRING"},
+                {"test = (BOOLEAN) var;", "BOOLEAN"}
+        };
+    }
+
+    @Test(dataProvider = "visitTypecastTestData")
+    public void visitTypecast_ValidInput_CreatesCorrectTypecastExpressionNode(String code, String type) {
+        ParseTree parseTree = createParseTree(code);
+
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+        TypecastExpNode typecastExpNode = (TypecastExpNode) assStateNode.get_assignExp();
+
+        softAssert.assertTrue(typecastExpNode.get_typeNode().get_type().equals(type));
         softAssert.assertAll();
     }
 }
