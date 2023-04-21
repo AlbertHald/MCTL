@@ -1,4 +1,4 @@
-// Generated from java-escape by ANTLR 4.11.1
+// Generated from dk/aau/p4/abaaja/mctl.g4 by ANTLR 4.12.0
 package dk.aau.p4.abaaja;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 

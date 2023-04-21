@@ -1,4 +1,4 @@
-// Generated from java-escape by ANTLR 4.11.1
+// Generated from dk/aau/p4/abaaja/mctl.g4 by ANTLR 4.12.0
 package dk.aau.p4.abaaja;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast", "CheckReturnValue"})
 public class mctlParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.11.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.12.0", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -98,7 +98,7 @@ public class mctlParser extends Parser {
 	}
 
 	@Override
-	public String getGrammarFileName() { return "java-escape"; }
+	public String getGrammarFileName() { return "mctl.g4"; }
 
 	@Override
 	public String[] getRuleNames() { return ruleNames; }
@@ -166,7 +166,7 @@ public class mctlParser extends Parser {
 			setState(46);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (((_la) & ~0x3f) == 0 && ((1L << _la) & 808143227453440L) != 0) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 808143227453440L) != 0)) {
 				{
 				setState(44);
 				_errHandler.sync(this);
@@ -279,7 +279,7 @@ public class mctlParser extends Parser {
 			setState(58);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while (((_la) & ~0x3f) == 0 && ((1L << _la) & 808143227453440L) != 0) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 808143227453440L) != 0)) {
 				{
 				setState(56);
 				_errHandler.sync(this);
@@ -1419,7 +1419,7 @@ public class mctlParser extends Parser {
 			setState(181);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (((_la) & ~0x3f) == 0 && ((1L << _la) & 422225425645568L) != 0) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 422225425645568L) != 0)) {
 				{
 				setState(180);
 				actualParameters();
@@ -2041,7 +2041,7 @@ public class mctlParser extends Parser {
 				setState(219);
 				((UnaryExprContext)_localctx).op = _input.LT(1);
 				_la = _input.LA(1);
-				if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 67158016L) != 0) ) {
+				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 67158016L) != 0)) ) {
 					((UnaryExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 				}
 				else {
@@ -2126,7 +2126,7 @@ public class mctlParser extends Parser {
 						setState(233);
 						((MulExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 3584L) != 0) ) {
+						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 3584L) != 0)) ) {
 							((MulExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
@@ -2168,7 +2168,7 @@ public class mctlParser extends Parser {
 						setState(239);
 						((CompExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
-						if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 120L) != 0) ) {
+						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 120L) != 0)) ) {
 							((CompExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
@@ -2441,7 +2441,7 @@ public class mctlParser extends Parser {
 			{
 			setState(267);
 			_la = _input.LA(1);
-			if ( !(((_la) & ~0x3f) == 0 && ((1L << _la) & 140739367403520L) != 0) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 140739367403520L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
