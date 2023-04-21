@@ -552,6 +552,30 @@ public class AstBuilderUnitTests {
     }
 
     /**
+     * visitIdStruct unit tests
+     */
+    @DataProvider
+    public Object[][] visitIdStructTestData() {
+        return new Object[][] {
+                {"a.b = id;"},
+                {"a[0].b = id;"},
+        };
+    }
+
+    @Test(dataProvider = "visitIdStructTestData")
+    public void visitIdStruct_ValidInput_CreatesIDStructNode(String code) {
+        ParseTree parseTree = createParseTree(code);
+
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+        IDStructNode idStructNode = (IDStructNode) assStateNode.get_assignId();
+
+        softAssert.assertTrue(idStructNode.get_idNode() instanceof IDExpNode, "ID: 1");
+        softAssert.assertTrue(idStructNode.get_accessor() instanceof  IDExpNode, "ID: 2");
+        softAssert.assertAll();
+    }
+
+    /**
      * visitReturnTypeNothing unit tests
      */
     @DataProvider
