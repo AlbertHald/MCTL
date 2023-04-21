@@ -250,7 +250,7 @@ public class AstBuilderUnitTests {
     }
 
     /**
-     * visitVariableDelcartation unit tests
+     * visitVariableDeclaration unit tests
      */
     @DataProvider
     public Object[][] visitVariableDeclarationTestData() {
@@ -280,7 +280,7 @@ public class AstBuilderUnitTests {
     }
 
     /**
-     * visitFunctionDelcartation unit tests
+     * visitFunctionDeclaration unit tests
      */
     @DataProvider
     public Object[][] visitFunctionDeclarationTestData() {
@@ -495,7 +495,7 @@ public class AstBuilderUnitTests {
         ReturnNode returnNode = (ReturnNode) mctlNode.get_children().get(0);
 
         // Assert
-        softAssert.assertTrue(returnNode.get_returnExp() instanceof IDExpNode, "The expresion is not of the expect type.");
+        softAssert.assertTrue(returnNode.get_returnExp() instanceof IDExpNode, "The expression is not of the expected type.");
         softAssert.assertAll();
     }
 
