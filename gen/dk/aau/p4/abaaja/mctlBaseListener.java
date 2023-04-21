@@ -269,13 +269,37 @@ public class mctlBaseListener implements mctlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterInvoke(mctlParser.InvokeContext ctx) { }
+	@Override public void enterFunctionInvoke(mctlParser.FunctionInvokeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitInvoke(mctlParser.InvokeContext ctx) { }
+	@Override public void exitFunctionInvoke(mctlParser.FunctionInvokeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVarMethodInvoke(mctlParser.VarMethodInvokeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVarMethodInvoke(mctlParser.VarMethodInvokeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterStringMethodInvoke(mctlParser.StringMethodInvokeContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitStringMethodInvoke(mctlParser.StringMethodInvokeContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

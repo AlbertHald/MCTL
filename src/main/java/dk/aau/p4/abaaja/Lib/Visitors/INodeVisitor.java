@@ -19,6 +19,9 @@ public interface INodeVisitor {
     void visit(RepeatStateNode node);
     void visit(AssStateNode node);
     void visit(InvokeNode node);
+    void visit(FuncInvokeNode node);
+    void visit(VarMethodInvokeNode node);
+    void visit(StringMethodInvokeNode node);
     void visit(ReturnNode node);
 
     void visit(FormalParamNode node);

@@ -155,9 +155,16 @@ public class PrettyPrintVisitor implements INodeVisitor{
     }
     public void visit(InvokeNode node){
         printIndented();
-        node.get_invokeId().accept(this);
+        if(node instanceof VarMethodInvokeNode){
+            ((VarMethodInvokeNode) node).get_varId().accept(this);
+            print(".");
+        }else if(node instanceof StringMethodInvokeNode){
+            ((StringMethodInvokeNode) node).get_string().accept(this);
+            print(".");
+        }
+        node.get_id().accept(this);
         print("(");
-        List<ExpNode> paramList = node.get_paramExp();
+        List<ExpNode> paramList = node.get_paramExps();
         int numParams = paramList.size();
         boolean breakParamLines = numParams > breakFuncParamLineIfMoreThan;
 
@@ -300,6 +307,15 @@ public class PrettyPrintVisitor implements INodeVisitor{
         printNewline();
         printIndented(notImplementedError);
         printNewline();
+    }
+    public void visit(FuncInvokeNode node){
+        this.visit((InvokeNode) node);
+    }
+    public void visit(VarMethodInvokeNode node){
+        this.visit((InvokeNode) node);
+    }
+    public void visit(StringMethodInvokeNode node){
+        this.visit((InvokeNode) node);
     }
     public void visit(BoolTypeNode node){
         this.visit((TypeNode) node);
