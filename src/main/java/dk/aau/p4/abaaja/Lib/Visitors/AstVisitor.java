@@ -347,25 +347,87 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return assStateNode;
     }
 
-    @Override public BaseNode visitInvoke(mctlParser.InvokeContext ctx) {
-        InvokeNode invokeNode = new InvokeNode();
-        invokeNode.set_lineNumber(ctx.start.getLine());
+    @Override public BaseNode visitFunctionInvoke(mctlParser.FunctionInvokeContext ctx) {
+        FuncInvokeNode funcInvokeNode = new FuncInvokeNode();
+        funcInvokeNode.set_lineNumber(ctx.start.getLine());
 
-        IDExpNode idExpNode = new IDExpNode();
-        idExpNode.set_lineNumber(ctx.start.getLine());
+        ActualIDExpNode actualIDExpNode = new ActualIDExpNode();
+        actualIDExpNode.set_lineNumber(ctx.start.getLine());
 
-        idExpNode.set_ID(ctx.ID().getText());
-        invokeNode.set_invokeId(idExpNode);
+        actualIDExpNode.set_ID(ctx.ID().getText());
+        funcInvokeNode.set_id(actualIDExpNode);
 
-        for(ParseTree child: ctx.actualParameters().expression()) {
-            BaseNode node = visit(child);
-            if(node instanceof ExpNode){
-                invokeNode.add_paramExp((ExpNode) node);
-            }else{
-                addProblem(ctx, "");
+        if(ctx.actualParameters() != null) {
+            for (ParseTree child : ctx.actualParameters().expression()) {
+                BaseNode node = visit(child);
+                if (node instanceof ExpNode) {
+                    funcInvokeNode.add_paramExp((ExpNode) node);
+                } else {
+                    addProblem(ctx, "");
+                }
             }
         }
-        return invokeNode;
+        return funcInvokeNode;
+    }
+
+    @Override public BaseNode visitVarMethodInvoke(mctlParser.VarMethodInvokeContext ctx) {
+        VarMethodInvokeNode varMethodInvokeNode = new VarMethodInvokeNode();
+        varMethodInvokeNode.set_lineNumber(ctx.start.getLine());
+
+        BaseNode tempVarIdNode = visit(ctx.id());
+        if (tempVarIdNode instanceof IDExpNode) {
+            varMethodInvokeNode.set_varId((IDExpNode) tempVarIdNode);
+        }
+        else{
+            addProblem(ctx, "");
+        }
+
+        ActualIDExpNode methodIDExpNode = new ActualIDExpNode();
+        methodIDExpNode.set_lineNumber(ctx.start.getLine());
+
+        methodIDExpNode.set_ID(ctx.ID().getText());
+        varMethodInvokeNode.set_id(methodIDExpNode);
+
+        if(ctx.actualParameters() != null) {
+            for (ParseTree child : ctx.actualParameters().expression()) {
+                BaseNode node = visit(child);
+                if (node instanceof ExpNode) {
+                    varMethodInvokeNode.add_paramExp((ExpNode) node);
+                } else {
+                    addProblem(ctx, "");
+                }
+            }
+        }
+        return varMethodInvokeNode;
+    }
+
+    @Override public BaseNode visitStringMethodInvoke(mctlParser.StringMethodInvokeContext ctx) {
+        StringMethodInvokeNode stringMethodInvokeNode = new StringMethodInvokeNode();
+        stringMethodInvokeNode.set_lineNumber(ctx.start.getLine());
+
+        StringExpNode stringExpNode = new StringExpNode();
+        stringExpNode.set_lineNumber(ctx.start.getLine());
+
+        stringExpNode.set_result(ctx.STRING().getText());
+        stringMethodInvokeNode.set_string(stringExpNode);
+
+        ActualIDExpNode methodIDExpNode = new ActualIDExpNode();
+        methodIDExpNode.set_lineNumber(ctx.start.getLine());
+
+        methodIDExpNode.set_ID(ctx.ID().getText());
+        stringMethodInvokeNode.set_id(methodIDExpNode);
+
+        if(ctx.actualParameters() != null) {
+            for (ParseTree child : ctx.actualParameters().expression()) {
+                BaseNode node = visit(child);
+                if (node instanceof ExpNode) {
+                    stringMethodInvokeNode.add_paramExp((ExpNode) node);
+                } else {
+                    addProblem(ctx, "");
+                }
+            }
+        }
+        return stringMethodInvokeNode;
     }
 
     @Override public BaseNode visitFormalParameter(mctlParser.FormalParameterContext ctx) {
