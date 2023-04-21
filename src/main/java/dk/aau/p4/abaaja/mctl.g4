@@ -57,7 +57,9 @@ assignment
     ;
 
 invoke
-    : (id DOT)? ID LPAR (actualParameters)? RPAR
+    : ID LPAR (actualParameters)? RPAR              #functionInvoke
+    | id DOT ID LPAR (actualParameters)? RPAR       #varMethodInvoke
+    | STRING DOT ID LPAR (actualParameters)? RPAR   #stringMethodInvoke
     ;
 
 // Parameter productions
@@ -146,7 +148,6 @@ Boolean: 'BOOLEAN';
 Struct: 'struct';
 True: 'true';
 False: 'false';
-Add: 'add';
 IndexesOf: 'indexesOf';
 SubString: 'subString';
 SubList: 'subList';

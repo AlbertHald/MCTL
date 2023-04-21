@@ -1,4 +1,4 @@
-// Generated from java-escape by ANTLR 4.11.1
+// Generated from dk/aau/p4/abaaja/mctl.g4 by ANTLR 4.12.0
 package dk.aau.p4.abaaja;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -151,11 +151,26 @@ public interface mctlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitIncrAss(mctlParser.IncrAssContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link mctlParser#invoke}.
+	 * Visit a parse tree produced by the {@code functionInvoke}
+	 * labeled alternative in {@link mctlParser#invoke}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitInvoke(mctlParser.InvokeContext ctx);
+	T visitFunctionInvoke(mctlParser.FunctionInvokeContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code varMethodInvoke}
+	 * labeled alternative in {@link mctlParser#invoke}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVarMethodInvoke(mctlParser.VarMethodInvokeContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code stringMethodInvoke}
+	 * labeled alternative in {@link mctlParser#invoke}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStringMethodInvoke(mctlParser.StringMethodInvokeContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link mctlParser#formalParameters}.
 	 * @param ctx the parse tree

@@ -1,4 +1,4 @@
-// Generated from java-escape by ANTLR 4.11.1
+// Generated from dk/aau/p4/abaaja/mctl.g4 by ANTLR 4.12.0
 package dk.aau.p4.abaaja;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -246,15 +246,41 @@ public interface mctlListener extends ParseTreeListener {
 	 */
 	void exitIncrAss(mctlParser.IncrAssContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link mctlParser#invoke}.
+	 * Enter a parse tree produced by the {@code functionInvoke}
+	 * labeled alternative in {@link mctlParser#invoke}.
 	 * @param ctx the parse tree
 	 */
-	void enterInvoke(mctlParser.InvokeContext ctx);
+	void enterFunctionInvoke(mctlParser.FunctionInvokeContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link mctlParser#invoke}.
+	 * Exit a parse tree produced by the {@code functionInvoke}
+	 * labeled alternative in {@link mctlParser#invoke}.
 	 * @param ctx the parse tree
 	 */
-	void exitInvoke(mctlParser.InvokeContext ctx);
+	void exitFunctionInvoke(mctlParser.FunctionInvokeContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code varMethodInvoke}
+	 * labeled alternative in {@link mctlParser#invoke}.
+	 * @param ctx the parse tree
+	 */
+	void enterVarMethodInvoke(mctlParser.VarMethodInvokeContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code varMethodInvoke}
+	 * labeled alternative in {@link mctlParser#invoke}.
+	 * @param ctx the parse tree
+	 */
+	void exitVarMethodInvoke(mctlParser.VarMethodInvokeContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code stringMethodInvoke}
+	 * labeled alternative in {@link mctlParser#invoke}.
+	 * @param ctx the parse tree
+	 */
+	void enterStringMethodInvoke(mctlParser.StringMethodInvokeContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code stringMethodInvoke}
+	 * labeled alternative in {@link mctlParser#invoke}.
+	 * @param ctx the parse tree
+	 */
+	void exitStringMethodInvoke(mctlParser.StringMethodInvokeContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link mctlParser#formalParameters}.
 	 * @param ctx the parse tree
