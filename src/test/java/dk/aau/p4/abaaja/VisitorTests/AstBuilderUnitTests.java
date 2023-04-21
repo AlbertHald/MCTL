@@ -147,14 +147,13 @@ public class AstBuilderUnitTests {
         ParseTree parseTree = createParseTree(code);
 
         // Act
-        /* Creates the following tree -> MctlNode - AssStateNode - IDExpNode , IDExpNode */
         MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
-        IDExpNode idExpNode = (IDExpNode) assStateNode.get_assignExp();
+        ActualIDExpNode actualIdExpNode = (ActualIDExpNode) assStateNode.get_assignExp();
 
         // Assert
-        softAssert.assertTrue(idExpNode instanceof IDExpNode);
-        softAssert.assertTrue(idExpNode.get_ID().equals(stringValue));
+        softAssert.assertTrue(actualIdExpNode instanceof ActualIDExpNode);
+        softAssert.assertTrue(actualIdExpNode.get_id().equals(stringValue));
         softAssert.assertAll();
     }
 
@@ -277,6 +276,34 @@ public class AstBuilderUnitTests {
         softAssert.assertTrue(varDecNode.get_id().equals(expectedIdentifier));
         softAssert.assertTrue(varDecNode.get_varDecType().get_arrayDegree() == arrayDegree);
         softAssert.assertTrue(varDecNode.get_varDecType().get_type().equals(expectedType));
+        softAssert.assertAll();
+    }
+
+    /**
+     * visitFunctionDelcartation unit tests
+     */
+    @DataProvider
+    public Object[][] visitFunctionDeclarationTestData() {
+        return new Object[][] {
+                {"to _functionId():BOOLEAN { return a; }", "_functionId", "BOOLEAN", 0},
+                {"to function1(id1: NUMBER):NUMBER { return a; }", "function1", "NUMBER", 1},
+                {"to test_func(id1:NUMBER, id2:NUMBER):STRING { return a; }", "test_func", "STRING", 2},
+        };
+    }
+
+    @Test(dataProvider = "visitFunctionDeclarationTestData")
+    public void visitFunctionDeclaration_ValidInput_CreatesFunctionDeclarationNode(String code, String expectedIdentifier, String expectedReturnType, int expectedFormalParameters) {
+        // Arrange
+        ParseTree parseTree = createParseTree(code);
+
+        // Act
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        FuncDecNode funcDecNode = (FuncDecNode) mctlNode.get_children().get(0);
+
+        // Assert
+        softAssert.assertTrue(funcDecNode.get_id().equals(expectedIdentifier));
+        softAssert.assertTrue(funcDecNode.get_returnType().get_type().equals(expectedReturnType));
+        softAssert.assertTrue(funcDecNode.get_paramList().size() == expectedFormalParameters);
         softAssert.assertAll();
     }
 
@@ -473,6 +500,34 @@ public class AstBuilderUnitTests {
     }
 
     /**
+     * visitFormalParameter unit tests
+     */
+    @DataProvider
+    public Object[][] visitFormalParameterTestData() {
+        return new Object[][] {
+                {"to func(id0: NUMBER):NUMBER {}", "id0", "NUMBER"},
+                {"to func(id1: STRING):NUMBER {}", "id1", "STRING"},
+                {"to func(id2: BOOLEAN):NUMBER {}", "id2", "BOOLEAN"},
+        };
+    }
+
+    @Test(dataProvider = "visitFormalParameterTestData")
+    public void visitFormalParameter_ValidInput_CreatesFormalParamNode(String code, String expectedId, String expectedType) {
+        // Arrange
+        ParseTree parseTree = createParseTree(code);
+
+        // Act
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        FuncDecNode funcDecNode = (FuncDecNode) mctlNode.get_children().get(0);
+
+        // Assert
+        softAssert.assertTrue(funcDecNode.get_paramList().get(0).get_id().equals(expectedId));
+        softAssert.assertTrue(funcDecNode.get_paramList().get(0).get_type().get_type().equals(expectedType));
+        softAssert.assertAll();
+    }
+
+
+    /**
      * visitIdVar unit tests
      */
     @DataProvider
@@ -492,7 +547,7 @@ public class AstBuilderUnitTests {
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         ActualIDExpNode actualIDExpNode = (ActualIDExpNode) assStateNode.get_assignId();
 
-        softAssert.assertTrue(actualIDExpNode.get_id().equals(id));
+        softAssert.assertTrue(actualIDExpNode.get_id().equals(id));  
         softAssert.assertAll();
     }
 }

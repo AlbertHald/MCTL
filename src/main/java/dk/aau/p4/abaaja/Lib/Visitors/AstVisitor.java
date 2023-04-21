@@ -154,7 +154,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         // Create an ID node and add its id
         ActualIDExpNode actualIDExpNode = new ActualIDExpNode();
 
-        actualIDExpNode.set_ID(ctx.getText());
+        actualIDExpNode.set_id(ctx.getText());
         actualIDExpNode.set_lineNumber(ctx.getStart().getLine());
 
         return actualIDExpNode;
