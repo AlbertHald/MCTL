@@ -428,4 +428,47 @@ public class AstBuilderUnitTests {
         softAssert.assertTrue(((AddExpNode) assStateNode.get_assignExp()).get_children().get(1) instanceof NumExpNode);
         softAssert.assertAll();
     }
+
+    /**
+     * visitStopStatement unit tests
+     */
+    @Test()
+    public void visitStopStatement_ValidInput_CreatesStopNode() {
+        // Arrange
+        ParseTree parseTree = createParseTree("stop;");
+
+        // Act
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        StopNode stopNode = (StopNode) mctlNode.get_children().get(0);
+
+        // Assert
+        softAssert.assertTrue(stopNode instanceof StopNode);
+        softAssert.assertAll();
+    }
+
+    /**
+     * visitReturnStatement unit tests
+     */
+    @DataProvider
+    public Object[][] visitReturnStatementTestData() {
+        return new Object[][] {
+                // {code, expression type, block list size}
+                {"return a;"},
+                {"return a[0];"},
+        };
+    }
+
+    @Test(dataProvider = "visitReturnStatementTestData")
+    public void visitReturnStatement_ValidInput_CreatesReturnNode(String code) {
+        // Arrange
+        ParseTree parseTree = createParseTree(code);
+
+        // Act
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        ReturnNode returnNode = (ReturnNode) mctlNode.get_children().get(0);
+
+        // Assert
+        softAssert.assertTrue(returnNode.get_returnExp() instanceof IDExpNode);
+        softAssert.assertAll();
+    }
 }
