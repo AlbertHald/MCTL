@@ -495,7 +495,7 @@ public class AstBuilderUnitTests {
         ReturnNode returnNode = (ReturnNode) mctlNode.get_children().get(0);
 
         // Assert
-        softAssert.assertTrue(returnNode.get_returnExp() instanceof IDExpNode);
+        softAssert.assertTrue(returnNode.get_returnExp() instanceof IDExpNode, "The expresion is not of the expect type.");
         softAssert.assertAll();
     }
 
@@ -521,8 +521,8 @@ public class AstBuilderUnitTests {
         FuncDecNode funcDecNode = (FuncDecNode) mctlNode.get_children().get(0);
 
         // Assert
-        softAssert.assertTrue(funcDecNode.get_paramList().get(0).get_id().equals(expectedId));
-        softAssert.assertTrue(funcDecNode.get_paramList().get(0).get_type().get_type().equals(expectedType));
+        softAssert.assertTrue(funcDecNode.get_paramList().get(0).get_id().equals(expectedId), "The ID's does not match.");
+        softAssert.assertTrue(funcDecNode.get_paramList().get(0).get_type().get_type().equals(expectedType), "The types does not match.");
         softAssert.assertAll();
     }
 
@@ -547,7 +547,7 @@ public class AstBuilderUnitTests {
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         ActualIDExpNode actualIDExpNode = (ActualIDExpNode) assStateNode.get_assignId();
 
-        softAssert.assertTrue(actualIDExpNode.get_id().equals(id), "ID");
+        softAssert.assertTrue(actualIDExpNode.get_id().equals(id), "The ID's does not match");
         softAssert.assertAll();
     }
 
@@ -667,7 +667,7 @@ public class AstBuilderUnitTests {
         MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
         IfStateNode ifStateNode = (IfStateNode) mctlNode.get_children().get(0);
 
-        softAssert.assertTrue(ifStateNode.get_blockChildrenNode().get(0).get_children().size() == lines);
+        softAssert.assertTrue(ifStateNode.get_blockChildrenNode().get(0).get_children().size() == lines, "Number of lines in block does not match the expected.");
         softAssert.assertAll();
     }
 }
