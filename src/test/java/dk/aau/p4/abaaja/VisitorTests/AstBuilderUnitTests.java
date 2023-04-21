@@ -597,4 +597,29 @@ public class AstBuilderUnitTests {
         softAssert.assertTrue(mulExpNode.get_children().size() == 2);
         softAssert.assertAll();
     }
+
+    /**
+     * visitUnaryExpr unit tests
+     */
+    @DataProvider
+    public Object[][] visitUnaryExprTestData() {
+        return new Object[][] {
+                {"test = +3;", "+"},
+                {"test = -8;", "-"},
+                {"test = !test;", "!"}
+        };
+    }
+
+    @Test(dataProvider = "visitUnaryExprTestData")
+    public void visitUnaryExpr_ValidInput_CreatesCorrectUnaryExpressionNode(String code, String operator) {
+        ParseTree parseTree = createParseTree(code);
+
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+        UnaryExpNode unaryExpNode = (UnaryExpNode) assStateNode.get_assignExp();
+
+        softAssert.assertTrue(unaryExpNode.get_operatorLiteral().equals(operator));
+        softAssert.assertTrue(unaryExpNode.get_children().size() == 1);
+        softAssert.assertAll();
+    }
 }
