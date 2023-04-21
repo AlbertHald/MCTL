@@ -492,7 +492,7 @@ public class AstBuilderUnitTests {
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         ActualIDExpNode actualIDExpNode = (ActualIDExpNode) assStateNode.get_assignId();
 
-        softAssert.assertTrue(actualIDExpNode.get_ID().equals(id));
+        softAssert.assertTrue(actualIDExpNode.get_id().equals(id));
         softAssert.assertAll();
     }
 }
