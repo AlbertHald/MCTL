@@ -22,7 +22,7 @@ public class SymbolTableUnitTests {
 
 
     @Test()
-    public void GetCurrentScope_ScopeClass_ReturnsAScope() {
+    public void GetCurrentScope_WhenGettingScope_ThenReturnsAScopeClass() {
 
         //Act
         boolean result = testSymbolTable.get_currentScope() instanceof Scope;
@@ -68,4 +68,33 @@ public class SymbolTableUnitTests {
         //Assert
         assert(result);
     }
+
+    @Test()
+    public void EnterScope_WhenEnteringScope_ThenCurrentScopeIsEnteredScope() {
+        //Arrange
+
+        //Act
+
+        //Assert
+    }
+
+    @Test()
+    public void SearchScope_WhenSearching_ThenReturnSearchedScope() {
+        //Arrange
+
+        //Act
+
+        //Assert
+    }
+
+    @Test()
+    public void SearchSymbol_WhenSearching_ThenReturnSearchedSymbol() {
+
+    }
+
+    @Test()
+    public void InsertSymbol_WhenInserted_ThenCurrentScopeContainsSymbol() {
+
+    }
+
 }
