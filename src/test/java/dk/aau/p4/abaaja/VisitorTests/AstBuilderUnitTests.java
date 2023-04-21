@@ -547,7 +547,7 @@ public class AstBuilderUnitTests {
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         ActualIDExpNode actualIDExpNode = (ActualIDExpNode) assStateNode.get_assignId();
 
-        softAssert.assertTrue(actualIDExpNode.get_id().equals(id));  
+        softAssert.assertTrue(actualIDExpNode.get_id().equals(id), "ID");
         softAssert.assertAll();
     }
 
@@ -569,7 +569,7 @@ public class AstBuilderUnitTests {
         MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
         FuncDecNode funcDecNode = (FuncDecNode) mctlNode.get_children().get(0);
 
-        softAssert.assertTrue(funcDecNode.get_returnType().get_type().equals(type));
+        softAssert.assertTrue(funcDecNode.get_returnType().get_type().equals(type), "Return Type");
         softAssert.assertAll();
     }
 
@@ -593,8 +593,8 @@ public class AstBuilderUnitTests {
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         MulExpNode mulExpNode = (MulExpNode) assStateNode.get_assignExp();
 
-        softAssert.assertTrue(mulExpNode.get_operatorLiteral().equals(operator));
-        softAssert.assertTrue(mulExpNode.get_children().size() == 2);
+        softAssert.assertTrue(mulExpNode.get_operatorLiteral().equals(operator), "Operator");
+        softAssert.assertTrue(mulExpNode.get_children().size() == 2, "Children Size");
         softAssert.assertAll();
     }
 
@@ -618,8 +618,32 @@ public class AstBuilderUnitTests {
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         UnaryExpNode unaryExpNode = (UnaryExpNode) assStateNode.get_assignExp();
 
-        softAssert.assertTrue(unaryExpNode.get_operatorLiteral().equals(operator));
-        softAssert.assertTrue(unaryExpNode.get_children().size() == 1);
+        softAssert.assertTrue(unaryExpNode.get_operatorLiteral().equals(operator), "Operator");
+        softAssert.assertTrue(unaryExpNode.get_children().size() == 1, "Children Size");
+        softAssert.assertAll();
+    }
+
+    /**
+     * visitEqualExpr unit tests
+     */
+    @DataProvider
+    public Object[][] visitEqualExprTestData() {
+        return new Object[][] {
+                {"var = (test == 3);", "=="},
+                {"var = (test != 8);", "!="},
+        };
+    }
+
+    @Test(dataProvider = "visitEqualExprTestData")
+    public void visitEqualExpr_ValidInput_CreatesCorrectEqualExpressionNode(String code, String operator) {
+        ParseTree parseTree = createParseTree(code);
+
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+        EqualExpNode equalExpNode = (EqualExpNode) assStateNode.get_assignExp();
+
+        softAssert.assertTrue(equalExpNode.get_operatorLiteral().equals(operator), "Operator");
+        softAssert.assertTrue(equalExpNode.get_children().size() == 2, "Children Size");
         softAssert.assertAll();
     }
 
