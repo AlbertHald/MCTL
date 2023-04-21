@@ -586,7 +586,7 @@ public class AstBuilderUnitTests {
     }
 
     @Test(dataProvider = "visitMulExprTestData")
-    public void visitMulExpr_ValidInput_CreatesCorrectMulExpressionNode(String code, String operator) {
+    public void visitMulExpr_ValidInput_CreatesCorrectMultiplicationExpressionNode(String code, String operator) {
         ParseTree parseTree = createParseTree(code);
 
         MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
