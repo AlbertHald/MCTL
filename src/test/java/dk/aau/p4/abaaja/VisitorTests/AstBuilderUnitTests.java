@@ -550,4 +550,26 @@ public class AstBuilderUnitTests {
         softAssert.assertTrue(actualIDExpNode.get_id().equals(id));  
         softAssert.assertAll();
     }
+
+    /**
+     * visitReturnTypeNothing unit tests
+     */
+    @DataProvider
+    public Object[][] visitReturnTypeNothingTestData() {
+        return new Object[][] {
+                {"to test() : NOTHING {}", "NOTHING"},
+                {"to test2() : NOTHING {variable x: NUMBER; x = 5;}", "NOTHING"}
+        };
+    }
+
+    @Test(dataProvider = "visitReturnTypeNothingTestData")
+    public void visitReturnTypeNothing_ValidInput_CreatesNothingTypeNode(String code, String type) {
+        ParseTree parseTree = createParseTree(code);
+
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        FuncDecNode funcDecNode = (FuncDecNode) mctlNode.get_children().get(0);
+
+        softAssert.assertTrue(funcDecNode.get_returnType().get_type().equals(type));
+        softAssert.assertAll();
+    }
 }
