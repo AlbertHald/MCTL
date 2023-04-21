@@ -14,6 +14,7 @@ import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.mctlParser;
 import dk.aau.p4.abaaja.Lib.Visitors.AstVisitor;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
+import org.testng.asserts.SoftAssert;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,12 @@ import java.util.List;
 @Test()
 public class AstBuilderUnitTests {
     private final AstVisitor astVisitor = new AstVisitor(new ProblemCollection());
+    private SoftAssert softAssert;
+
+    @BeforeMethod
+    public void BeforeMethod() {
+        softAssert = new SoftAssert();
+    }
 
     /**
      * createParseTree method to create a parse tree using Antlr and returning it
@@ -57,11 +64,8 @@ public class AstBuilderUnitTests {
         // Arrange
         ParseTree parseTree = createParseTree(code);
 
-        // Act
-        boolean result = (parseTree != null);
-
         // Assert
-        Assert.assertTrue(result);
+        softAssert.assertTrue(parseTree != null);
     }
 
     /**
@@ -86,12 +90,10 @@ public class AstBuilderUnitTests {
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         BoolExpNode boolExpNode = (BoolExpNode) assStateNode.get_assignExp();
 
-        boolean result =
-                (boolExpNode instanceof BoolExpNode) &&
-                (boolExpNode.get_result() == booleanValue);
-
         // Assert
-        Assert.assertTrue(result);
+        softAssert.assertTrue(boolExpNode instanceof BoolExpNode);
+        softAssert.assertTrue(boolExpNode.get_result() == booleanValue);
+        softAssert.assertAll();
     }
 
 
@@ -121,10 +123,10 @@ public class AstBuilderUnitTests {
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         StringExpNode stringExpNode = (StringExpNode) assStateNode.get_assignExp();
 
-        boolean result = (stringExpNode instanceof StringExpNode) && (stringExpNode.get_result().equals(stringValue));
-
         // Assert
-        Assert.assertTrue(result);
+        softAssert.assertTrue(stringExpNode instanceof StringExpNode);
+        softAssert.assertTrue(stringExpNode.get_result().equals(stringValue));
+        softAssert.assertAll();
     }
 
     /**
@@ -150,10 +152,10 @@ public class AstBuilderUnitTests {
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         IDExpNode idExpNode = (IDExpNode) assStateNode.get_assignExp();
 
-        boolean result = (idExpNode instanceof IDExpNode) && (idExpNode.get_ID().equals(stringValue));
-
         // Assert
-        Assert.assertTrue(result);
+        softAssert.assertTrue(idExpNode instanceof IDExpNode);
+        softAssert.assertTrue(idExpNode.get_ID().equals(stringValue));
+        softAssert.assertAll();
     }
 
     /**
@@ -184,10 +186,10 @@ public class AstBuilderUnitTests {
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         NumExpNode numExpNode = (NumExpNode) assStateNode.get_assignExp();
 
-        boolean result = (numExpNode instanceof NumExpNode) && (numExpNode.get_result().equals(doubleValue));
-
         // Assert
-        Assert.assertTrue(result);
+        softAssert.assertTrue(numExpNode instanceof NumExpNode);
+        softAssert.assertTrue(numExpNode.get_result().equals(doubleValue));
+        softAssert.assertAll();
     }
 
     @DataProvider
@@ -212,10 +214,10 @@ public class AstBuilderUnitTests {
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         NumExpNode numExpNode = (NumExpNode) assStateNode.get_assignExp();
 
-        boolean result = (numExpNode instanceof NumExpNode) && (numExpNode.get_result().equals(intValue));
-
         // Assert
-        Assert.assertTrue(result);
+        softAssert.assertTrue(numExpNode instanceof NumExpNode);
+        softAssert.assertTrue(numExpNode.get_result().equals(intValue));
+        softAssert.assertAll();
     }
 
     /**
@@ -242,10 +244,10 @@ public class AstBuilderUnitTests {
         VarDecNode varDecNode = (VarDecNode) mctlNode.get_children().get(0);
         TypeNode typeNode = (TypeNode) varDecNode.get_varDecType();
 
-        boolean result = (typeNode.get_type().equals(expectedTypeNode)) && (typeNode.get_arrayDegree() == arrayDegree);
-
         // Assert
-        Assert.assertTrue(result);
+        softAssert.assertTrue(typeNode.get_type().equals(expectedTypeNode));
+        softAssert.assertTrue(typeNode.get_arrayDegree() == arrayDegree);
+        softAssert.assertAll();
     }
 
     /**
@@ -271,19 +273,18 @@ public class AstBuilderUnitTests {
         MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
         VarDecNode varDecNode = (VarDecNode) mctlNode.get_children().get(0);
 
-        boolean result = (varDecNode.get_id().equals(expectedIdentifier)) &&
-                (varDecNode.get_varDecType().get_arrayDegree() == arrayDegree) &&
-                (varDecNode.get_varDecType().get_type().equals(expectedType));
-
         // Assert
-        Assert.assertTrue(result);
+        softAssert.assertTrue(varDecNode.get_id().equals(expectedIdentifier));
+        softAssert.assertTrue(varDecNode.get_varDecType().get_arrayDegree() == arrayDegree);
+        softAssert.assertTrue(varDecNode.get_varDecType().get_type().equals(expectedType));
+        softAssert.assertAll();
     }
 
     /**
      * visitStructDeclaration unit tests
      */
     @DataProvider
-    public Object[][] visitStructDeclarationIntegerTestData() {
+    public Object[][] visitStructDeclarationTestData() {
         return new Object[][] {
                 {"struct STRUCT1 {variable varID : NUMBER,}", "STRUCT1", "varID", "NUMBER"},
                 {"struct struct2 {variable variable_ID : STRING,}", "struct2", "variable_ID", "STRING"},
@@ -292,7 +293,7 @@ public class AstBuilderUnitTests {
         };
     }
 
-    @Test(dataProvider = "visitStructDeclarationIntegerTestData")
+    @Test(dataProvider = "visitStructDeclarationTestData")
     public void visitStructDeclaration_ValidInput_CreatesStructDeclarationNode(String code, String structId, String varId, String varType) {
         // Arrange
         ParseTree parseTree = createParseTree(code);
@@ -303,12 +304,128 @@ public class AstBuilderUnitTests {
         StructDecNode structDecNode = (StructDecNode) mctlNode.get_children().get(0);
         VarDecNode varDecNode = structDecNode.get_declarations().get(0);
 
-        boolean result = (structDecNode.get_id().equals(structId)) &&
-                (varDecNode.get_varDecType().get_type().equals(varType)) &&
-                (varDecNode.get_id().equals(varId));
-
         // Assert
-        Assert.assertTrue(result);
+        softAssert.assertTrue(structDecNode.get_id().equals(structId));
+        softAssert.assertTrue(varDecNode.get_varDecType().get_type().equals(varType));
+        softAssert.assertTrue(varDecNode.get_id().equals(varId));
+        softAssert.assertAll();
     }
 
+    /**
+     * visitIfStatement unit tests
+     */
+    @DataProvider
+    public Object[][] visitIfStatementTestData() {
+        return new Object[][] {
+                // {code, expression list size, block list size}
+                {"if (true) { var = a; } else if (true) { var = b; } else { var = c; }", 2, 3},
+                {"if (true) { var = a; } else { var = b; }", 1, 2},
+                {"if (true) { var = a; }", 1, 1},
+                {"if (true) {}", 1, 1},
+        };
+    }
+
+    @Test(dataProvider = "visitIfStatementTestData")
+    public void visitIfStatement_ValidInput_CreatesIfStatementNode(String code, int expressionListSize, int blockListSize) {
+        // Arrange
+        ParseTree parseTree = createParseTree(code);
+
+        // Act
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        IfStateNode ifStateNode = (IfStateNode) mctlNode.get_children().get(0);
+
+        // Assert
+        softAssert.assertTrue(ifStateNode.get_expChildren().size() == expressionListSize);
+        softAssert.assertTrue(ifStateNode.get_blockChildrenNode().size() == blockListSize);
+        softAssert.assertAll();
+    }
+
+    /**
+     * visitRepeatStatement unit tests
+     */
+    @DataProvider
+    public Object[][] visitRepeatStatementTestData() {
+        return new Object[][] {
+                // {code, expression type, block list size}
+                {"repeat (true and true) { a++; }"},
+                {"repeat (1+1 == 2 and 3>2) { a++; }"},
+                {"repeat (testID and testID2) { a++; }"},
+        };
+    }
+
+    @Test(dataProvider = "visitRepeatStatementTestData")
+    public void visitRepeatStatement_ValidInput_CreatesRepeatStatementNode(String code) {
+        // Arrange
+        ParseTree parseTree = createParseTree(code);
+
+        // Act
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        RepeatStateNode repeatStateNode = (RepeatStateNode) mctlNode.get_children().get(0);
+
+
+        // Assert
+        softAssert.assertTrue(repeatStateNode.get_repeatExp() instanceof AndExpNode);
+        softAssert.assertTrue(repeatStateNode.get_expBlock().get_children().size() == 1);
+        softAssert.assertTrue(repeatStateNode.get_expBlock().get_children().get(0) instanceof AssStateNode);
+        softAssert.assertAll();
+    }
+
+    /**
+     * visitAssignmentStatement unit tests
+     */
+    @DataProvider
+    public Object[][] visitExprAssTestData() {
+        return new Object[][] {
+                // {code, expression type, block list size}
+                {"a.b = a + 1;"},
+                {"a.b.c = a + a;"},
+                {"a[b] = a + 123456789;"},
+                {"a[b][c] = a + a;"},
+        };
+    }
+
+    @Test(dataProvider = "visitExprAssTestData")
+    public void visitExprAss_ValidInput_CreatesAssStateNode(String code) {
+        // Arrange
+        ParseTree parseTree = createParseTree(code);
+
+        // Act
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+
+        // Assert
+        softAssert.assertTrue(assStateNode.get_assignId() instanceof IDExpNode);
+        softAssert.assertTrue(assStateNode.get_assignExp() instanceof AddExpNode);
+        softAssert.assertAll();
+    }
+
+    @DataProvider
+    public Object[][] visitIncrAssTestData() {
+        return new Object[][] {
+                // {code, expression type, block list size}
+                {"a++;", mctlParser.PLUS}, {"a--;", mctlParser.MINUS},
+                {"a.b++;", mctlParser.PLUS}, {"a.b--;", mctlParser.MINUS},
+                {"a.b.c++;", mctlParser.PLUS}, {"a.b.c--;", mctlParser.MINUS},
+                {"a[b]++;", mctlParser.PLUS}, {"a[b]--;", mctlParser.MINUS},
+                {"a[b][c]++;", mctlParser.PLUS}, {"a[b][c]--;", mctlParser.MINUS},
+        };
+    }
+
+    @Test(dataProvider = "visitIncrAssTestData")
+    public void visitIncrAss_ValidInput_CreatesAssStateNode(String code, int operator) {
+        // Arrange
+        ParseTree parseTree = createParseTree(code);
+
+        // Act
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+
+        // Assert
+        softAssert.assertTrue(assStateNode.get_assignId() instanceof IDExpNode);
+        softAssert.assertTrue(assStateNode.get_assignExp() instanceof AddExpNode);
+        softAssert.assertTrue(((AddExpNode) assStateNode.get_assignExp()).get_operator() == operator);
+        softAssert.assertTrue(((AddExpNode) assStateNode.get_assignExp()).get_children().get(0) instanceof IDExpNode);
+        softAssert.assertTrue(((AddExpNode) assStateNode.get_assignExp()).get_children().get(1) instanceof NumExpNode);
+        softAssert.assertAll();
+    }
 }

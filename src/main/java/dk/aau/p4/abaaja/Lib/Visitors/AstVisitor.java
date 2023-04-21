@@ -320,7 +320,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         BaseNode tempIdNode = visit(ctx.id());
         if (tempIdNode instanceof IDExpNode) {
             IDExpNode idExpNode = (IDExpNode) tempIdNode;
-            assStateNode.set_assignId((IDExpNode) idExpNode);
+            assStateNode.set_assignId(idExpNode);
 
             // Add operator to node
             AddExpNode addExpNode = new AddExpNode();
@@ -339,6 +339,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             addExpNode.add_child(idExpNode);
             addExpNode.add_child(numExpNode);
 
+            assStateNode.set_assignExp(addExpNode);
         }
         else {
             addProblem(ctx, "");addProblem(ctx, "");
