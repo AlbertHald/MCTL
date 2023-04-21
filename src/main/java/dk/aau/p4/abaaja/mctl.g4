@@ -19,7 +19,7 @@ variableDeclaration
 id
     : ID                                    #idVar
     | id DOT id                             #idStruct
-    | id (LSQR expression RSQR)+            #idArray
+    | id LSQR expression RSQR               #idArray
     ;
 
 statement
