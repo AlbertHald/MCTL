@@ -81,19 +81,30 @@ public class SymbolTableUnitTests {
     @Test()
     public void SearchSymbol_WhenSearching_ThenReturnSearchedSymbol() {
         //Arrange
+        String expectedSymbolName = "expectedName";
+        Symbol testSymbol = new Symbol(expectedSymbolName);
+        try{
+            testSymbolTable.CreateScope("testScope");
+        } catch (Exception e) {
+            assert(false);
+        }
+        testSymbolTable.InsertSymbol(testSymbol);
+
 
         //Act
+        boolean result = testSymbolTable.SearchSymbol("expectedName").get_name() == expectedSymbolName;
 
         //Assert
+        assert(result);
     }
 
     @Test()
     public void InsertSymbol_WhenInserted_ThenCurrentScopeContainsSymbol() {
 
         String expectedSymbolName = "expectedName";
-        Symbol testSymbol = new Symbol();
+        Symbol testSymbol = new Symbol(expectedSymbolName);
 
-        testSymbolTable.InsertSymbol(expectedSymbolName, testSymbol);
+        testSymbolTable.InsertSymbol(testSymbol);
 
         boolean result = testSymbolTable.get_currentScope().get_symbols().containsKey(expectedSymbolName);
 
