@@ -1,10 +1,13 @@
 package dk.aau.p4.abaaja.Lib.Symbols;
 
+import java.util.ArrayList;
+
 //Symbol table entries
 public class Symbol {
     private String _name;
     private String _type;
     private int _dimension;
+    private ArrayList<Type> _types = new ArrayList<>();
 
     public Symbol() {}
     public Symbol(String name) {
@@ -29,6 +32,12 @@ public class Symbol {
     public int get_dimension() {
         return _dimension;
     }
+
+    /**
+     * Getter / Setters for the types ArrayList
+     */
+    public ArrayList<Type> get_types() { return _types; }
+    public void add_types_element(Type type) { this._types.add(type); }
 
     public void set_name(String _name) {
         this._name = _name;

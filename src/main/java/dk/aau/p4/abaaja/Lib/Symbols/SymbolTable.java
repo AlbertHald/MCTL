@@ -15,11 +15,8 @@ public class SymbolTable {
         _currentScope = _globalScope;
     }
 
-    public void CreateScope(String scopeName) throws Exception {
-        if(SearchScope(scopeName) != null) {
-            throw new Exception("Scope already exists: " + scopeName);
-        }
-        Scope scope = new Scope(scopeName);
+    public void CreateScope() {
+        Scope scope = new Scope();
         scope.set_parent(_currentScope);
         _symboltable.add(scope);
 
@@ -31,25 +28,6 @@ public class SymbolTable {
 
             _symboltable.remove(_currentScope);
         _currentScope = _symboltable.get(_symboltable.size() - 1);
-    }
-
-    public void EnterScope(String scopeName) throws Exception {
-        Scope scope = SearchScope(scopeName);
-        if(scope == null)
-            throw new Exception("Scope does not exist: " + scopeName);
-
-        _currentScope = scope;
-    }
-
-    //A function that finds a scope (can return null if not found)
-    public Scope SearchScope(String scopeName){
-
-        for (Scope scope : _symboltable) {
-            if(scope.get_Name().equals(scopeName)) {
-                return scope;
-            }
-        }
-        return null;
     }
 
     public Scope get_currentScope() {

@@ -51,5 +51,4 @@ public interface INodeVisitor {
     void visit(BoolExpNode node);
     void visit(NumExpNode node);
     void visit(StringExpNode node);
-
 }

@@ -11,6 +11,7 @@ public class Scope {
     private Scope _parent;
 
     //Constructor
+    public Scope() {}
     public Scope(String name) {
         this._name = name;
     }
