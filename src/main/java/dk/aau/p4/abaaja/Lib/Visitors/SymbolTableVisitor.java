@@ -24,6 +24,9 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     public void visit(LineNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
@@ -40,17 +43,27 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(DecNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(StateNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(VarDecNode node) {
         Symbol symbol = new Symbol(node.get_id(), node.get_varDecType().get_type(), node.get_varDecType().get_arrayDegree());
         symbolTable.InsertSymbol(symbol);
+
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
@@ -58,7 +71,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         Symbol symbol = new Symbol();
 
         symbol.set_type(node.get_id());
-        
+
 
     }
 
@@ -71,172 +84,265 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(IfStateNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(RepeatStateNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(AssStateNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(InvokeNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(FuncInvokeNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(VarMethodInvokeNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(StringMethodInvokeNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(ReturnNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(FormalParamNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(StopNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(TypeNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(BoolTypeNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(NumTypeNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(StringTypeNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(NothingTypeNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(IDTypeNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(ExpNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(UnaryExpNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(TypecastExpNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(BinaryExpNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(MulExpNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(AddExpNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(AndExpNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(OrExpNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(CompExpNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(EqualExpNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(IDExpNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(ActualIDExpNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(IDArrayExpNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(IDStructNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(BoolExpNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(NumExpNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
 
     @Override
     public void visit(StringExpNode node) {
 
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
     }
-
-
-    /*
-    * This section contains the visit functions that does not utilize the symboltable
-    */
-
 
 }
