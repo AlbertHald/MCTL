@@ -792,4 +792,30 @@ public class AstBuilderUnitTests {
         softAssert.assertTrue(addExpNode.get_children().size() == 2, "Children Size");
         softAssert.assertAll();
     }
+
+    /**
+     * visitCompExpr unit tests
+     */
+    @DataProvider
+    public Object[][] visitCompExprTestData() {
+        return new Object[][] {
+                {"test = var < rav;", "<"},
+                {"test = var > rav;", ">"},
+                {"test = var <= rav;", "<="},
+                {"test = var >= rav;", ">="}
+        };
+    }
+
+    @Test(dataProvider = "visitCompExprTestData")
+    public void visitCompExpr_ValidInput_CreatesCorrectCompExprNode(String code, String operator) {
+        ParseTree parseTree = createParseTree(code);
+
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+        CompExpNode compExpNode = (CompExpNode) assStateNode.get_assignExp();
+
+        softAssert.assertTrue(compExpNode.get_operatorLiteral().equals(operator), "Operator");
+        softAssert.assertTrue(compExpNode.get_children().size() == 2, "Children Size");
+        softAssert.assertAll();
+    }
 }
