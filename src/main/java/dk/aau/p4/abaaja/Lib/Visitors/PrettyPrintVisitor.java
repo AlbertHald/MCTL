@@ -1,6 +1,8 @@
 package dk.aau.p4.abaaja.Lib.Visitors;
 
 import dk.aau.p4.abaaja.Lib.Nodes.*;
+import dk.aau.p4.abaaja.Lib.TextSinks.ITextSink;
+
 import java.util.List;
 
 public class PrettyPrintVisitor implements INodeVisitor{
@@ -21,17 +23,25 @@ public class PrettyPrintVisitor implements INodeVisitor{
      */
     static final String notImplementedError = "ERROR - Unknown statement";
 
+    /**
+     * Can output to different sinks depending on what is passed to `set_sink()`.
+     * Can output to console by passing `System.out`, can output to String by passing `StringSink`.
+     */
+    public static ITextSink _sink;
+    public void set_sink(ITextSink sink){
+        PrettyPrintVisitor._sink = sink;
+    }
     void print(String out){
-        System.out.print(out);
+        PrettyPrintVisitor._sink.print(out);
     }
     void printIndented(String out){
-        System.out.print(indentation.repeat(indentationLevel) + out);
+        PrettyPrintVisitor._sink.print(indentation.repeat(indentationLevel) + out);
     }
     void printIndented(){
         printIndented("");
     }
     void printNewline(){
-        System.out.println();
+        PrettyPrintVisitor._sink.println();
     }
 
     public static int indentationLevel = 0;
@@ -42,7 +52,7 @@ public class PrettyPrintVisitor implements INodeVisitor{
         PrettyPrintVisitor.indentationLevel--;
     }
 
-    public void visitChildren(BaseNode node) {
+    void visitChildren(BaseNode node) {
         for (BaseNode child : node.get_children()) {
             child.accept(this);
         }

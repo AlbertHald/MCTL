@@ -1,9 +1,8 @@
 package dk.aau.p4.abaaja;
 
 // Antlr imports
-import dk.aau.p4.abaaja.Lib.Nodes.BaseNode;
 import dk.aau.p4.abaaja.Lib.Nodes.MctlNode;
-import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
+import dk.aau.p4.abaaja.Lib.TextSinks.*;
 import dk.aau.p4.abaaja.Lib.Visitors.AstVisitor;
 import dk.aau.p4.abaaja.Lib.Visitors.PrettyPrintVisitor;
 import org.antlr.v4.runtime.CharStream;
@@ -29,6 +28,10 @@ public class Main {
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here
             MctlNode concreteNode = (MctlNode) tree.accept(new AstVisitor(problemCollection));
+
+            PrettyPrintVisitor prettyPrintVisitor = new PrettyPrintVisitor();
+            prettyPrintVisitor.set_sink(new ConsoleSink());
+            concreteNode.accept(prettyPrintVisitor);
         }
         else {
             // Prints parse errors
