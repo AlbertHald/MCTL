@@ -2,8 +2,12 @@ package dk.aau.p4.abaaja.Lib.Visitors;
 
 import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
+import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
+import dk.aau.p4.abaaja.Lib.Symbols.Type;
+
+import java.util.List;
 
 public class SymbolTableVisitor implements INodeVisitor {
     private ProblemCollection problemCollection;
@@ -12,6 +16,17 @@ public class SymbolTableVisitor implements INodeVisitor {
     public SymbolTableVisitor (ProblemCollection problemCollection) {
         this.problemCollection = problemCollection;
     }
+
+    private void visitChildren(List<BaseNode> nodes) {
+        for (BaseNode child : nodes) {
+            child.accept(this);
+        }
+    }
+
+    private boolean isDeclared(String id) {
+        return symbolTable.SearchSymbol(id) == null;
+    }
+
 
     public void visit(MctlNode node) {
         //Initializes symboltable and sets current scope to "Global"
@@ -68,11 +83,31 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(FuncDecNode node) {
-        Symbol symbol = new Symbol();
+        Symbol functionSymbol = new Symbol();
 
-        symbol.set_type(node.get_id());
+        // Check if symbol is declared
+        if (isDeclared(node.get_id())) {
+            problemCollection.addProblem(ProblemType.ERROR_IDENTIFIER_CANNOT_BE_REUSED, "The identifier \"" + node.get_id() + "\" cannot be redeclared", node.get_lineNumber());
+        }
+        else {
+            // Set function ID and return type
+            functionSymbol.set_type(node.get_id());
+            functionSymbol.set_type(node.get_returnType().get_type());
 
+            // Create scope for function block and create parameter symbols
+            symbolTable.CreateScope();
+            for (FormalParamNode formalParam : node.get_paramList()) {
+                Symbol paramSymbol = new Symbol(formalParam.get_id());
+                paramSymbol.set_type(formalParam.get_type().get_type());
 
+                functionSymbol.add_types_element(new Type(paramSymbol.get_name(), paramSymbol.get_type()));
+                symbolTable.InsertSymbol(paramSymbol);
+            }
+
+            for (BaseNode line : node.get_funcBlock().get_children()) {
+                line.accept(this);
+            }
+        }
     }
 
     @Override
