@@ -718,4 +718,28 @@ public class AstBuilderUnitTests {
         softAssert.assertTrue(typecastExpNode.get_typeNode().get_type().equals(type), "Type");
         softAssert.assertAll();
     }
+
+    /**
+     * visitOrExpr unit tests
+     */
+    @DataProvider
+    public Object[][] visitOrExprTestData() {
+        return new Object[][] {
+                {"test = var or rav;", "or"},
+                {"test = var1 or var2 or var3 or var4 or var5;", "or"}
+        };
+    }
+
+    @Test(dataProvider = "visitOrExprTestData")
+    public void visitOrExpr_ValidInput_CreatesCorrectOrExprNode(String code, String operator) {
+        ParseTree parseTree = createParseTree(code);
+
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+        OrExpNode orExpNode = (OrExpNode) assStateNode.get_assignExp();
+
+        softAssert.assertTrue(orExpNode.get_operatorLiteral().equals(operator), "Operator");
+        softAssert.assertTrue(orExpNode.get_children().size() == 2, "Children Size");
+        softAssert.assertAll();
+    }
 }
