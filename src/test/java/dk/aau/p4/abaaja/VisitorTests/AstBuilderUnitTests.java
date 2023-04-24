@@ -4,22 +4,15 @@ import dk.aau.p4.abaaja.mctlLexer;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-// Imports
+import org.testng.asserts.SoftAssert;
 import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.mctlParser;
 import dk.aau.p4.abaaja.Lib.Visitors.AstVisitor;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
-import org.testng.asserts.SoftAssert;
 
-import java.util.ArrayList;
-import java.util.List;
-
-// TODO: Test ASTVisitor
 @Test()
 public class AstBuilderUnitTests {
     private final AstVisitor astVisitor = new AstVisitor(new ProblemCollection());
@@ -32,7 +25,7 @@ public class AstBuilderUnitTests {
 
     /**
      * createParseTree method to create a parse tree using Antlr and returning it
-     * @param code
+     * @param code The code
      * @return Concrete Parse Tree
      */
     private ParseTree createParseTree(String code) {
@@ -59,6 +52,7 @@ public class AstBuilderUnitTests {
         };
     }
 
+    // TODO: Condition 'parseTree != null' is always 'true'
     @Test(dataProvider = "createParseTreeTestData")
     public void createParseTree_ValidInput_CreatesParseTree(String code) {
         // Arrange
@@ -91,7 +85,7 @@ public class AstBuilderUnitTests {
         BoolExpNode boolExpNode = (BoolExpNode) assStateNode.get_assignExp();
 
         // Assert
-        softAssert.assertTrue(boolExpNode instanceof BoolExpNode);
+        softAssert.assertTrue(boolExpNode != null);
         softAssert.assertTrue(boolExpNode.get_result() == booleanValue);
         softAssert.assertAll();
     }
@@ -105,9 +99,10 @@ public class AstBuilderUnitTests {
         return new Object[][] {
             {"test = \"This is a String\";", "\"This is a String\""},
             {"test = \"1234 string 8078.,/()&\";", "\"1234 string 8078.,/()&\""},
-            {"test = \"\'Double Quoted String\'\";", "\"\'Double Quoted String\'\""},
-            {"test = \'Single Quoted String\';", "\'Single Quoted String\'"},
+            {"test = \"'Double Quoted String'\";", "\"'Double Quoted String'\""},
+            {"test = 'Single Quoted String';", "'Single Quoted String'"},
             {"test = \"Newline: \n Carriage return: \r Tab: \t Backslash: \\ \";", "\"Newline: \n Carriage return: \r Tab: \t Backslash: \\ \""},
+            {"test = \"Unicode: Ωαφω\";", "\"Unicode: Ωαφω\""},
             {"test = \"Unicode: \u03A9\u03B1\u03C6\u03C9\";", "\"Unicode: \u03A9\u03B1\u03C6\u03C9\""},
         };
     }
@@ -124,7 +119,7 @@ public class AstBuilderUnitTests {
         StringExpNode stringExpNode = (StringExpNode) assStateNode.get_assignExp();
 
         // Assert
-        softAssert.assertTrue(stringExpNode instanceof StringExpNode);
+        softAssert.assertTrue(stringExpNode != null);
         softAssert.assertTrue(stringExpNode.get_result().equals(stringValue));
         softAssert.assertAll();
     }
@@ -152,14 +147,13 @@ public class AstBuilderUnitTests {
         ActualIDExpNode actualIdExpNode = (ActualIDExpNode) assStateNode.get_assignExp();
 
         // Assert
-        softAssert.assertTrue(actualIdExpNode instanceof ActualIDExpNode);
+        softAssert.assertTrue(actualIdExpNode != null);
         softAssert.assertTrue(actualIdExpNode.get_id().equals(stringValue));
         softAssert.assertAll();
     }
 
     /**
      * visitNumberExpr unit tests
-     *
      * Only test cases for positive numbers as the NumberExpNode should not contain negative numbers.
      * This information is stored using the unaryExpNode.
      */
@@ -186,7 +180,7 @@ public class AstBuilderUnitTests {
         NumExpNode numExpNode = (NumExpNode) assStateNode.get_assignExp();
 
         // Assert
-        softAssert.assertTrue(numExpNode instanceof NumExpNode);
+        softAssert.assertTrue(numExpNode != null);
         softAssert.assertTrue(numExpNode.get_result().equals(doubleValue));
         softAssert.assertAll();
     }
@@ -214,7 +208,7 @@ public class AstBuilderUnitTests {
         NumExpNode numExpNode = (NumExpNode) assStateNode.get_assignExp();
 
         // Assert
-        softAssert.assertTrue(numExpNode instanceof NumExpNode);
+        softAssert.assertTrue(numExpNode != null);
         softAssert.assertTrue(numExpNode.get_result().equals(intValue));
         softAssert.assertAll();
     }
@@ -421,7 +415,7 @@ public class AstBuilderUnitTests {
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
 
         // Assert
-        softAssert.assertTrue(assStateNode.get_assignId() instanceof IDExpNode);
+        softAssert.assertTrue(assStateNode.get_assignId() != null);
         softAssert.assertTrue(assStateNode.get_assignExp() instanceof AddExpNode);
         softAssert.assertAll();
     }
@@ -448,7 +442,7 @@ public class AstBuilderUnitTests {
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
 
         // Assert
-        softAssert.assertTrue(assStateNode.get_assignId() instanceof IDExpNode);
+        softAssert.assertTrue(assStateNode.get_assignId() != null);
         softAssert.assertTrue(assStateNode.get_assignExp() instanceof AddExpNode);
         softAssert.assertTrue(((AddExpNode) assStateNode.get_assignExp()).get_operator() == operator);
         softAssert.assertTrue(((AddExpNode) assStateNode.get_assignExp()).get_children().get(0) instanceof IDExpNode);
@@ -469,7 +463,7 @@ public class AstBuilderUnitTests {
         StopNode stopNode = (StopNode) mctlNode.get_children().get(0);
 
         // Assert
-        softAssert.assertTrue(stopNode instanceof StopNode);
+        softAssert.assertTrue(stopNode != null);
         softAssert.assertAll();
     }
 
@@ -570,7 +564,7 @@ public class AstBuilderUnitTests {
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         IDStructNode idStructNode = (IDStructNode) assStateNode.get_assignId();
 
-        softAssert.assertTrue(idStructNode.get_idNode() instanceof IDExpNode, "ID: 1");
+        softAssert.assertTrue(idStructNode.get_idNode() != null, "ID: 1");
         softAssert.assertTrue(idStructNode.get_accessor() instanceof IDExpNode, "ID: 2");
         softAssert.assertAll();
     }
@@ -923,6 +917,31 @@ public class AstBuilderUnitTests {
 
         softAssert.assertTrue(idArrayExpNode.get_idNode() != null, "ID: 1");
         softAssert.assertTrue(idArrayExpNode.get_accessor() != null, "ID: 2");
+        softAssert.assertAll();
+    }
+
+    /**
+     * visitMctl unit tests
+     */
+    @DataProvider
+    public Object[][] visitMctlTestData() {
+        return new Object[][] {
+                {"test = 0.0;", 1},
+                {"test = var1 + var2 + var3 + var4 + var5;", 1},
+                {"struct x_y_z {variable hasCoordinates : BOOLEAN}", 1},
+                {"if (true) { var = a; } else if (true) { var = b; } else { var = c; }", 1},
+                {"if (a == b) { var = 1; } methodMan(); arr[y] = arr[i + 2]; repeat(10) { y++; }", 4},
+                {"var1 = 1; var2 = 2; var3 = 3; var4 = 4; var5 = 5;", 5},
+        };
+    }
+
+    @Test(dataProvider = "visitMctlTestData")
+    public void visitMctl_ValidInput_CreatesCorrectIdArrayExpNode(String code, int nodeSize) {
+        ParseTree parseTree = createParseTree(code);
+
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+
+        softAssert.assertTrue(mctlNode.get_children().size() == nodeSize, "Node Size");
         softAssert.assertAll();
     }
 }

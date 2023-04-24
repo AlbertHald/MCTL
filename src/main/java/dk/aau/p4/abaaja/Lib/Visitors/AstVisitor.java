@@ -24,7 +24,6 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
                 ctx.getStart().getLine());
     }
 
-
     @Override public BaseNode visitMctl(mctlParser.MctlContext ctx) {
         MctlNode program = new MctlNode();
         program.set_lineNumber(ctx.getStart().getLine());
