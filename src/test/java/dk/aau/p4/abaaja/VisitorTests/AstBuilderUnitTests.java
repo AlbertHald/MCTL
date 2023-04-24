@@ -860,7 +860,7 @@ public class AstBuilderUnitTests {
     }
 
     @Test(dataProvider = "visitVarMethodInvokeTestData")
-    public void visitVarMethodInvoke_ValidInput_CreatesCorrectVarMethodInvokeNode(String code, String stringValue, String methodName, int paramSize) {
+    public void visitVarMethodInvoke_ValidInput_CreatesCorrectVarMethodInvokeNode(String code, String varName, String methodName, int paramSize) {
         ParseTree parseTree = createParseTree(code);
 
         MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
@@ -869,9 +869,35 @@ public class AstBuilderUnitTests {
         ActualIDExpNode FakeIDExpNode = (ActualIDExpNode) varMethodInvokeNode.get_varId();
         ActualIDExpNode actualIDExpNode = varMethodInvokeNode.get_id();
 
-        softAssert.assertTrue(FakeIDExpNode.get_id().equals(stringValue), "String Value");
+        softAssert.assertTrue(FakeIDExpNode.get_id().equals(varName), "Variable Name");
         softAssert.assertTrue(actualIDExpNode.get_id().equals(methodName), "Method Name");
         softAssert.assertTrue(varMethodInvokeNode.get_paramExps().size() == paramSize, "Parameter Size");
+        softAssert.assertAll();
+    }
+
+    /**
+     * visitFunctionInvoke unit tests
+     */
+    @DataProvider
+    public Object[][] visitFunctionInvokeTestData() {
+        return new Object[][] {
+                {"var(bing, bong);", "var", 2},
+                {"vroom();", "vroom", 0},
+                {"_1(2);", "_1", 1},
+        };
+    }
+
+    @Test(dataProvider = "visitFunctionInvokeTestData")
+    public void visitFunctionInvoke_ValidInput_CreatesCorrectFuncInvokeNode(String code, String functionName, int paramSize) {
+        ParseTree parseTree = createParseTree(code);
+
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        FuncInvokeNode funcInvokeNode = (FuncInvokeNode) mctlNode.get_children().get(0);
+
+        ActualIDExpNode actualIDExpNode = funcInvokeNode.get_id();
+
+        softAssert.assertTrue(actualIDExpNode.get_id().equals(functionName), "Function Name");
+        softAssert.assertTrue(funcInvokeNode.get_paramExps().size() == paramSize, "Parameter Size");
         softAssert.assertAll();
     }
 }
