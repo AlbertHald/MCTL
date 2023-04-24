@@ -818,4 +818,32 @@ public class AstBuilderUnitTests {
         softAssert.assertTrue(compExpNode.get_children().size() == 2, "Children Size");
         softAssert.assertAll();
     }
+
+    /**
+     * visitCompExpr unit tests
+     */
+    @DataProvider
+    public Object[][] visitStringMethodInvokeTestData() {
+        return new Object[][] {
+                {"\"var\".rav(bing, bong);", "\"var\"", "rav", 2},
+                {"\"vroom vroom\".go();", "\"vroom vroom\"", "go", 0},
+                {"\"1\".toString(2);", "\"1\"", "toString", 1},
+        };
+    }
+
+    @Test(dataProvider = "visitStringMethodInvokeTestData")
+    public void visitStringMethodInvoke_ValidInput_CreatesCorrectStringMethodInvokeNode(String code, String stringValue, String methodName, int paramCount) {
+        ParseTree parseTree = createParseTree(code);
+
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        StringMethodInvokeNode stringMethodInvokeNode = (StringMethodInvokeNode) mctlNode.get_children().get(0);
+
+        StringExpNode stringExpNode = stringMethodInvokeNode.get_string();
+        ActualIDExpNode actualIDExpNode = stringMethodInvokeNode.get_id();
+
+        softAssert.assertTrue(stringExpNode.get_result().equals(stringValue));
+        softAssert.assertTrue(actualIDExpNode.get_id().equals(methodName));
+        softAssert.assertTrue(stringMethodInvokeNode.get_paramExps().size() == paramCount);
+        softAssert.assertAll();
+    }
 }
