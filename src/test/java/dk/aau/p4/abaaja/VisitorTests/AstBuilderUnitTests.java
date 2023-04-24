@@ -571,7 +571,7 @@ public class AstBuilderUnitTests {
         IDStructNode idStructNode = (IDStructNode) assStateNode.get_assignId();
 
         softAssert.assertTrue(idStructNode.get_idNode() instanceof IDExpNode, "ID: 1");
-        softAssert.assertTrue(idStructNode.get_accessor() instanceof  IDExpNode, "ID: 2");
+        softAssert.assertTrue(idStructNode.get_accessor() instanceof IDExpNode, "ID: 2");
         softAssert.assertAll();
     }
 
@@ -898,6 +898,31 @@ public class AstBuilderUnitTests {
 
         softAssert.assertTrue(actualIDExpNode.get_id().equals(functionName), "Function Name");
         softAssert.assertTrue(funcInvokeNode.get_paramExps().size() == paramSize, "Parameter Size");
+        softAssert.assertAll();
+    }
+
+    /**
+     * visitIdArray unit tests
+     */
+    @DataProvider
+    public Object[][] visitIdArrayTestData() {
+        return new Object[][] {
+                {"a[0] = 1;"},
+                {"a[0][1] = 2;"},
+                {"a[0][1][3][4][5] = 5;"}
+        };
+    }
+    
+    @Test(dataProvider = "visitIdArrayTestData")
+    public void visitIdArray_ValidInput_CreatesCorrectIdArrayExpNode(String code) {
+        ParseTree parseTree = createParseTree(code);
+
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+        IDArrayExpNode idArrayExpNode = (IDArrayExpNode) assStateNode.get_assignId();
+
+        softAssert.assertTrue(idArrayExpNode.get_idNode() != null, "ID: 1");
+        softAssert.assertTrue(idArrayExpNode.get_accessor() != null, "ID: 2");
         softAssert.assertAll();
     }
 }
