@@ -34,8 +34,8 @@ public class Scope {
         return _symbols;
     }
 
-    public void set_symbols(String symbolName, Symbol entry) {
-        _symbols.put(symbolName, entry);
+    public void set_symbols(Symbol entry) {
+        _symbols.put(entry.get_name(), entry);
     }
 
 }
