@@ -1,13 +1,13 @@
 package dk.aau.p4.abaaja.Lib.Visitors;
 
 import dk.aau.p4.abaaja.Lib.Nodes.*;
-import dk.aau.p4.abaaja.Lib.ProblemHandling.Problem;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
-import dk.aau.p4.abaaja.Lib.Symbols.Type;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SymbolTableVisitor implements INodeVisitor {
@@ -97,8 +97,11 @@ public class SymbolTableVisitor implements INodeVisitor {
         }
         else {
             // Set function ID and return type
-            functionSymbol.set_type(node.get_id());
+            functionSymbol.set_name(node.get_id());
             functionSymbol.set_type(node.get_returnType().get_type());
+
+            // Creating temporary list containing the function parameters
+            List<List<String>> functionParamList = new ArrayList<>();
 
             // Create scope for function block and create parameter symbols
             symbolTable.CreateScope();
@@ -106,13 +109,17 @@ public class SymbolTableVisitor implements INodeVisitor {
                 Symbol paramSymbol = new Symbol(formalParam.get_id());
                 paramSymbol.set_type(formalParam.get_type().get_type());
 
-                functionSymbol.add_types_element(new Type(paramSymbol.get_name(), paramSymbol.get_type()));
+                // Adding parameter to functionSymbol and current symbol table
+                functionParamList.add(Arrays.asList(formalParam.get_type().get_type()));
                 symbolTable.InsertSymbol(paramSymbol);
             }
 
             for (BaseNode line : node.get_funcBlock().get_children()) {
                 line.accept(this);
             }
+
+            functionSymbol.set_types(functionParamList);
+            symbolTable.CloseScope();
         }
     }
 
@@ -141,9 +148,8 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(AssStateNode node) {
 
-        for (BaseNode child : node.get_children()) {
-            child.accept(this);
-        }
+        //if (symbolTable.SearchSymbol(node.get_assignId().))
+        // Check Expression Types
     }
 
     @Override

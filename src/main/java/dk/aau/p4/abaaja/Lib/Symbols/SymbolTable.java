@@ -1,18 +1,38 @@
 package dk.aau.p4.abaaja.Lib.Symbols;
 
+import dk.aau.p4.abaaja.Lib.PredefinedFunction;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class SymbolTable {
-
     private Scope _currentScope;
     private final Scope _globalScope;
     private final ArrayList<Scope> _symboltable = new ArrayList<>();
 
+    // Predefined functions of the programming language
+    private List<PredefinedFunction> predefinedFunctions = Arrays.asList(
+            new PredefinedFunction("add", Arrays.asList(null), null),
+            new PredefinedFunction("remove", null, null),
+            new PredefinedFunction("length", null, "NUMBER"),
+            new PredefinedFunction("print", Arrays.asList(Arrays.asList("STRING")), null),
+            new PredefinedFunction("read", null, "STRING"),
+            new PredefinedFunction("indexesOf", Arrays.asList(Arrays.asList("STRING", "BOOLEAN", "NUMBER", "NOTHING")), "NUMBER[]"),
+            new PredefinedFunction("substring", Arrays.asList(Arrays.asList("NUMBER"), Arrays.asList("NUMBER")), "STRING")
+    );
 
     public SymbolTable(){
         _globalScope = new Scope("Global");
         _symboltable.add(_globalScope);
         _currentScope = _globalScope;
+
+        // Adding predefined functions to the symbol table
+        for (PredefinedFunction predefinedFunction : predefinedFunctions) {
+            Symbol functionSymbol = new Symbol(predefinedFunction.get_id());
+            functionSymbol.set_type(predefinedFunction.get_returnType());
+            functionSymbol.set_types(predefinedFunction.get_parameters());
+        }
     }
 
     public void CreateScope() {
