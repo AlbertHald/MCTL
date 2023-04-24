@@ -1,6 +1,7 @@
 package dk.aau.p4.abaaja.Lib.Visitors;
 
 import dk.aau.p4.abaaja.Lib.Nodes.*;
+import dk.aau.p4.abaaja.Lib.ProblemHandling.Problem;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
@@ -73,8 +74,13 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(VarDecNode node) {
-        Symbol symbol = new Symbol(node.get_id(), node.get_varDecType().get_type(), node.get_varDecType().get_arrayDegree());
-        symbolTable.InsertSymbol(symbol);
+
+        if(isDeclared(node.get_id())) {
+            problemCollection.addProblem(ProblemType.ERROR_IDENTIFIER_CANNOT_BE_REUSED, "The identifier \"" + node.get_id() + "\" cannot be redeclared", node.get_lineNumber());
+        } else {
+            Symbol symbol = new Symbol(node.get_id(), node.get_varDecType().get_type(), node.get_varDecType().get_arrayDegree());
+            symbolTable.InsertSymbol(symbol);
+        }
 
         for (BaseNode child : node.get_children()) {
             child.accept(this);
@@ -174,7 +180,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(ReturnNode node) {
-
+        //Check if Return is of same type as functionDec
         for (BaseNode child : node.get_children()) {
             child.accept(this);
         }
