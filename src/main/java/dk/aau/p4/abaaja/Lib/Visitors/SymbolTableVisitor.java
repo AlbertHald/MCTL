@@ -28,11 +28,16 @@ public class SymbolTableVisitor implements INodeVisitor {
         return symbolTable.SearchSymbol(id) == null;
     }
 
-
     public void visit(MctlNode node) {
         //Initializes symboltable and sets current scope to "Global"
         symbolTable = new SymbolTable();
 
+        // Visit all function and struct declarations and add them to the symbol table
+        for (BaseNode child : node.get_children()) {
+            child.accept(new InitialScopeVisitor(problemCollection, symbolTable));
+        }
+
+        // Visit remaining lines
         for (BaseNode child : node.get_children()) {
             child.accept(this);
         }
@@ -49,6 +54,12 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(BlockNode node) {
         symbolTable.CreateScope();
 
+        // Visit all function and struct declarations and add them to the symbol table
+        for (BaseNode child : node.get_children()) {
+            child.accept(new InitialScopeVisitor(problemCollection, symbolTable));
+        }
+
+        // Visit all remaining line
         for (BaseNode child : node.get_children()) {
             child.accept(this);
         }
@@ -89,38 +100,27 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(FuncDecNode node) {
-        Symbol functionSymbol = new Symbol();
+        // Create scope for function block and create parameter symbols
+        symbolTable.CreateScope();
+        for (FormalParamNode formalParam : node.get_paramList()) {
+            Symbol paramSymbol = new Symbol(formalParam.get_id());
+            paramSymbol.set_type(formalParam.get_type().get_type());
 
-        // Check if symbol is declared
-        if (isDeclared(node.get_id())) {
-            problemCollection.addProblem(ProblemType.ERROR_IDENTIFIER_CANNOT_BE_REUSED, "The identifier \"" + node.get_id() + "\" cannot be redeclared", node.get_lineNumber());
+            // Adding parameter to functionSymbol and current symbol table
+            symbolTable.InsertSymbol(paramSymbol);
         }
-        else {
-            // Set function ID and return type
-            functionSymbol.set_name(node.get_id());
-            functionSymbol.set_type(node.get_returnType().get_type());
 
-            // Creating temporary list containing the function parameters
-            List<List<String>> functionParamList = new ArrayList<>();
-
-            // Create scope for function block and create parameter symbols
-            symbolTable.CreateScope();
-            for (FormalParamNode formalParam : node.get_paramList()) {
-                Symbol paramSymbol = new Symbol(formalParam.get_id());
-                paramSymbol.set_type(formalParam.get_type().get_type());
-
-                // Adding parameter to functionSymbol and current symbol table
-                functionParamList.add(Arrays.asList(formalParam.get_type().get_type()));
-                symbolTable.InsertSymbol(paramSymbol);
-            }
-
-            for (BaseNode line : node.get_funcBlock().get_children()) {
-                line.accept(this);
-            }
-
-            functionSymbol.set_types(functionParamList);
-            symbolTable.CloseScope();
+        // Checking function and struct declarations in code block
+        for (BaseNode line : node.get_funcBlock().get_children()) {
+            line.accept(new InitialScopeVisitor(problemCollection, symbolTable));
         }
+
+        // Check lines of the function block
+        for (BaseNode line : node.get_funcBlock().get_children()) {
+            line.accept(this);
+        }
+
+        symbolTable.CloseScope();
     }
 
     @Override
