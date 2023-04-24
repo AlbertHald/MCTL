@@ -820,7 +820,7 @@ public class AstBuilderUnitTests {
     }
 
     /**
-     * visitCompExpr unit tests
+     * visitStringMethodInvoke unit tests
      */
     @DataProvider
     public Object[][] visitStringMethodInvokeTestData() {
@@ -832,7 +832,7 @@ public class AstBuilderUnitTests {
     }
 
     @Test(dataProvider = "visitStringMethodInvokeTestData")
-    public void visitStringMethodInvoke_ValidInput_CreatesCorrectStringMethodInvokeNode(String code, String stringValue, String methodName, int paramCount) {
+    public void visitStringMethodInvoke_ValidInput_CreatesCorrectStringMethodInvokeNode(String code, String stringValue, String methodName, int paramSize) {
         ParseTree parseTree = createParseTree(code);
 
         MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
@@ -841,9 +841,37 @@ public class AstBuilderUnitTests {
         StringExpNode stringExpNode = stringMethodInvokeNode.get_string();
         ActualIDExpNode actualIDExpNode = stringMethodInvokeNode.get_id();
 
-        softAssert.assertTrue(stringExpNode.get_result().equals(stringValue));
-        softAssert.assertTrue(actualIDExpNode.get_id().equals(methodName));
-        softAssert.assertTrue(stringMethodInvokeNode.get_paramExps().size() == paramCount);
+        softAssert.assertTrue(stringExpNode.get_result().equals(stringValue), "String Value");
+        softAssert.assertTrue(actualIDExpNode.get_id().equals(methodName), "Method Name");
+        softAssert.assertTrue(stringMethodInvokeNode.get_paramExps().size() == paramSize, "Parameter Size");
+        softAssert.assertAll();
+    }
+
+    /**
+     * visitVarMethodInvoke unit tests
+     */
+    @DataProvider
+    public Object[][] visitVarMethodInvokeTestData() {
+        return new Object[][] {
+                {"var.rav(bing, bong);", "var", "rav", 2},
+                {"vroom.go();", "vroom", "go", 0},
+                {"_1.toString(2);", "_1", "toString", 1},
+        };
+    }
+
+    @Test(dataProvider = "visitVarMethodInvokeTestData")
+    public void visitVarMethodInvoke_ValidInput_CreatesCorrectVarMethodInvokeNode(String code, String stringValue, String methodName, int paramSize) {
+        ParseTree parseTree = createParseTree(code);
+
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        VarMethodInvokeNode varMethodInvokeNode = (VarMethodInvokeNode) mctlNode.get_children().get(0);
+
+        ActualIDExpNode FakeIDExpNode = (ActualIDExpNode) varMethodInvokeNode.get_varId();
+        ActualIDExpNode actualIDExpNode = varMethodInvokeNode.get_id();
+
+        softAssert.assertTrue(FakeIDExpNode.get_id().equals(stringValue), "String Value");
+        softAssert.assertTrue(actualIDExpNode.get_id().equals(methodName), "Method Name");
+        softAssert.assertTrue(varMethodInvokeNode.get_paramExps().size() == paramSize, "Parameter Size");
         softAssert.assertAll();
     }
 }
