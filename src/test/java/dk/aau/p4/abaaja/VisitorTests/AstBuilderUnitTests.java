@@ -766,4 +766,30 @@ public class AstBuilderUnitTests {
         softAssert.assertTrue(andExpNode.get_children().size() == 2, "Children Size");
         softAssert.assertAll();
     }
+
+    /**
+     * visitAddExpr unit tests
+     */
+    @DataProvider
+    public Object[][] visitAddExprTestData() {
+        return new Object[][] {
+                {"test = var + rav;", "+"},
+                {"test = var1 + var2 + var3 + var4 + var5;", "+"},
+                {"test = var - rav;", "-"},
+                {"test = var1 - var2 - var3 - var4 - var5;", "-"}
+        };
+    }
+
+    @Test(dataProvider = "visitAddExprTestData")
+    public void visitAddExpr_ValidInput_CreatesCorrectAddExprNode(String code, String operator) {
+        ParseTree parseTree = createParseTree(code);
+
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+        AddExpNode addExpNode = (AddExpNode) assStateNode.get_assignExp();
+
+        softAssert.assertTrue(addExpNode.get_operatorLiteral().equals(operator), "Operator");
+        softAssert.assertTrue(addExpNode.get_children().size() == 2, "Children Size");
+        softAssert.assertAll();
+    }
 }
