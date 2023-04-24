@@ -7,6 +7,7 @@ public class Symbol {
     private String _name;
     private String _type;
     private int _dimension;
+    private boolean _isInstantiated;
     private ArrayList<Type> _types = new ArrayList<>();
 
     public Symbol() {}
@@ -46,4 +47,11 @@ public class Symbol {
         this._type = _type;
     }
     public void set_dimension(int _dimension) { this._dimension = _dimension; }
+
+    public boolean get_is_isInstantiated() {
+        return _isInstantiated;
+    }
+    public void set_isInstantiated(boolean _isInstantiated) {
+        this._isInstantiated = _isInstantiated;
+    }
 }
