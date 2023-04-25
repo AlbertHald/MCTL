@@ -3,12 +3,10 @@ package dk.aau.p4.abaaja.Lib.Visitors;
 import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
-import dk.aau.p4.abaaja.Lib.Symbols.StructDescriptor;
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.StructDescriptor;
 import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class SymbolTableVisitor implements INodeVisitor {
