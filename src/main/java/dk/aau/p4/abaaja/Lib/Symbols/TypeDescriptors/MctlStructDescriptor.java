@@ -33,7 +33,6 @@ public class MctlStructDescriptor extends MctlTypeDescriptor {
     }
 
     public StructDecNode get_nodeReference() {
-
         return _nodeReference;
     }
 }

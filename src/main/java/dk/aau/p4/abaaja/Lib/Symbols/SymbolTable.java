@@ -1,7 +1,7 @@
 package dk.aau.p4.abaaja.Lib.Symbols;
 
 import dk.aau.p4.abaaja.Lib.PredefinedFunction;
-import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlTypeDescriptor;
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,11 +23,25 @@ public class SymbolTable {
             new PredefinedFunction("substring", Arrays.asList(Arrays.asList("NUMBER"), Arrays.asList("NUMBER")), "STRING")
     );
 
+    // Predefined types of the programming language
+    private List<MctlTypeDescriptor> predefinedTypeLiterals = Arrays.asList(
+            new MctlBooleanDescriptor(),
+            new MctlNumberDescriptor(),
+            new MctlStringDescriptor(),
+            new MctlNothingDescriptor()
+    );
+
     public SymbolTable(){
         _globalScope = new Scope("Global");
         _symboltable.add(_globalScope);
         _currentScope = _globalScope;
 
+        // Add predefined types
+        for (MctlTypeDescriptor type : predefinedTypeLiterals) {
+            get_currentScope().add_type(type);
+        }
+
+        // TODO: Fix this
         // Adding predefined functions to the symbol table
         for (PredefinedFunction predefinedFunction : predefinedFunctions) {
             Symbol functionSymbol = new Symbol(predefinedFunction.get_id());
