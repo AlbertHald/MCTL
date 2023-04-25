@@ -137,7 +137,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(StructDecNode node) {
-        MctlStructDescriptor structDeclaration = new MctlStructDescriptor(node.get_id());
+        MctlStructDescriptor structDeclaration = new MctlStructDescriptor(node.get_id(), node);
     }
 
     @Override
