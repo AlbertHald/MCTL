@@ -157,8 +157,8 @@ public class PrettyPrintVisitor implements INodeVisitor{
         endLineNode(node);
     }
     public void visit(StructDecNode node){
-        printIndented("struct " + node.get_id() + ": {");
         beginLineNode(node);
+        printIndented("struct " + node.get_id() + " {");
         printNewline();
         indentUp();
         for (VarDecNode declaration : node.get_declarations()) {
