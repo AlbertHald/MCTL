@@ -1,7 +1,7 @@
 package dk.aau.p4.abaaja.Lib.Symbols;
 
 import dk.aau.p4.abaaja.Lib.PredefinedFunction;
-import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.TypeDescriptor;
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlTypeDescriptor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,7 +68,7 @@ public class SymbolTable {
     }
 
     // Search Type method
-    public TypeDescriptor searchType(String type) {
+    public MctlTypeDescriptor searchType(String type) {
         Scope scope = _currentScope;
 
         do {
@@ -82,7 +82,7 @@ public class SymbolTable {
     public void insertSymbol(Symbol symbol) {
         _currentScope.add_symbol(symbol);
     }
-    public void insertType(TypeDescriptor type) {
+    public void insertType(MctlTypeDescriptor type) {
         _currentScope.add_type(type);
     }
 }

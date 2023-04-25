@@ -5,7 +5,7 @@ import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
-import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.TypeDescriptor;
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlTypeDescriptor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,7 +42,7 @@ public class InitialScopeVisitor implements INodeVisitor {
             // Set function ID and return type
             functionSymbol.set_name(node.get_id());
 
-            TypeDescriptor typeDescriptor = _symbolTable.searchType(node.get_returnType().get_type());
+            MctlTypeDescriptor typeDescriptor = _symbolTable.searchType(node.get_returnType().get_type());
             if (typeDescriptor == null) {
                 _problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_returnType().get_type() + "\" is unknown", node.get_lineNumber());
             } else {

@@ -6,7 +6,7 @@ import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlStructDescriptor;
 import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
-import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.TypeDescriptor;
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlTypeDescriptor;
 
 import java.util.List;
 
@@ -111,7 +111,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         symbolTable.createScope();
         for (FormalParamNode formalParam : node.get_paramList()) {
             Symbol paramSymbol = new Symbol(formalParam.get_id());
-            TypeDescriptor tempType = symbolTable.searchType(formalParam.get_type().get_type());
+            MctlTypeDescriptor tempType = symbolTable.searchType(formalParam.get_type().get_type());
             if (tempType == null) {
                 problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + formalParam.get_type().get_type() + "\" is unknown", node.get_lineNumber());
             } else {
