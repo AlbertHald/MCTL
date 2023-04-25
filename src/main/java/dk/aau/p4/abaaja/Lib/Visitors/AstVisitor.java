@@ -28,6 +28,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitMctl(mctlParser.MctlContext ctx) {
         MctlNode program = new MctlNode();
         program.set_lineNumber(ctx.start.getLine());
+        program.set_lineEndNumber(ctx.getStop().getLine());
 
         // Create array of ParseTree objects representing each line
         for (ParseTree child : ctx.children.toArray(ParseTree[]::new)) {
@@ -44,6 +45,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitBlock(mctlParser.BlockContext ctx) {
         BlockNode blockNode = new BlockNode();
         blockNode.set_lineNumber(ctx.start.getLine());
+        blockNode.set_lineEndNumber(ctx.getStop().getLine());
 
         for (ParseTree child : ctx.children) {
             // Skips square brackets
@@ -68,6 +70,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         VarDecNode varDecNode = new VarDecNode();
         varDecNode.set_id(ctx.ID().getText());
         varDecNode.set_lineNumber(ctx.start.getLine());
+        varDecNode.set_lineEndNumber(ctx.getStop().getLine());
 
         // Get variable type
         BaseNode varTypeNode = visit(ctx.variableType());
@@ -82,6 +85,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitStructDeclaration(mctlParser.StructDeclarationContext ctx) {
         StructDecNode structDecNode = new StructDecNode();
         structDecNode.set_lineNumber(ctx.start.getLine());
+        structDecNode.set_lineEndNumber(ctx.getStop().getLine());
 
         // Set struct ID
         structDecNode.set_id(ctx.ID().getText());
@@ -104,6 +108,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitIdStruct(mctlParser.IdStructContext ctx) {
         IDStructNode idStructNode = new IDStructNode();
         idStructNode.set_lineNumber(ctx.start.getLine());
+        idStructNode.set_lineEndNumber(ctx.getStop().getLine());
 
         // Add the two individual ID's
         BaseNode tempIDNode = visit(ctx.id().get(0));
@@ -128,6 +133,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitIdArray(mctlParser.IdArrayContext ctx) {
         IDArrayExpNode idArrayExpNode = new IDArrayExpNode();
         idArrayExpNode.set_lineNumber(ctx.start.getLine());
+        idArrayExpNode.set_lineEndNumber(ctx.getStop().getLine());
 
         // Add the ID
         BaseNode tempIdNode = visit(ctx.id());
@@ -155,6 +161,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         ActualIDExpNode actualIDExpNode = new ActualIDExpNode();
         actualIDExpNode.set_id(ctx.getText());
         actualIDExpNode.set_lineNumber(ctx.start.getLine());
+        actualIDExpNode.set_lineEndNumber(ctx.getStop().getLine());
 
         return actualIDExpNode;
     }
@@ -162,6 +169,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitReturn(mctlParser.ReturnContext ctx) {
         ReturnNode returnNode = new ReturnNode();
         returnNode.set_lineNumber(ctx.start.getLine());
+        returnNode.set_lineEndNumber(ctx.getStop().getLine());
 
         BaseNode expNode = visit(ctx.expression());
 
@@ -178,6 +186,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitFunctionDeclaration(mctlParser.FunctionDeclarationContext ctx) {
         FuncDecNode funcDecNode = new FuncDecNode();
         funcDecNode.set_lineNumber(ctx.start.getLine());
+        funcDecNode.set_lineEndNumber(ctx.getStop().getLine());
 
         funcDecNode.set_id(ctx.ID().getText());
 
@@ -219,6 +228,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitIfStatement(mctlParser.IfStatementContext ctx) {
         IfStateNode ifStateNode = new IfStateNode();
         ifStateNode.set_lineNumber(ctx.start.getLine());
+        ifStateNode.set_lineEndNumber(ctx.getStop().getLine());
 
         // Set Expression List
         for (ParseTree child : ctx.if_().ifLiteral()) {
@@ -252,6 +262,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitRepeatStatement(mctlParser.RepeatStatementContext ctx) {
         RepeatStateNode repeatStateNode = new RepeatStateNode();
         repeatStateNode.set_lineNumber(ctx.start.getLine());
+        repeatStateNode.set_lineEndNumber(ctx.getStop().getLine());
 
         // Visit and add the repeat expression
         BaseNode repeatExpNode = visit(ctx.repeat().expression());
@@ -283,6 +294,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitStopStatement(mctlParser.StopStatementContext ctx) {
         StopNode stopNode = new StopNode();
         stopNode.set_lineNumber(ctx.start.getLine());
+        stopNode.set_lineEndNumber(ctx.getStop().getLine());
 
         return stopNode;
     }
@@ -294,6 +306,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitExprAss(mctlParser.ExprAssContext ctx) {
         AssStateNode assStateNode = new AssStateNode();
         assStateNode.set_lineNumber(ctx.start.getLine());
+        assStateNode.set_lineEndNumber(ctx.getStop().getLine());
 
         // Visit and add the id node
         BaseNode tempIdNode = visit(ctx.id());
@@ -319,6 +332,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitIncrAss(mctlParser.IncrAssContext ctx) {
         AssStateNode assStateNode = new AssStateNode();
         assStateNode.set_lineNumber(ctx.start.getLine());
+        assStateNode.set_lineEndNumber(ctx.getStop().getLine());
 
         // Visit and add the id node
         BaseNode tempIdNode = visit(ctx.id());
@@ -329,6 +343,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             // Add operator to node
             AddExpNode addExpNode = new AddExpNode();
             addExpNode.set_lineNumber(ctx.start.getLine());
+            addExpNode.set_lineEndNumber(ctx.getStop().getLine());
             if (ctx.op.getType() == mctlParser.INCREMENT) {
                 addExpNode.set_operator(mctlParser.PLUS);
                 addExpNode.set_operatorLiteral("+");
@@ -344,6 +359,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             // Set expression to id plus number node with value 1
             NumExpNode numExpNode = new NumExpNode();
             numExpNode.set_lineNumber(ctx.start.getLine());
+            numExpNode.set_lineEndNumber(ctx.getStop().getLine());
             numExpNode.set_result(1);
 
             addExpNode.add_child(idExpNode);
@@ -361,9 +377,11 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitFunctionInvoke(mctlParser.FunctionInvokeContext ctx) {
         FuncInvokeNode funcInvokeNode = new FuncInvokeNode();
         funcInvokeNode.set_lineNumber(ctx.start.getLine());
+        funcInvokeNode.set_lineEndNumber(ctx.getStop().getLine());
 
         ActualIDExpNode actualIDExpNode = new ActualIDExpNode();
         actualIDExpNode.set_lineNumber(ctx.start.getLine());
+        actualIDExpNode.set_lineEndNumber(ctx.getStop().getLine());
 
         actualIDExpNode.set_id(ctx.ID().getText());
         funcInvokeNode.set_id(actualIDExpNode);
@@ -384,6 +402,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitVarMethodInvoke(mctlParser.VarMethodInvokeContext ctx) {
         VarMethodInvokeNode varMethodInvokeNode = new VarMethodInvokeNode();
         varMethodInvokeNode.set_lineNumber(ctx.start.getLine());
+        varMethodInvokeNode.set_lineEndNumber(ctx.getStop().getLine());
 
         BaseNode tempVarIdNode = visit(ctx.id());
         if (tempVarIdNode instanceof IDExpNode) {
@@ -395,6 +414,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
 
         ActualIDExpNode methodIDExpNode = new ActualIDExpNode();
         methodIDExpNode.set_lineNumber(ctx.start.getLine());
+        methodIDExpNode.set_lineEndNumber(ctx.getStop().getLine());
 
         methodIDExpNode.set_id(ctx.ID().getText());
         varMethodInvokeNode.set_id(methodIDExpNode);
@@ -415,15 +435,18 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitStringMethodInvoke(mctlParser.StringMethodInvokeContext ctx) {
         StringMethodInvokeNode stringMethodInvokeNode = new StringMethodInvokeNode();
         stringMethodInvokeNode.set_lineNumber(ctx.start.getLine());
+        stringMethodInvokeNode.set_lineEndNumber(ctx.getStop().getLine());
 
         StringExpNode stringExpNode = new StringExpNode();
         stringExpNode.set_lineNumber(ctx.start.getLine());
+        stringExpNode.set_lineEndNumber(ctx.getStop().getLine());
 
         stringExpNode.set_result(ctx.STRING().getText());
         stringMethodInvokeNode.set_string(stringExpNode);
 
         ActualIDExpNode methodIDExpNode = new ActualIDExpNode();
         methodIDExpNode.set_lineNumber(ctx.start.getLine());
+        methodIDExpNode.set_lineEndNumber(ctx.getStop().getLine());
 
         methodIDExpNode.set_id(ctx.ID().getText());
         stringMethodInvokeNode.set_id(methodIDExpNode);
@@ -444,6 +467,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitFormalParameter(mctlParser.FormalParameterContext ctx) {
         FormalParamNode formalParamNode = new FormalParamNode();
         formalParamNode.set_lineNumber(ctx.start.getLine());
+        formalParamNode.set_lineEndNumber(ctx.getStop().getLine());
 
         formalParamNode.set_id(ctx.ID().getText());
 
@@ -461,6 +485,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitNumberExpr(mctlParser.NumberExprContext ctx) {
         NumExpNode numExpNode = new NumExpNode();
         numExpNode.set_lineNumber(ctx.start.getLine());
+        numExpNode.set_lineEndNumber(ctx.getStop().getLine());
 
         String stringFormattedNumber = ctx.getText();
         numExpNode.set_result(stringFormattedNumber.contains(".") ? Double.parseDouble(stringFormattedNumber) : Integer.parseInt(stringFormattedNumber));
@@ -471,6 +496,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitAndExpr(mctlParser.AndExprContext ctx) {
         AndExpNode andExpNode = new AndExpNode();
         andExpNode.set_lineNumber(ctx.start.getLine());
+        andExpNode.set_lineEndNumber(ctx.getStop().getLine());
 
         andExpNode.set_operatorLiteral("and");
 
@@ -490,6 +516,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitCompExpr(mctlParser.CompExprContext ctx) {
         CompExpNode compExpNode = new CompExpNode();
         compExpNode.set_lineNumber(ctx.start.getLine());
+        compExpNode.set_lineEndNumber(ctx.getStop().getLine());
 
         // Add the comparison operator
         compExpNode.set_operator(ctx.op.getType());
@@ -511,6 +538,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitBoolExpr(mctlParser.BoolExprContext ctx) {
         BoolExpNode boolExpNode = new BoolExpNode();
         boolExpNode.set_lineNumber(ctx.start.getLine());
+        boolExpNode.set_lineEndNumber(ctx.getStop().getLine());
         boolExpNode.set_result(Boolean.parseBoolean(ctx.getText()));
 
         return boolExpNode;
@@ -519,6 +547,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitAddExpr(mctlParser.AddExprContext ctx) {
         AddExpNode addExpNode = new AddExpNode();
         addExpNode.set_lineNumber(ctx.start.getLine());
+        addExpNode.set_lineEndNumber(ctx.getStop().getLine());
 
         // Add operator to node
         addExpNode.set_operator(ctx.op.getType());
@@ -544,6 +573,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitOrExpr(mctlParser.OrExprContext ctx) {
         OrExpNode orExpNode = new OrExpNode();
         orExpNode.set_lineNumber(ctx.start.getLine());
+        orExpNode.set_lineEndNumber(ctx.getStop().getLine());
 
         orExpNode.set_operatorLiteral("or");
 
@@ -563,6 +593,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitTypecast(mctlParser.TypecastContext ctx) {
         TypecastExpNode typecastExpNode = new TypecastExpNode();
         typecastExpNode.set_lineNumber(ctx.start.getLine());
+        typecastExpNode.set_lineEndNumber(ctx.getStop().getLine());
 
         BaseNode tempTypeNode = visit(ctx.variableType());
         BaseNode tempExprNode = visit(ctx.expression());
@@ -581,6 +612,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitEqualExpr(mctlParser.EqualExprContext ctx) {
         EqualExpNode equalExpNode = new EqualExpNode();
         equalExpNode.set_lineNumber(ctx.start.getLine());
+        equalExpNode.set_lineEndNumber(ctx.getStop().getLine());
 
         // Add operator to node
         equalExpNode.set_operator(ctx.op.getType());
@@ -610,6 +642,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitUnaryExpr(mctlParser.UnaryExprContext ctx) {
         UnaryExpNode unaryExpNode = new UnaryExpNode();
         unaryExpNode.set_lineNumber(ctx.start.getLine());
+        unaryExpNode.set_lineEndNumber(ctx.getStop().getLine());
 
         // Add operator to node
         unaryExpNode.set_operator(ctx.op.getType());
@@ -635,6 +668,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitMulExpr(mctlParser.MulExprContext ctx) {
         MulExpNode mulExpNode = new MulExpNode();
         mulExpNode.set_lineNumber(ctx.start.getLine());
+        mulExpNode.set_lineEndNumber(ctx.getStop().getLine());
 
         // Add operator to node
         mulExpNode.set_operator(ctx.op.getType());
@@ -659,6 +693,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
     @Override public BaseNode visitStringExpr(mctlParser.StringExprContext ctx) {
         StringExpNode stringExpNode = new StringExpNode();
         stringExpNode.set_lineNumber(ctx.start.getLine());
+        stringExpNode.set_lineEndNumber(ctx.getStop().getLine());
         stringExpNode.set_result(ctx.getText());
 
         return stringExpNode;
@@ -672,6 +707,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
 
         // Set the line number
         nothingTypeNode.set_lineNumber(ctx.start.getLine());
+        nothingTypeNode.set_lineEndNumber(ctx.getStop().getLine());
 
         return nothingTypeNode;
     }
@@ -700,6 +736,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
 
         // Set the line number
         typeNode.set_lineNumber(ctx.start.getLine());
+        typeNode.set_lineEndNumber(ctx.getStop().getLine());
 
         return typeNode;
     }

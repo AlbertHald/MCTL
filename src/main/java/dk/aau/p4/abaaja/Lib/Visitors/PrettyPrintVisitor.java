@@ -13,6 +13,12 @@ public class PrettyPrintVisitor implements INodeVisitor{
     static final String indentation = "  ";
 
     /**
+     * If the code has more than this number of consecutive empty lines,
+     * the lines will be trimmed to the max allowed number.
+     */
+    static final int maxEmptyLines = 3;
+
+    /**
      * When declaring or calling a function with more than this number of parameters,
      * the parameters will be printed on separate lines to make it more readable.
      */
@@ -41,7 +47,26 @@ public class PrettyPrintVisitor implements INodeVisitor{
         printIndented("");
     }
     void printNewline(){
+        PrettyPrintVisitor.workingLineNumber++;
         PrettyPrintVisitor._sink.println();
+    }
+
+    public static int workingLineNumber = 1;
+    public static int workingLineNumberOffset = 0;
+    void beginLineNode(BaseNode node){
+        int addedLines = 0;
+        while(
+                (node.get_lineNumber() + PrettyPrintVisitor.workingLineNumberOffset > PrettyPrintVisitor.workingLineNumber)
+                && (addedLines < maxEmptyLines)
+        ){
+            addedLines++;
+            printNewline();
+        }
+
+    }
+    void endLineNode(BaseNode node){
+        PrettyPrintVisitor.workingLineNumberOffset = workingLineNumber - node.get_lineEndNumber();
+        printNewline();
     }
 
     public static int indentationLevel = 0;
@@ -58,8 +83,15 @@ public class PrettyPrintVisitor implements INodeVisitor{
         }
     }
 
+    void resetState(){
+        PrettyPrintVisitor.indentationLevel = 0;
+        PrettyPrintVisitor.workingLineNumber = 1;
+        PrettyPrintVisitor.workingLineNumberOffset = 0;
+    }
+
 
     public void visit(MctlNode node){
+        resetState();
         this.visitChildren(node);
     }
     public void visit(LineNode node){
@@ -70,19 +102,24 @@ public class PrettyPrintVisitor implements INodeVisitor{
         print("{");
         printNewline();
         indentUp();
-        this.visitChildren(node);
+        if(node.get_children().size() > 0){
+            this.visitChildren(node);
+        }else{
+            printNewline();
+        }
         indentDown();
         printIndented("}");
     }
 
     public void visit(VarDecNode node){
+        beginLineNode(node);
         printIndented("variable " + node.get_id() + ": ");
         node.get_varDecType().accept(this);
         print(";");
-        printNewline();
+        endLineNode(node);
     }
     public void visit(FuncDecNode node){
-
+        beginLineNode(node);
         printIndented("to " + node.get_id() + " (");
         List<FormalParamNode> paramList = node.get_paramList();
         int numParams = paramList.size();
@@ -111,10 +148,11 @@ public class PrettyPrintVisitor implements INodeVisitor{
         node.get_returnType().accept(this);
         print(" ");
         node.get_funcBlock().accept(this);
-        printNewline();
+        endLineNode(node);
     }
     public void visit(StructDecNode node){
         printIndented("struct " + node.get_id() + ": {");
+        beginLineNode(node);
         printNewline();
         indentUp();
         for (VarDecNode declaration : node.get_declarations()) {
@@ -125,10 +163,11 @@ public class PrettyPrintVisitor implements INodeVisitor{
         }
         indentDown();
         printIndented("};");
-        printNewline();
+        endLineNode(node);
     }
 
     public void visit(IfStateNode node){
+        beginLineNode(node);
         List<ExpNode> expList = node.get_expChildren();
         List<BlockNode> blockList = node.get_blockChildrenNode();
         int numExps = expList.size();
@@ -146,24 +185,27 @@ public class PrettyPrintVisitor implements INodeVisitor{
             }
             blockList.get(i).accept(this);
         }
-        printNewline();
+        endLineNode(node);
     }
     public void visit(RepeatStateNode node){
+        beginLineNode(node);
         printIndented("repeat(");
         node.get_repeatExp().accept(this);
         print(")");
         node.get_expBlock().accept(this);
-        printNewline();
+        endLineNode(node);
     }
     public void visit(AssStateNode node){
+        beginLineNode(node);
         printIndented();
         node.get_assignId().accept(this);
         print(" = ");
         node.get_assignExp().accept(this);
         print(";");
-        printNewline();
+        endLineNode(node);
     }
     public void visit(InvokeNode node){
+        beginLineNode(node);
         printIndented();
         if(node instanceof VarMethodInvokeNode){
             ((VarMethodInvokeNode) node).get_varId().accept(this);
@@ -202,17 +244,18 @@ public class PrettyPrintVisitor implements INodeVisitor{
         }else {
             print(");");
         }
-        printNewline();
+        endLineNode(node);
     }
     public void visit(ReturnNode node){
         BaseNode returnExp = node.get_returnExp();
+        beginLineNode(node);
         printIndented("return");
         if(returnExp != null){
             print(" ");
             returnExp.accept(this);
         }
         print(";");
-        printNewline();
+        endLineNode(node);
     }
 
     public void visit(FormalParamNode node){
@@ -220,8 +263,9 @@ public class PrettyPrintVisitor implements INodeVisitor{
         node.get_type().accept(this);
     }
     public void visit(StopNode node){
+        beginLineNode(node);
         printIndented("stop;");
-        printNewline();
+        endLineNode(node);
     }
     public void visit(TypeNode node){
         print(node.get_type());
