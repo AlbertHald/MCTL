@@ -32,7 +32,8 @@ public class MctlStructDescriptor extends MctlTypeDescriptor {
         return _structVariables.get(key);
     }
 
-    public StructDecNode get_nodeRefrence() {
+    public StructDecNode get_nodeReference() {
+
         return _nodeReference;
     }
 }
