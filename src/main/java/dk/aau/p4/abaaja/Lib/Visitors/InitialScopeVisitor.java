@@ -5,6 +5,7 @@ import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlStructDescriptor;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlTypeDescriptor;
 
 import java.util.ArrayList;
@@ -36,7 +37,11 @@ public class InitialScopeVisitor implements INodeVisitor {
 
         // Check if symbol is declared
         if (isDeclared(node.get_id())) {
-            _problemCollection.addProblem(ProblemType.ERROR_IDENTIFIER_CANNOT_BE_REUSED, "The identifier \"" + node.get_id() + "\" cannot be redeclared", node.get_lineNumber());
+            _problemCollection.addProblem(
+                    ProblemType.ERROR_IDENTIFIER_CANNOT_BE_REUSED,
+                    "The identifier \"" + node.get_id() + "\" cannot be redeclared",
+                    node.get_lineNumber()
+            );
         }
         else {
             // Set function ID and return type
@@ -44,7 +49,10 @@ public class InitialScopeVisitor implements INodeVisitor {
 
             MctlTypeDescriptor typeDescriptor = _symbolTable.searchType(node.get_returnType().get_type());
             if (typeDescriptor == null) {
-                _problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_returnType().get_type() + "\" is unknown", node.get_lineNumber());
+                _problemCollection.addProblem(
+                        ProblemType.ERROR_UNKNOWN_TYPE,
+                        "The type \"" + node.get_returnType().get_type() + "\" is unknown",
+                        node.get_lineNumber());
             } else {
                 functionSymbol.set_type(typeDescriptor);
             }
@@ -64,10 +72,9 @@ public class InitialScopeVisitor implements INodeVisitor {
 
     @Override
     public void visit(StructDecNode node) {
-
-
-        visitChildren(node.get_children());
-
+        MctlStructDescriptor mctlStructDescriptor = new MctlStructDescriptor(node.get_id(), node);
+        _symbolTable.insertType(mctlStructDescriptor);
+        _symbolTable.get_currentScope().add_structType(node.get_id());
     }
 
     @Override

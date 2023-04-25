@@ -8,7 +8,7 @@ import java.util.HashMap;
 public class MctlStructDescriptor extends MctlTypeDescriptor {
     //ID is also the struct type
     private final String _typeDescriptor;
-    private final HashMap<String, Symbol> _structVariables = new HashMap<>();
+    private final HashMap<String, MctlTypeDescriptor> _structVariables = new HashMap<>();
     private final StructDecNode _nodeReference;
 
     public MctlStructDescriptor(String typeDescriptor, StructDecNode nodeReference) {
@@ -21,14 +21,14 @@ public class MctlStructDescriptor extends MctlTypeDescriptor {
         return _typeDescriptor;
     }
 
-    public HashMap<String, Symbol> get_structVariables() {
+    public HashMap<String, MctlTypeDescriptor> get_structVariables() {
         return _structVariables;
     }
-    public void set_structVariables(Symbol entry) {
-        _structVariables.put(entry.get_name(), entry);
+    public void add_structVariables(String id, MctlTypeDescriptor entry) {
+        _structVariables.put(id, entry);
     }
 
-    public Symbol get_structsymbol(String key) {
+    public MctlTypeDescriptor get_structsymbol(String key) {
         return _structVariables.get(key);
     }
 

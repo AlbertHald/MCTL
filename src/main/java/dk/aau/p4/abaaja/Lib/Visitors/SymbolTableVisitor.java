@@ -28,14 +28,37 @@ public class SymbolTableVisitor implements INodeVisitor {
         return symbolTable.searchSymbol(id) == null;
     }
 
+    private void initialScopeVisit(List<BaseNode> nodes) {
+        // Checking function and struct declarations in code block
+        for (BaseNode child : nodes) {
+            child.accept(new InitialScopeVisitor(problemCollection, symbolTable));
+        }
+
+        // Finalize struct type declarations
+        List<String> structTypes = symbolTable.get_currentScope().get_structTypes();
+        for (String structTypeLiteral : structTypes) {
+            MctlStructDescriptor mctlStructDescriptor = (MctlStructDescriptor) symbolTable.searchType(structTypeLiteral);
+
+            // Add each variable declaration for the struct to its descriptor
+            for (VarDecNode node : mctlStructDescriptor.get_nodeRefrence().get_declarations()) {
+                MctlTypeDescriptor typeDescriptor = symbolTable.searchType(node.get_varDecType().get_type());
+
+                // Check if the type exists
+                if (typeDescriptor == null) {
+                    problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_varDecType().get_type() + "\" is unknown", node.get_lineNumber());
+                } else {
+                    mctlStructDescriptor.add_structVariables(node.get_id(), typeDescriptor);
+                }
+            }
+        }
+
+    }
+
     public void visit(MctlNode node) {
         //Initializes symboltable and sets current scope to "Global"
         symbolTable = new SymbolTable();
 
-        // Visit all function and struct declarations and add them to the symbol table
-        for (BaseNode child : node.get_children()) {
-            child.accept(new InitialScopeVisitor(problemCollection, symbolTable));
-        }
+        initialScopeVisit(node.get_children());
 
         // Visit remaining lines
         for (BaseNode child : node.get_children()) {
@@ -55,9 +78,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         symbolTable.createScope();
 
         // Visit all function and struct declarations and add them to the symbol table
-        for (BaseNode child : node.get_children()) {
-            child.accept(new InitialScopeVisitor(problemCollection, symbolTable));
-        }
+        initialScopeVisit(node.get_children());
 
         // Visit all remaining line
         for (BaseNode child : node.get_children()) {
@@ -122,10 +143,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             symbolTable.insertSymbol(paramSymbol);
         }
 
-        // Checking function and struct declarations in code block
-        for (BaseNode line : node.get_funcBlock().get_children()) {
-            line.accept(new InitialScopeVisitor(problemCollection, symbolTable));
-        }
+        initialScopeVisit(node.get_funcBlock().get_children());
 
         // Check lines of the function block
         for (BaseNode line : node.get_funcBlock().get_children()) {
