@@ -1,5 +1,7 @@
 package dk.aau.p4.abaaja.Lib.Symbols;
 
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.TypeDescriptor;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -7,6 +9,7 @@ public class Scope {
 
     //A hashmap of symbols in the scope.
     private final HashMap<String, Symbol> _symbols = new HashMap<>();
+    private final HashMap<String, TypeDescriptor> _types = new HashMap<>();
     private String _name;
     private Scope _parent;
 
@@ -34,9 +37,14 @@ public class Scope {
     public HashMap<String, Symbol> get_symbols() {
         return _symbols;
     }
-
-    public void set_symbols(Symbol entry) {
+    public void add_symbol(Symbol entry) {
         _symbols.put(entry.get_name(), entry);
     }
 
+    public HashMap<String, TypeDescriptor> get_types() {
+        return _types;
+    }
+    public void add_type(TypeDescriptor entry) {
+        _types.put(entry.get_type_literal(), entry);
+    }
 }

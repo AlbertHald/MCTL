@@ -1,6 +1,7 @@
 package dk.aau.p4.abaaja.Lib.Symbols;
 
 import dk.aau.p4.abaaja.Lib.PredefinedFunction;
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.TypeDescriptor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,12 +31,12 @@ public class SymbolTable {
         // Adding predefined functions to the symbol table
         for (PredefinedFunction predefinedFunction : predefinedFunctions) {
             Symbol functionSymbol = new Symbol(predefinedFunction.get_id());
-            functionSymbol.set_type(predefinedFunction.get_returnType());
-            functionSymbol.set_types(predefinedFunction.get_parameters());
+            //functionSymbol.set_type(predefinedFunction.get_returnType());
+            //functionSymbol.set_types(predefinedFunction.get_parameters());
         }
     }
 
-    public void CreateScope() {
+    public void createScope() {
         Scope scope = new Scope();
         scope.set_parent(_currentScope);
         _symboltable.add(scope);
@@ -43,7 +44,7 @@ public class SymbolTable {
         _currentScope = scope;
     }
 
-    public void CloseScope(){
+    public void closeScope(){
         if(_currentScope.get_Parent() != null)
 
             _symboltable.remove(_currentScope);
@@ -55,7 +56,7 @@ public class SymbolTable {
     }
 
     //Search symbol in scope
-    public Symbol SearchSymbol(String symbol) {
+    public Symbol searchSymbol(String symbol) {
         Scope scope = _currentScope;
 
         do {
@@ -66,7 +67,22 @@ public class SymbolTable {
         return null;
     }
 
-    public void InsertSymbol(Symbol symbol) {
-        _currentScope.set_symbols(symbol);
+    // Search Type method
+    public TypeDescriptor searchType(String type) {
+        Scope scope = _currentScope;
+
+        do {
+            if(!scope.get_types().isEmpty() && scope.get_types().containsKey(type))
+                return scope.get_types().get(type);
+        } while((scope = scope.get_Parent()) != null);
+
+        return null;
+    }
+
+    public void insertSymbol(Symbol symbol) {
+        _currentScope.add_symbol(symbol);
+    }
+    public void insertType(TypeDescriptor type) {
+        _currentScope.add_type(type);
     }
 }

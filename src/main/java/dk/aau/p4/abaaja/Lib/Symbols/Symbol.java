@@ -1,12 +1,14 @@
 package dk.aau.p4.abaaja.Lib.Symbols;
 
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.TypeDescriptor;
+
 import java.util.ArrayList;
 import java.util.List;
 
 //Symbol table entries
 public class Symbol {
     private String _name;
-    private String _type;
+    private TypeDescriptor _type;
     private int _dimension;
     private boolean _isInstantiated;
     private List<List<String>> _types = new ArrayList<>();
@@ -15,11 +17,11 @@ public class Symbol {
     public Symbol(String name) {
         this._name = name;
     }
-    public Symbol(String name, String type) {
-        this._name = type;
+    public Symbol(String name, TypeDescriptor type) {
+        this._name = name;
         this._type = type;
     }
-    public Symbol(String name, String type, int dimension) {
+    public Symbol(String name, TypeDescriptor type, int dimension) {
         this._name = name;
         this._type = type;
         this._dimension = dimension;
@@ -27,7 +29,7 @@ public class Symbol {
 
     public String get_name() {return _name; }
 
-    public String get_type() {
+    public TypeDescriptor get_type() {
         return _type;
     }
 
@@ -44,7 +46,7 @@ public class Symbol {
     public void set_name(String _name) {
         this._name = _name;
     }
-    public void set_type(String _type) {
+    public void set_type(TypeDescriptor _type) {
         this._type = _type;
     }
     public void set_dimension(int _dimension) { this._dimension = _dimension; }

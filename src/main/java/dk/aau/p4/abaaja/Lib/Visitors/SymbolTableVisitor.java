@@ -6,6 +6,7 @@ import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlStructDescriptor;
 import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.TypeDescriptor;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class SymbolTableVisitor implements INodeVisitor {
     }
 
     private boolean isDeclared(String id) {
-        return symbolTable.SearchSymbol(id) == null;
+        return symbolTable.searchSymbol(id) == null;
     }
 
     public void visit(MctlNode node) {
@@ -51,7 +52,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(BlockNode node) {
-        symbolTable.CreateScope();
+        symbolTable.createScope();
 
         // Visit all function and struct declarations and add them to the symbol table
         for (BaseNode child : node.get_children()) {
@@ -63,7 +64,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             child.accept(this);
         }
 
-        symbolTable.CloseScope();
+        symbolTable.closeScope();
     }
 
     @Override
@@ -84,12 +85,19 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(VarDecNode node) {
+        TypeDescriptor type;
 
         if(isDeclared(node.get_id())) {
             problemCollection.addProblem(ProblemType.ERROR_IDENTIFIER_CANNOT_BE_REUSED, "The identifier \"" + node.get_id() + "\" cannot be redeclared", node.get_lineNumber());
         } else {
-            Symbol symbol = new Symbol(node.get_id(), node.get_varDecType().get_type(), node.get_varDecType().get_arrayDegree());
-            symbolTable.InsertSymbol(symbol);
+            type = symbolTable.searchType(node.get_varDecType().get_type());
+            if (type != null) {
+                Symbol symbol = new Symbol(node.get_id(), type, node.get_varDecType().get_arrayDegree());
+                symbolTable.insertSymbol(symbol);
+            } else {
+                problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_varDecType().get_type() + "\" is unknown", node.get_lineNumber());
+            }
+
         }
 
         for (BaseNode child : node.get_children()) {
@@ -100,13 +108,18 @@ public class SymbolTableVisitor implements INodeVisitor {
     @Override
     public void visit(FuncDecNode node) {
         // Create scope for function block and create parameter symbols
-        symbolTable.CreateScope();
+        symbolTable.createScope();
         for (FormalParamNode formalParam : node.get_paramList()) {
             Symbol paramSymbol = new Symbol(formalParam.get_id());
-            paramSymbol.set_type(formalParam.get_type().get_type());
+            TypeDescriptor tempType = symbolTable.searchType(formalParam.get_type().get_type());
+            if (tempType == null) {
+                problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + formalParam.get_type().get_type() + "\" is unknown", node.get_lineNumber());
+            } else {
+                paramSymbol.set_type(tempType);
+            }
 
             // Adding parameter to functionSymbol and current symbol table
-            symbolTable.InsertSymbol(paramSymbol);
+            symbolTable.insertSymbol(paramSymbol);
         }
 
         // Checking function and struct declarations in code block
@@ -119,7 +132,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             line.accept(this);
         }
 
-        symbolTable.CloseScope();
+        symbolTable.closeScope();
     }
 
     @Override

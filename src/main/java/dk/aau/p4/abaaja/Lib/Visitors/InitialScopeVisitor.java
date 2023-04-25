@@ -5,6 +5,7 @@ import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.TypeDescriptor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +21,7 @@ public class InitialScopeVisitor implements INodeVisitor {
     }
 
     private boolean isDeclared(String id) {
-        return _symbolTable.SearchSymbol(id) == null;
+        return _symbolTable.searchSymbol(id) == null;
     }
 
     private void visitChildren(List<BaseNode> nodes) {
@@ -40,7 +41,13 @@ public class InitialScopeVisitor implements INodeVisitor {
         else {
             // Set function ID and return type
             functionSymbol.set_name(node.get_id());
-            functionSymbol.set_type(node.get_returnType().get_type());
+
+            TypeDescriptor typeDescriptor = _symbolTable.searchType(node.get_returnType().get_type());
+            if (typeDescriptor == null) {
+                _problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_returnType().get_type() + "\" is unknown", node.get_lineNumber());
+            } else {
+                functionSymbol.set_type(typeDescriptor);
+            }
 
             // Creating temporary list containing the function parameters
             List<List<String>> functionParamList = new ArrayList<>();
@@ -56,7 +63,12 @@ public class InitialScopeVisitor implements INodeVisitor {
     }
 
     @Override
-    public void visit(StructDecNode node) { visitChildren(node.get_children()); }
+    public void visit(StructDecNode node) {
+
+
+        visitChildren(node.get_children());
+
+    }
 
     @Override
     public void visit(MctlNode node) {}
