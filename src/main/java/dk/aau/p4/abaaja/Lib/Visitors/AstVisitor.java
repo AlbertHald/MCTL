@@ -63,6 +63,16 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return blockNode;
     }
 
+    @Override public CommentNode visitComment(mctlParser.CommentContext ctx) {
+        CommentNode commentNode = new CommentNode();
+        commentNode.set_lineNumber(ctx.getStart().getLine());
+        commentNode.set_lineEndNumber(ctx.getStop().getLine());
+
+        commentNode.set_text(ctx.COMMENT().getText());
+
+        return commentNode;
+    }
+
     @Override public BaseNode visitVarDecl(mctlParser.VarDeclContext ctx) { return visitVariableDeclaration(ctx.variableDeclaration()); }
 
     @Override public BaseNode visitVariableDeclaration(mctlParser.VariableDeclarationContext ctx) {

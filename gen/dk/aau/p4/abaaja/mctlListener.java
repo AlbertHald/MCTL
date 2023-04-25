@@ -28,6 +28,16 @@ public interface mctlListener extends ParseTreeListener {
 	 */
 	void exitBlock(mctlParser.BlockContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link mctlParser#comment}.
+	 * @param ctx the parse tree
+	 */
+	void enterComment(mctlParser.CommentContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link mctlParser#comment}.
+	 * @param ctx the parse tree
+	 */
+	void exitComment(mctlParser.CommentContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code varDecl}
 	 * labeled alternative in {@link mctlParser#declaration}.
 	 * @param ctx the parse tree
