@@ -1,0 +1,16 @@
+to buildUp (height: NUMBER, block: STRING): NOTHING {
+  repeat(height){
+    lookDown();
+    jump();
+    wait(0.2);
+    variable success: BOOLEAN;
+    if(!success){
+      #{ obstructed or sky limit }
+      stop;
+    }
+  }
+  #{ commit unexist }
+  moveForward(1);
+}
+
+BuildUp(100, "dirt");

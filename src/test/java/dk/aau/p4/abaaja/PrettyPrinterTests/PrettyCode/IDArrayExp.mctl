@@ -1,0 +1,4 @@
+
+list[0] = 6;
+
+list[6][9] = anotherList[4][20];

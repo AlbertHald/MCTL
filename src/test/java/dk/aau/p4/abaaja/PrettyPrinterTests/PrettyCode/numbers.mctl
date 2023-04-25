@@ -1,0 +1,50 @@
+
+s = 5;
+s = 42;
+s = 0;
+s = 10;
+s = 1000;
+
+return 5;
+return 42;
+return 0;
+return 10;
+return 1000;
+
+invocation(5);
+invocation(42);
+invocation(0);
+invocation(10);
+invocation(1000);
+
+if(5){
+
+}
+if(42){
+
+}
+if(0){
+
+}
+if(10){
+
+}
+if(1000){
+
+}
+
+repeat(5){
+
+}
+repeat(42){
+
+}
+repeat(0){
+
+}
+repeat(10){
+
+}
+repeat(1000){
+
+}

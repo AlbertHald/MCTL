@@ -1,0 +1,26 @@
+
+f = true;
+
+f = "fast" == "fast";
+f = "fast" != "fast";
+
+f = 4 > 5;
+f = 4 < 5;
+
+f = true and false;
+f = true or false;
+
+f = !false;
+
+f = 2 + (4 - (1 + 6));
+f = 2 + (4 - (k * 6));
+f = 2 + ((4 * k) + 6);
+f = 2 + (4 * (k + 6));
+f = ((2 + 4) * k) + 6;
+f = 2 / (4 % (1 + 6));
+f = 0 + 0;
+
+f = !((k and true) or ((5 < s) and (test != "test")));
+f = !(k and true) or (((5 < s) and test) != "test");
+f = k and ((true or 5) < ((!s and test) != "test"));
+f = ((k and (true or 5)) < (!s and test)) != "test";

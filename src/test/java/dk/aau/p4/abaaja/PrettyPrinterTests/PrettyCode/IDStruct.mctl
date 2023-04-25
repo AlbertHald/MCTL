@@ -1,0 +1,4 @@
+
+structID.accessor = 9;
+
+structID.accessor.onemore = anotherStruct.withField;
