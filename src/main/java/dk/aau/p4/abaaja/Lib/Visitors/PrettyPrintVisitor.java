@@ -111,6 +111,12 @@ public class PrettyPrintVisitor implements INodeVisitor{
         printIndented("}");
     }
 
+    public void visit(CommentNode node){
+        beginLineNode(node);
+        printIndented(node.get_text());
+        endLineNode(node);
+    }
+
     public void visit(VarDecNode node){
         beginLineNode(node);
         printIndented("variable " + node.get_id() + ": ");

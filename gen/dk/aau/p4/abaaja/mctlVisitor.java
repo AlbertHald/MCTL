@@ -23,6 +23,12 @@ public interface mctlVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBlock(mctlParser.BlockContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link mctlParser#comment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComment(mctlParser.CommentContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code varDecl}
 	 * labeled alternative in {@link mctlParser#declaration}.
 	 * @param ctx the parse tree

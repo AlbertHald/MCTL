@@ -41,6 +41,18 @@ public class mctlBaseListener implements mctlListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterComment(mctlParser.CommentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitComment(mctlParser.CommentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterVarDecl(mctlParser.VarDeclContext ctx) { }
 	/**
 	 * {@inheritDoc}
