@@ -1,0 +1,9 @@
+to makeAngledLine (length: NUMBER): NOTHING {
+  repeat(length){
+    place();
+    turnRight(90);
+    moveForward(1);
+    turnLeft(90);
+    moveForward(1);
+  }
+}

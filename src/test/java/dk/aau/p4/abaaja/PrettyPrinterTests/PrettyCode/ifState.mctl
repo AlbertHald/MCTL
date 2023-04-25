@@ -1,0 +1,41 @@
+if(t){
+
+}
+
+if(t){
+  variable w: STRING;
+}
+
+if(t){
+
+}else{
+
+}
+
+if(t){
+
+}else if(t){
+
+}else if(t){
+
+}else{
+
+}
+
+if(t){
+  variable w: STRING;
+}else if(t){
+  variable w: STRING;
+}else if(t){
+  variable w: STRING;
+}else{
+  variable w: STRING;
+}
+
+if(t){
+  variable w: STRING;
+  stop;
+  w = "k";
+}else{
+  stop;
+}
