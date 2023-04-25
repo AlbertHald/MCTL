@@ -113,7 +113,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         } else {
             type = symbolTable.searchType(node.get_varDecType().get_type());
             if (type != null) {
-                Symbol symbol = new Symbol(node.get_id(), type, node.get_varDecType().get_arrayDegree());
+                Symbol symbol = new Symbol(node.get_id(), type);
                 symbolTable.insertSymbol(symbol);
             } else {
                 problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_varDecType().get_type() + "\" is unknown", node.get_lineNumber());

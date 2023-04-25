@@ -9,7 +9,6 @@ import java.util.List;
 public class Symbol {
     private String _name;
     private MctlTypeDescriptor _type;
-    private int _dimension;
     private boolean _isInstantiated;
     private List<List<String>> _types = new ArrayList<>();
 
@@ -21,20 +20,11 @@ public class Symbol {
         this._name = name;
         this._type = type;
     }
-    public Symbol(String name, MctlTypeDescriptor type, int dimension) {
-        this._name = name;
-        this._type = type;
-        this._dimension = dimension;
-    }
 
     public String get_name() {return _name; }
 
     public MctlTypeDescriptor get_type() {
         return _type;
-    }
-
-    public int get_dimension() {
-        return _dimension;
     }
 
     /**
@@ -49,7 +39,6 @@ public class Symbol {
     public void set_type(MctlTypeDescriptor _type) {
         this._type = _type;
     }
-    public void set_dimension(int _dimension) { this._dimension = _dimension; }
 
     public boolean get_is_isInstantiated() {
         return _isInstantiated;
