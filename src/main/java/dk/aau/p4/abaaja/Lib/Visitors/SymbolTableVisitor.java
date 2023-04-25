@@ -85,7 +85,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(VarDecNode node) {
-        TypeDescriptor type;
+        MctlTypeDescriptor type;
 
         if(isDeclared(node.get_id())) {
             problemCollection.addProblem(ProblemType.ERROR_IDENTIFIER_CANNOT_BE_REUSED, "The identifier \"" + node.get_id() + "\" cannot be redeclared", node.get_lineNumber());
