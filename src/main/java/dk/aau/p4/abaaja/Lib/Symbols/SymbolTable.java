@@ -45,10 +45,10 @@ public class SymbolTable {
     }
 
     public void closeScope(){
-        if(_currentScope.get_Parent() != null)
-
+        if(_currentScope.get_Parent() != null) {
             _symboltable.remove(_currentScope);
-        _currentScope = _symboltable.get(_symboltable.size() - 1);
+            _currentScope = _symboltable.get(_symboltable.size() - 1);
+        }
     }
 
     public Scope get_currentScope() {
