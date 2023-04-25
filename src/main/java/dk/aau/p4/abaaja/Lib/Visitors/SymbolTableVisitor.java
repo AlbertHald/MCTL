@@ -3,6 +3,7 @@ package dk.aau.p4.abaaja.Lib.Visitors;
 import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
+import dk.aau.p4.abaaja.Lib.Symbols.StructDescriptor;
 import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
 
@@ -125,8 +126,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(StructDecNode node) {
-        Symbol symbol = new Symbol();
-        symbolTable.InsertSymbol(symbol);
+        StructDescriptor structDeclaration = new StructDescriptor(node.get_id());
     }
 
     @Override
