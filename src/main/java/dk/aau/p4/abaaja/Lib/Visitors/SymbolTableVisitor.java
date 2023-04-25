@@ -40,7 +40,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             MctlStructDescriptor mctlStructDescriptor = (MctlStructDescriptor) symbolTable.searchType(structTypeLiteral);
 
             // Add each variable declaration for the struct to its descriptor
-            for (VarDecNode node : mctlStructDescriptor.get_nodeRefrence().get_declarations()) {
+            for (VarDecNode node : mctlStructDescriptor.get_nodeReference().get_declarations()) {
                 MctlTypeDescriptor typeDescriptor = symbolTable.searchType(node.get_varDecType().get_type());
 
                 // Check if the type exists
