@@ -16,6 +16,7 @@ public class Symbol {
     public Symbol(String name) {
         this._name = name;
     }
+    
     public Symbol(String name, MctlTypeDescriptor type) {
         this._name = name;
         this._type = type;

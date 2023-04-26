@@ -1,0 +1,11 @@
+
+struct TRAFFICLIGHT {
+  variable red: BOOLEAN,
+  variable yellow: BOOLEAN,
+  variable green: BOOLEAN,
+  variable power: NUMBER,
+};
+
+struct SMALL {
+  variable i: NUMBER,
+};

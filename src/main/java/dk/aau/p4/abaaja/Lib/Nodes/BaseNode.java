@@ -23,11 +23,18 @@ public abstract class BaseNode {
     public void set_lineNumber(int _lineNumber) {
         this._lineNumber = _lineNumber;
     }
+    public int get_lineEndNumber() {
+        return _lineEndNumber;
+    }
+    public void set_lineEndNumber(int lineEndNumber) {
+        this._lineEndNumber = lineEndNumber;
+    }
 
     /**
      * Private variables
      */
     private int _lineNumber = 0;
+    private int _lineEndNumber = 0;
     private List<BaseNode> _children = new ArrayList<>();
 
     /**

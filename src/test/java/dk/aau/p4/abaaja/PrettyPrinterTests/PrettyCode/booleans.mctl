@@ -1,0 +1,23 @@
+
+s = true;
+s = false;
+
+return true;
+return false;
+
+invocation(true);
+invocation(false);
+
+if(true){
+
+}
+if(false){
+
+}
+
+repeat(true){
+
+}
+repeat(false){
+
+}

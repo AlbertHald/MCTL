@@ -7,6 +7,7 @@ public interface INodeVisitor {
     void visit(LineNode node);
 
     void visit(BlockNode node);
+    void visit(CommentNode node);
 
     void visit(DecNode node);
     void visit(StateNode node);

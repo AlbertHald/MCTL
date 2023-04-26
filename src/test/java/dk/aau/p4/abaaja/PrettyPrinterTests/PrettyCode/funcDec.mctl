@@ -1,0 +1,9 @@
+
+to small (): NOTHING {
+
+}
+
+to bossAround (): NOTHING {
+  variable beBastian: BOOLEAN;
+  beBastian = true;
+}

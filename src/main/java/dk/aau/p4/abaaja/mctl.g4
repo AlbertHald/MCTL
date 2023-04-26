@@ -1,11 +1,16 @@
 grammar mctl;
 
-mctl: (declaration | statement | COMMENT | SEMI)* EOF;
+mctl: (declaration | statement | comment | SEMI)* EOF;
 
 block
-    : LCURL (declaration | statement | COMMENT | SEMI)* RCURL
+    : LCURL (declaration | statement | comment | SEMI)* RCURL
     ;
 
+comment
+    : COMMENT
+    ;
+
+// Declaration productions for variables, functions, and structs
 declaration
     : variableDeclaration SEMI                                                         #varDecl
     | To ID LPAR (formalParameters)? RPAR COLON returnType block                       #functionDeclaration
@@ -16,12 +21,14 @@ variableDeclaration
     : Variable ID COLON variableType
     ;
 
+// Identifier productions
 id
     : ID                                    #idVar
     | id DOT id                             #idStruct
     | id LSQR expression RSQR               #idArray
     ;
 
+// Statement productions
 statement
     : if                                    #ifStatement
     | repeat                                #repeatStatement
@@ -59,6 +66,7 @@ invoke
     | STRING DOT ID LPAR (actualParameters)? RPAR   #stringMethodInvoke
     ;
 
+// Parameter productions
 formalParameters
     : (formalParameter COMMA)* formalParameter (COMMA)?
     ;
@@ -71,6 +79,7 @@ actualParameters
     : (expression COMMA)* expression (COMMA)?
     ;
 
+// Expression productions sorted using the specified operator precedence
 expression
     : invoke                                                           #invExpr
     | LPAR expression RPAR                                             #parenExpr
@@ -159,5 +168,5 @@ Repeat: 'repeat';
 ID: [a-zA-Z_] [a-zA-Z0-9_]*;
 NUMBER: [0-9]+('.'[0-9]*)?;
 
-COMMENT: '#{' .*? '}' -> skip;
+COMMENT: '#{' .*? '}';
 WS: [ \n\t\r]+ -> skip;
