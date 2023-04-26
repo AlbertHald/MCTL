@@ -1,0 +1,9 @@
+
+#{ A quick inline comment }
+
+#{
+  A longer walkthrough of this code's features.
+    - Feature 1 is: cool
+    - Feature 2 is: cool++
+  Thanks for coming to my TED talk.
+}

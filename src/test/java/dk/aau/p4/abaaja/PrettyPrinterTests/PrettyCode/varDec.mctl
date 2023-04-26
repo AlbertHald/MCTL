@@ -1,0 +1,6 @@
+
+variable bastian: STRING;
+
+variable small: STRING;
+
+variable boolean: TRAFFICLIGHT;

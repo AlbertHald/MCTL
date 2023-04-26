@@ -1,0 +1,16 @@
+
+s = "test";
+s = "";
+
+return "test";
+return "";
+
+invocation("test");
+invocation("");
+
+if("test"){
+
+}
+if(""){
+
+}

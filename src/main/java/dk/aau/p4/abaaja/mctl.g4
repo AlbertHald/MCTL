@@ -1,9 +1,13 @@
 grammar mctl;
 
-mctl: (declaration | statement | COMMENT | SEMI)* EOF;
+mctl: (declaration | statement | comment | SEMI)* EOF;
 
 block
-    : LCURL (declaration | statement | COMMENT | SEMI)* RCURL
+    : LCURL (declaration | statement | comment | SEMI)* RCURL
+    ;
+
+comment
+    : COMMENT
     ;
 
 // Declaration productions for variables, functions, and structs
@@ -164,5 +168,5 @@ Repeat: 'repeat';
 ID: [a-zA-Z_] [a-zA-Z0-9_]*;
 NUMBER: [0-9]+('.'[0-9]*)?;
 
-COMMENT: '#{' .*? '}' -> skip;
+COMMENT: '#{' .*? '}';
 WS: [ \n\t\r]+ -> skip;

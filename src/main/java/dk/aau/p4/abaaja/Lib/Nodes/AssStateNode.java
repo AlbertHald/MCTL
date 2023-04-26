@@ -7,6 +7,7 @@ public class AssStateNode extends StateNode {
     //Private variables
     private IDExpNode _id;
     private ExpNode _expression;
+    private String _literalPostfixOperator;
 
     //getters and setters
     public IDExpNode get_assignId(){
@@ -21,6 +22,13 @@ public class AssStateNode extends StateNode {
     }
     public void set_assignExp(ExpNode expression) {
         this._expression = expression;
+    }
+
+    public String get_literalPostfixOperator(){
+        return this._literalPostfixOperator;
+    }
+    public void set_literalPostfixOperator(String literalPostfixOperator){
+        this._literalPostfixOperator = literalPostfixOperator;
     }
 
     @Override

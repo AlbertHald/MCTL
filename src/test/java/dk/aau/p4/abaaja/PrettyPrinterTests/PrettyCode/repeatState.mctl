@@ -1,0 +1,14 @@
+
+repeat(t){
+
+}
+
+repeat(4){
+  variable w: BOOLEAN;
+}
+
+repeat(true){
+  variable w: BOOLEAN;
+  stop;
+  w = "k";
+}
