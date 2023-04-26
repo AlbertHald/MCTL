@@ -1,5 +1,6 @@
 package dk.aau.p4.abaaja.Lib.Symbols;
 
+import dk.aau.p4.abaaja.Lib.Nodes.NothingTypeNode;
 import dk.aau.p4.abaaja.Lib.PredefinedFunction;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.*;
 
@@ -14,13 +15,15 @@ public class SymbolTable {
 
     // Predefined functions of the programming language
     private List<PredefinedFunction> predefinedFunctions = Arrays.asList(
-            new PredefinedFunction("add", Arrays.asList(null), null),
-            new PredefinedFunction("remove", null, null),
-            new PredefinedFunction("length", null, "NUMBER"),
-            new PredefinedFunction("print", Arrays.asList(Arrays.asList("STRING")), null),
-            new PredefinedFunction("read", null, "STRING"),
-            new PredefinedFunction("indexesOf", Arrays.asList(Arrays.asList("STRING", "BOOLEAN", "NUMBER", "NOTHING")), "NUMBER[]"),
-            new PredefinedFunction("substring", Arrays.asList(Arrays.asList("NUMBER"), Arrays.asList("NUMBER")), "STRING")
+            new PredefinedFunction("add", Arrays.asList(Arrays.asList(new MctlTypeDescriptor())), new MctlNothingDescriptor()),
+            new PredefinedFunction("remove", null, new MctlNothingDescriptor()),
+            new PredefinedFunction("length", null, new MctlNumberDescriptor()),
+            new PredefinedFunction("print", Arrays.asList(Arrays.asList(new MctlStringDescriptor())), new MctlNothingDescriptor()),
+            new PredefinedFunction("read", null, new MctlStringDescriptor()),
+            new PredefinedFunction("indexesOf",
+                    Arrays.asList(Arrays.asList(new MctlStringDescriptor(), new MctlBooleanDescriptor(), new MctlNumberDescriptor(), new MctlNothingDescriptor())),
+                    new MctlArrayTypeDescriptor(new MctlNumberDescriptor(), 1)),
+            new PredefinedFunction("substring", Arrays.asList(Arrays.asList(new MctlNumberDescriptor()), Arrays.asList(new MctlNumberDescriptor())), new MctlStringDescriptor())
     );
 
     // Predefined types of the programming language
@@ -41,12 +44,11 @@ public class SymbolTable {
             get_currentScope().add_type(type);
         }
 
-        // TODO: Fix this
         // Adding predefined functions to the symbol table
         for (PredefinedFunction predefinedFunction : predefinedFunctions) {
             Symbol functionSymbol = new Symbol(predefinedFunction.get_id());
-            //functionSymbol.set_type(predefinedFunction.get_returnType());
-            //functionSymbol.set_types(predefinedFunction.get_parameters());
+            functionSymbol.set_type(predefinedFunction.get_returnType());
+            functionSymbol.set_types(predefinedFunction.get_parameters());
         }
     }
 

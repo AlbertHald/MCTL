@@ -10,7 +10,7 @@ public class Symbol {
     private String _name;
     private MctlTypeDescriptor _type;
     private boolean _isInstantiated;
-    private List<List<String>> _types = new ArrayList<>();
+    private List<List<MctlTypeDescriptor>> _types = new ArrayList<>();
 
     public Symbol() {}
     public Symbol(String name) {
@@ -30,8 +30,8 @@ public class Symbol {
     /**
      * Getter / Setters for the types ArrayList
      */
-    public List<List<String>> get_types() { return _types; }
-    public void set_types(List<List<String>> types) { this._types = types; }
+    public List<List<MctlTypeDescriptor>> get_types() { return _types; }
+    public void set_types(List<List<MctlTypeDescriptor>> types) { this._types = types; }
 
     public void set_name(String _name) {
         this._name = _name;
