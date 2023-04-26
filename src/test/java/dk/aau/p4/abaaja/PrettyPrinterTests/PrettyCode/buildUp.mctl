@@ -13,4 +13,4 @@ to buildUp (height: NUMBER, block: STRING): NOTHING {
   moveForward(1);
 }
 
-BuildUp(100, "dirt");
+buildUp(100, "dirt");
