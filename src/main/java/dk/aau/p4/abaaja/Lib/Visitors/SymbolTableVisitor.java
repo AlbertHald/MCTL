@@ -425,4 +425,11 @@ public class SymbolTableVisitor implements INodeVisitor {
         }
     }
 
+    @Override
+    public void visit(CommentNode node) {
+
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
+    }
 }

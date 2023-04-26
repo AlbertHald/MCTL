@@ -116,4 +116,6 @@ public class InitialStructVisitor implements INodeVisitor {
     public void visit(NumExpNode node) {}
     @Override
     public void visit(StringExpNode node) {}
+    @Override
+    public void visit(CommentNode node) {}
 }
