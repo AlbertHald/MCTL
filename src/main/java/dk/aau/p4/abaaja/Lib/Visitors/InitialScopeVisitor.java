@@ -15,14 +15,12 @@ import java.util.List;
 public class InitialScopeVisitor implements INodeVisitor {
     private ProblemCollection _problemCollection;
     private SymbolTable _symbolTable;
+    private VisitorTools _visitorTools;
 
     public InitialScopeVisitor(ProblemCollection problemCollection, SymbolTable symbolTable) {
         this._problemCollection = problemCollection;
         this._symbolTable = symbolTable;
-    }
-
-    private boolean isDeclared(String id) {
-        return _symbolTable.searchSymbol(id) == null;
+        this._visitorTools = new VisitorTools(symbolTable);
     }
 
     private void visitChildren(List<BaseNode> nodes) {
@@ -36,7 +34,7 @@ public class InitialScopeVisitor implements INodeVisitor {
         Symbol functionSymbol = new Symbol();
 
         // Check if symbol is declared
-        if (isDeclared(node.get_id())) {
+        if (_visitorTools.isDeclared(node.get_id())) {
             _problemCollection.addProblem(
                     ProblemType.ERROR_IDENTIFIER_CANNOT_BE_REUSED,
                     "The identifier \"" + node.get_id() + "\" cannot be redeclared",
@@ -47,23 +45,29 @@ public class InitialScopeVisitor implements INodeVisitor {
             // Set function ID and return type
             functionSymbol.set_name(node.get_id());
 
-            MctlTypeDescriptor typeDescriptor = _symbolTable.searchType(node.get_returnType().get_type());
-            if (typeDescriptor == null) {
+            MctlTypeDescriptor returnTypeDescriptor = _symbolTable.searchType(node.get_returnType().get_type());
+            if (returnTypeDescriptor == null) {
                 _problemCollection.addProblem(
                         ProblemType.ERROR_UNKNOWN_TYPE,
                         "The type \"" + node.get_returnType().get_type() + "\" is unknown",
                         node.get_lineNumber());
             } else {
-                functionSymbol.set_type(typeDescriptor);
+                functionSymbol.set_type(returnTypeDescriptor);
             }
 
             // Creating temporary list containing the function parameters
-            List<List<String>> functionParamList = new ArrayList<>();
+            List<List<MctlTypeDescriptor>> functionParamList = new ArrayList<>();
 
             // Create parameter symbols
             for (FormalParamNode formalParam : node.get_paramList()) {
-                // Adding parameter to functionSymbol
-                functionParamList.add(Arrays.asList(formalParam.get_type().get_type()));
+                MctlTypeDescriptor typeDescriptor = _visitorTools.getTypeDescriptor(formalParam.get_type());
+
+                if (typeDescriptor != null) {
+                    // Adding parameter to functionSymbol
+                    functionParamList.add(Arrays.asList(typeDescriptor));
+                } else {
+                    _problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + formalParam.get_type().get_type() + "\" does not exist", formalParam.get_lineNumber());
+                }
             }
 
             functionSymbol.set_types(functionParamList);

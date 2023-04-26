@@ -13,6 +13,7 @@ import java.util.List;
 public class SymbolTableVisitor implements INodeVisitor {
     private ProblemCollection problemCollection;
     SymbolTable symbolTable;
+    VisitorTools visitorTools;
 
     public SymbolTableVisitor (ProblemCollection problemCollection) {
         this.problemCollection = problemCollection;
@@ -22,10 +23,6 @@ public class SymbolTableVisitor implements INodeVisitor {
         for (BaseNode child : nodes) {
             child.accept(this);
         }
-    }
-
-    private boolean isDeclared(String id) {
-        return symbolTable.searchSymbol(id) == null;
     }
 
     private void initialScopeVisit(List<BaseNode> nodes) {
@@ -41,7 +38,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
             // Add each variable declaration for the struct to its descriptor
             for (VarDecNode node : mctlStructDescriptor.get_nodeReference().get_declarations()) {
-                MctlTypeDescriptor typeDescriptor = symbolTable.searchType(node.get_varDecType().get_type());
+                MctlTypeDescriptor typeDescriptor = visitorTools.getTypeDescriptor(node.get_varDecType());
 
                 // Check if the type exists
                 if (typeDescriptor == null) {
@@ -57,6 +54,7 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(MctlNode node) {
         //Initializes symboltable and sets current scope to "Global"
         symbolTable = new SymbolTable();
+        visitorTools = new VisitorTools(symbolTable);
 
         initialScopeVisit(node.get_children());
 
@@ -106,17 +104,18 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(VarDecNode node) {
-        MctlTypeDescriptor type;
+        MctlTypeDescriptor typeDescriptor;
 
-        if(isDeclared(node.get_id())) {
+        if(visitorTools.isDeclared(node.get_id())) {
             problemCollection.addProblem(ProblemType.ERROR_IDENTIFIER_CANNOT_BE_REUSED, "The identifier \"" + node.get_id() + "\" cannot be redeclared", node.get_lineNumber());
         } else {
-            type = symbolTable.searchType(node.get_varDecType().get_type());
-            if (type != null) {
-                Symbol symbol = new Symbol(node.get_id(), type);
+            typeDescriptor = visitorTools.getTypeDescriptor(node.get_varDecType());
+
+            if (typeDescriptor != null) {
+                Symbol symbol = new Symbol(node.get_id(), typeDescriptor);
                 symbolTable.insertSymbol(symbol);
             } else {
-                problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_varDecType().get_type() + "\" is unknown", node.get_lineNumber());
+                problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_varDecType().get_type() + "\" does not exist", node.get_lineNumber());
             }
 
         }
@@ -132,7 +131,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         symbolTable.createScope();
         for (FormalParamNode formalParam : node.get_paramList()) {
             Symbol paramSymbol = new Symbol(formalParam.get_id());
-            MctlTypeDescriptor tempType = symbolTable.searchType(formalParam.get_type().get_type());
+            MctlTypeDescriptor tempType = visitorTools.getTypeDescriptor(formalParam.get_type());
             if (tempType == null) {
                 problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + formalParam.get_type().get_type() + "\" is unknown", node.get_lineNumber());
             } else {
