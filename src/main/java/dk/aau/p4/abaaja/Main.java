@@ -23,7 +23,7 @@ public class Main {
 
         // Parse test CharStream
         //
-        ParseTree tree = syntaxPhase( CharStreams.fromString("to aa() : NUMBER { return 2; } \nstruct TEST {variable bing: NUMBER,variable bong: STRING} \nvariable bong: NUMBER; \nhest(200,ko); \nvariable ko : BOOLEAN;;"), problemCollection);
+        ParseTree tree = syntaxPhase( CharStreams.fromString("a[2]=2;"), problemCollection);
 
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here
