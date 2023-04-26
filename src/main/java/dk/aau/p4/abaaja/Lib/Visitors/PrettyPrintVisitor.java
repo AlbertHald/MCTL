@@ -205,8 +205,8 @@ public class PrettyPrintVisitor implements INodeVisitor{
         beginLineNode(node);
         printIndented();
         node.get_assignId().accept(this);
-        if(node.get_literalIncrement() != null){
-            print(node.get_literalIncrement());
+        if(node.get_literalPostfixOperator() != null){
+            print(node.get_literalPostfixOperator());
         }else{
             print(" = ");
             node.get_assignExp().accept(this);
