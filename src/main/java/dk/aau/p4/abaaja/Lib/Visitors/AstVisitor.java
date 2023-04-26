@@ -355,10 +355,12 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
             addExpNode.set_lineNumber(ctx.start.getLine());
             addExpNode.set_lineEndNumber(ctx.getStop().getLine());
             if (ctx.op.getType() == mctlParser.INCREMENT) {
+                assStateNode.set_literalIncrement("++");
                 addExpNode.set_operator(mctlParser.PLUS);
                 addExpNode.set_operatorLiteral("+");
             }
             else if (ctx.op.getType() == mctlParser.DECREMENT) {
+                assStateNode.set_literalIncrement("--");
                 addExpNode.set_operator(mctlParser.MINUS);
                 addExpNode.set_operatorLiteral("-");
             }
