@@ -60,6 +60,7 @@ public class AstBuilderUnitTests {
 
         // Assert
         softAssert.assertTrue(parseTree != null);
+        softAssert.assertAll();
     }
 
     /**
