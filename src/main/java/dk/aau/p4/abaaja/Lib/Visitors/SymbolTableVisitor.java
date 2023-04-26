@@ -26,9 +26,14 @@ public class SymbolTableVisitor implements INodeVisitor {
     }
 
     private void initialScopeVisit(List<BaseNode> nodes) {
-        // Checking function and struct declarations in code block
+        // Checking struct declarations in code block
         for (BaseNode child : nodes) {
-            child.accept(new InitialScopeVisitor(problemCollection, symbolTable));
+            child.accept(new InitialStructVisitor(problemCollection, symbolTable));
+        }
+
+        // Checking function declarations in code block
+        for (BaseNode child : nodes) {
+            child.accept(new InitialFuncVisitor(problemCollection, symbolTable));
         }
 
         // Finalize struct type declarations

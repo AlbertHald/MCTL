@@ -23,7 +23,7 @@ public class Main {
         ProblemCollection problemCollection = new ProblemCollection();
 
         // Parse test CharStream
-        ParseTree tree = syntaxPhase( CharStreams.fromString("variable test: UNDECLARED; struct UNDECLARED {variable var: NUMBER}"), problemCollection);
+        ParseTree tree = syntaxPhase( CharStreams.fromString("to bing(bong: DECLARED) : DECLARED { return bong; } variable test: DECLARED; struct DECLARED {variable var: NUMBER}"), problemCollection);
 
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here

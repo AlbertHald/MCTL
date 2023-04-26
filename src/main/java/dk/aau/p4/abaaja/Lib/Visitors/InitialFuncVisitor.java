@@ -12,12 +12,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class InitialScopeVisitor implements INodeVisitor {
+public class InitialFuncVisitor implements INodeVisitor {
     private ProblemCollection _problemCollection;
     private SymbolTable _symbolTable;
     private VisitorTools _visitorTools;
 
-    public InitialScopeVisitor(ProblemCollection problemCollection, SymbolTable symbolTable) {
+    public InitialFuncVisitor(ProblemCollection problemCollection, SymbolTable symbolTable) {
         this._problemCollection = problemCollection;
         this._symbolTable = symbolTable;
         this._visitorTools = new VisitorTools(symbolTable);
@@ -49,7 +49,7 @@ public class InitialScopeVisitor implements INodeVisitor {
             if (returnTypeDescriptor == null) {
                 _problemCollection.addProblem(
                         ProblemType.ERROR_UNKNOWN_TYPE,
-                        "The type \"" + node.get_returnType().get_type() + "\" is unknown",
+                        "The type \"" + node.get_returnType().get_type() + "\" does not exist",
                         node.get_lineNumber());
             } else {
                 functionSymbol.set_type(returnTypeDescriptor);
@@ -75,12 +75,7 @@ public class InitialScopeVisitor implements INodeVisitor {
     }
 
     @Override
-    public void visit(StructDecNode node) {
-        MctlStructDescriptor mctlStructDescriptor = new MctlStructDescriptor(node.get_id(), node);
-        _symbolTable.insertType(mctlStructDescriptor);
-        _symbolTable.get_currentScope().add_structType(node.get_id());
-    }
-
+    public void visit(StructDecNode node) {}
     @Override
     public void visit(MctlNode node) {}
     @Override
