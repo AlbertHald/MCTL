@@ -121,7 +121,7 @@ public class TypeCheckingVisitor {
     }
 
     public MctlTypeDescriptor visit(TypecastExpNode node) {
-
+        return null; // this visitor should not be visited, probably, I think.
     }
 
     public MctlTypeDescriptor visit(BinaryExpNode node) {
