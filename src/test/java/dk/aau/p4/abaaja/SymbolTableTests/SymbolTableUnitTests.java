@@ -39,11 +39,11 @@ public class SymbolTableUnitTests {
 
         //Act
         try {
-            testSymbolTable.CreateScope("testScope");
+            testSymbolTable.createScope("testScope");
         } catch (Exception e) {
             assert(false);
         }
-        boolean result = testSymbolTable.get_currentScope().get_Name() == expectedScopeName;
+        boolean result = testSymbolTable.get_currentScope().get_Name().equals(expectedScopeName);
 
         //Assert
         assert (result);
@@ -56,31 +56,14 @@ public class SymbolTableUnitTests {
         String expectedScopeName = "Global";
 
         try {
-            testSymbolTable.CreateScope("testScope");
+            testSymbolTable.createScope("testScope");
         } catch (Exception e) {
             assert(false);
         }
-        testSymbolTable.CloseScope();
+        testSymbolTable.closeScope();
 
         //Act
-        boolean result = testSymbolTable.get_currentScope().get_Name() == expectedScopeName;
-
-        //Assert
-        assert(result);
-    }
-
-    @Test()
-    public void SearchScope_WhenSearching_ThenReturnSearchedScope() {
-        //Arrange
-        String expectedScopeName = "testScope2";
-        try{
-            testSymbolTable.CreateScope("testScope1");
-            testSymbolTable.CreateScope("testScope2");
-        } catch (Exception e) {
-            assert(false);
-        }
-        //Act
-        boolean result = testSymbolTable.SearchScope("testScope2").get_Name() == expectedScopeName;
+        boolean result = testSymbolTable.get_currentScope().get_Name().equals(expectedScopeName);
 
         //Assert
         assert(result);
@@ -92,15 +75,15 @@ public class SymbolTableUnitTests {
         String expectedSymbolName = "expectedName";
         Symbol testSymbol = new Symbol(expectedSymbolName);
         try{
-            testSymbolTable.CreateScope("testScope");
+            testSymbolTable.createScope("testScope");
         } catch (Exception e) {
             assert(false);
         }
-        testSymbolTable.InsertSymbol(testSymbol);
+        testSymbolTable.insertSymbol(testSymbol);
 
 
         //Act
-        boolean result = testSymbolTable.SearchSymbol("expectedName").get_name() == expectedSymbolName;
+        boolean result = testSymbolTable.searchSymbol("expectedName").get_name().equals(expectedSymbolName);
 
         //Assert
         assert(result);
@@ -112,7 +95,7 @@ public class SymbolTableUnitTests {
         String expectedSymbolName = "expectedName";
         Symbol testSymbol = new Symbol(expectedSymbolName);
 
-        testSymbolTable.InsertSymbol(testSymbol);
+        testSymbolTable.insertSymbol(testSymbol);
 
         boolean result = testSymbolTable.get_currentScope().get_symbols().containsKey(expectedSymbolName);
 

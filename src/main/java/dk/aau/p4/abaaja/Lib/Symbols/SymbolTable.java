@@ -60,6 +60,14 @@ public class SymbolTable {
         _currentScope = scope;
     }
 
+    public void createScope(String name) {
+        Scope scope = new Scope(name);
+        scope.set_parent(_currentScope);
+        _symboltable.add(scope);
+
+        _currentScope = scope;
+    }
+
     public void closeScope(){
         if(_currentScope.get_Parent() != null) {
             _symboltable.remove(_currentScope);

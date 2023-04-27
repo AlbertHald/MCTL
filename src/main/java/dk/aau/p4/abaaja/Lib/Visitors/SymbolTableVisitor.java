@@ -182,9 +182,10 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(AssStateNode node) {
+        TypeCheckingVisitor typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, symbolTable);
 
-        //if (symbolTable.SearchSymbol(node.get_assignId().))
-        // Check Expression Types
+        MctlTypeDescriptor mctlTypeDescriptor = typeCheckingVisitor.visit(node.get_assignExp());
+        System.out.println(node.get_assignExp() + " : " + mctlTypeDescriptor);
     }
 
     @Override

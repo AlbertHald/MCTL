@@ -23,7 +23,7 @@ public class Main {
         ProblemCollection problemCollection = new ProblemCollection();
 
         // Parse test CharStream
-        ParseTree tree = syntaxPhase( CharStreams.fromString("a[2]=2;"), problemCollection);
+        ParseTree tree = syntaxPhase( CharStreams.fromString(" struct BING { variable bong: NUMBER }; variable a: BING; variable test: NUMBER; test = a.bong;"), problemCollection);
 
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here

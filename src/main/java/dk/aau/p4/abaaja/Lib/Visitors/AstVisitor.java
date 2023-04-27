@@ -20,7 +20,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
 
     private void addProblem(ParserRuleContext ctx, String message) {
         problemCollection.addProblem(ProblemType.ERROR_AST_BUILDER,
-                message != "" ? message : "The AST builder encountered an unexpected error at line: " + ctx.getStart().getLine(),
+                !message.equals("") ? message : "The AST builder encountered an unexpected error at line: " + ctx.getStart().getLine(),
                 ctx.getStart().getLine());
     }
 
@@ -131,8 +131,8 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         }
 
         BaseNode tempAccessorNode = visit(ctx.id().get(1));
-        if (tempAccessorNode instanceof ExpNode) {
-            idStructNode.set_accessor((ExpNode) tempAccessorNode);
+        if (tempAccessorNode instanceof IDExpNode) {
+            idStructNode.set_accessor((IDExpNode) tempAccessorNode);
         }
         else {
             addProblem(ctx, "");

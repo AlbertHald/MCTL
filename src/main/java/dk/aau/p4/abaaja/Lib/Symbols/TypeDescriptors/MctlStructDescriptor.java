@@ -28,6 +28,7 @@ public class MctlStructDescriptor extends MctlTypeDescriptor {
         _structVariables.put(id, entry);
     }
 
+    // TODO: Return null if entry does not exist
     public MctlTypeDescriptor get_structsymbol(String key) {
         return _structVariables.get(key);
     }
