@@ -177,7 +177,7 @@ public class TypeCheckingVisitor {
     }
 
     public MctlTypeDescriptor visit(StringExpNode node) {
-
+        return _symbolTable.searchType("STRING");
     }
 
     public MctlTypeDescriptor visit(CommentNode node) { return null; }
