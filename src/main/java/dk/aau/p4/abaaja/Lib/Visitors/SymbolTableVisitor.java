@@ -118,6 +118,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
             if (typeDescriptor != null) {
                 Symbol symbol = new Symbol(node.get_id(), typeDescriptor);
+                symbol.set_isInstantiated(true);
                 symbolTable.insertSymbol(symbol);
             } else {
                 problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_varDecType().get_type() + "\" does not exist", node.get_lineNumber());
@@ -144,6 +145,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             }
 
             // Adding parameter to functionSymbol and current symbol table
+            paramSymbol.set_isInstantiated(true);
             symbolTable.insertSymbol(paramSymbol);
         }
 
