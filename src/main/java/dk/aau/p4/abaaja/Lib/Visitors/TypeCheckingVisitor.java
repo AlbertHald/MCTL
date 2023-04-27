@@ -138,7 +138,11 @@ public class TypeCheckingVisitor {
     }
 
     public MctlTypeDescriptor visit(ExpNode node) {
-        System.out.println("Exp");
+        if (node instanceof IDExpNode) {
+            return visit((IDExpNode) node);
+        }
+
+
         return null; // TODO: Implement
     }
 

@@ -185,7 +185,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         TypeCheckingVisitor typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, symbolTable);
 
         MctlTypeDescriptor mctlTypeDescriptor = typeCheckingVisitor.visit(node.get_assignExp());
-        System.out.println(node.get_assignExp() + " : " + mctlTypeDescriptor);
+        System.out.println(node.get_assignExp() + " : " + mctlTypeDescriptor.get_type_literal());
     }
 
     @Override
