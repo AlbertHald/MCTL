@@ -169,7 +169,7 @@ public class TypeCheckingVisitor {
     }
 
     public MctlTypeDescriptor visit(BoolExpNode node) {
-
+        return _symbolTable.searchType("BOOLEAN");
     }
 
     public MctlTypeDescriptor visit(NumExpNode node) {
