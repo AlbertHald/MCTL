@@ -1,9 +1,20 @@
 package dk.aau.p4.abaaja.Lib.Visitors;
 
 import dk.aau.p4.abaaja.Lib.Nodes.*;
+import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
+import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlTypeDescriptor;
 
 public class TypeCheckingVisitor {
+    private ProblemCollection _problemCollection;
+    private SymbolTable _symbolTable;
+    private VisitorTools _visitorTools;
+
+    public TypeCheckingVisitor(ProblemCollection problemCollection, SymbolTable symbolTable) {
+        this._problemCollection = problemCollection;
+        this._symbolTable = symbolTable;
+        this._visitorTools = new VisitorTools(symbolTable);
+    }
 
     public MctlTypeDescriptor visit(MctlNode node) {
 
