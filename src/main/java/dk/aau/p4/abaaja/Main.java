@@ -23,7 +23,13 @@ public class Main {
         ProblemCollection problemCollection = new ProblemCollection();
 
         // Parse test CharStream
-        ParseTree tree = syntaxPhase( CharStreams.fromString(" struct BING { variable bong: NUMBER };struct BING { variable bong: NUMBER }; variable a: BING; variable test: NUMBER; test = a.bong;"), problemCollection);
+        ParseTree tree = syntaxPhase( CharStreams.fromString("struct BING { variable baang: NUMBER };\n" +
+                "struct BONG { variable ooo: BING, variable bong: NUMBER };\n " +
+                "variable a: BING;\n " +
+                "a.baang = 8;\n " +
+                "variable oof: BONG;\n " +
+                "oof.ooo = oof.ooo.baang;\n " +
+                "oof.bong = 3;\n"), problemCollection);
 
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here
@@ -36,7 +42,7 @@ public class Main {
             concreteNode.accept(new SymbolTableVisitor(problemCollection));
 
             for (Problem problem : problemCollection.getProblems()) {
-                System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage());
+                System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
             }
         }
         else {

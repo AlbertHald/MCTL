@@ -2,227 +2,166 @@ package dk.aau.p4.abaaja.Lib.Visitors;
 
 import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
+import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.*;
 
 public class TypeCheckingVisitor {
-    private ProblemCollection _problemCollection;
-    private SymbolTable _symbolTable;
-    private VisitorTools _visitorTools;
+    private final ProblemCollection _problemCollection;
+    private final SymbolTable _symbolTable;
 
     public TypeCheckingVisitor(ProblemCollection problemCollection, SymbolTable symbolTable) {
         this._problemCollection = problemCollection;
         this._symbolTable = symbolTable;
-        this._visitorTools = new VisitorTools(symbolTable);
-    }
-
-    public MctlTypeDescriptor visit(MctlNode node) {
-        System.out.println("Mctl");
-        return null; // TODO: Implement
-    }
-
-    public MctlTypeDescriptor visit(LineNode node) {
-        System.out.println("Line");
-        return null; // TODO: Implement
-    }
-
-    public MctlTypeDescriptor visit(BlockNode node) {
-        System.out.println("Block");
-        return null; // TODO: Implement
     }
 
     public MctlTypeDescriptor visit(DecNode node) {
-        System.out.println("DecNode");
-        return null; // TODO: Implement
+        MctlTypeDescriptor typeDescriptor = null;
+
+        if (node instanceof VarDecNode) { typeDescriptor = visit((VarDecNode) node); }
+        else if (node instanceof FuncDecNode) { typeDescriptor = visit((FuncDecNode) node); }
+        else if (node instanceof StructDecNode) { typeDescriptor = visit((StructDecNode) node); }
+
+        return typeDescriptor;
     }
 
     public MctlTypeDescriptor visit(StateNode node) {
-        System.out.println("State");
-        return null; // TODO: Implement
-    }
+        MctlTypeDescriptor typeDescriptor = null;
 
-    public MctlTypeDescriptor visit(VarDecNode node) {
-        System.out.println("VarDec");
-        return null; // TODO: Implement
-    }
+        if (node instanceof IfStateNode) { typeDescriptor = visit((IfStateNode) node); }
+        else if (node instanceof AssStateNode) { typeDescriptor = visit((AssStateNode) node); }
+        else if (node instanceof FuncInvokeNode) { typeDescriptor = visit((FuncInvokeNode) node); }
+        else if (node instanceof InvokeNode) { typeDescriptor = visit((InvokeNode) node); }
+        else if (node instanceof RepeatStateNode) { typeDescriptor = visit((RepeatStateNode) node); }
+        else if (node instanceof ReturnNode) { typeDescriptor = visit((ReturnNode) node); }
+        else if (node instanceof StopNode) { typeDescriptor = visit((StopNode) node); }
 
-    public MctlTypeDescriptor visit(FuncDecNode node) {
-        System.out.println("FuncDec");
-        return null; // TODO: Implement
-    }
-
-    public MctlTypeDescriptor visit(StructDecNode node) {
-        System.out.println("StructDec");
-        return null; // TODO: Implement
+        return typeDescriptor;
     }
 
     public MctlTypeDescriptor visit(IfStateNode node) {
-        System.out.println("IfState");
-        return null; // TODO: Implement
+        MctlTypeDescriptor typeDescriptor = _symbolTable.searchType("BOOLEAN");
+
+        for (ExpNode expNode : node.get_expChildren()) {
+            MctlTypeDescriptor tempTypeDescriptor = visit(expNode);
+            if (!tempTypeDescriptor.get_type_literal().equals("BOOLEAN")) {
+                _problemCollection.addProblem(
+                        ProblemType.ERROR_TYPE_MISMATCH,
+                        "Expected type BOOLEAN but got: " + tempTypeDescriptor.get_type_literal(),
+                        expNode.get_lineNumber()
+                );
+
+                typeDescriptor = null;
+            }
+        }
+
+        return typeDescriptor;
     }
 
     public MctlTypeDescriptor visit(RepeatStateNode node) {
-        System.out.println("RepeatState");
-        return null; // TODO: Implement
+        String typeLiteral = visit(node.get_repeatExp()).get_type_literal();
+
+        if (!(typeLiteral.equals("BOOLEAN") || typeLiteral.equals("NUMBER"))) {
+            _problemCollection.addProblem(
+                    ProblemType.ERROR_TYPE_MISMATCH,
+                    "Expected type BOOLEAN or NUMBER but got: " + typeLiteral,
+                    node.get_lineNumber()
+            );
+        }
+
+        return _symbolTable.searchType(typeLiteral);
     }
 
-    public MctlTypeDescriptor visit(AssStateNode node) {
-        System.out.println("AssState");
-        return null; // TODO: Implement
-    }
+    public MctlTypeDescriptor visit(AssStateNode node) { return null; }
+    public MctlTypeDescriptor visit(InvokeExpNode node) { return visit(node.getInvokeNode()); }
 
     public MctlTypeDescriptor visit(InvokeNode node) {
-        System.out.println("Invoke");
-        return null; // TODO: Implement
-    }
+        MctlTypeDescriptor typeDescriptor = null;
 
-    public MctlTypeDescriptor visit(FuncInvokeNode node) {
-        System.out.println("FuncInvoke");
-        return null; // TODO: Implement
-    }
+        if (node instanceof StringMethodInvokeNode) { typeDescriptor = visit((StringMethodInvokeNode) node); }
+        else if (node instanceof VarMethodInvokeNode) { typeDescriptor = visit((VarMethodInvokeNode) node); }
+        else if (node instanceof FuncInvokeNode) { typeDescriptor = visit((FuncInvokeNode) node); }
 
-    public MctlTypeDescriptor visit(VarMethodInvokeNode node) {
-        System.out.println("VarMethodInvoke");
-        return null; // TODO: Implement
-    }
 
-    public MctlTypeDescriptor visit(StringMethodInvokeNode node) {
-        System.out.println("StringMethodInvoke");
-        return null; // TODO: Implement
-    }
-
-    public MctlTypeDescriptor visit(ReturnNode node) {
-        System.out.println("Return");
-        return null; // TODO: Implement
-    }
-
-    public MctlTypeDescriptor visit(FormalParamNode node) {
-        System.out.println("FormalParam");
-        return null; // TODO: Implement
-    }
-
-    public MctlTypeDescriptor visit(StopNode node) {
-        System.out.println("Stop");
-        return null; // TODO: Implement
+        return typeDescriptor;
     }
 
     public MctlTypeDescriptor visit(TypeNode node) {
-        System.out.println("Type");
-        return null; // TODO: Implement
-    }
+        MctlTypeDescriptor typeDescriptor = null;
 
-    public MctlTypeDescriptor visit(BoolTypeNode node) {
-        System.out.println("BoolType");
-        return null; // TODO: Implement
-    }
-
-    public MctlTypeDescriptor visit(NumTypeNode node) {
-        System.out.println("NumType");
-        return null; // TODO: Implement
-    }
-
-    public MctlTypeDescriptor visit(StringTypeNode node) {
-        System.out.println("StringType");
-        return null; // TODO: Implement
-    }
-
-    public MctlTypeDescriptor visit(NothingTypeNode node) {
-        System.out.println("NothingType");
-        return null; // TODO: Implement
+        if (node instanceof BoolTypeNode) { typeDescriptor = visit((BoolTypeNode) node); }
+        else if (node instanceof NumTypeNode) { typeDescriptor = visit((NumTypeNode) node); }
+        else if (node instanceof StringTypeNode) { typeDescriptor = visit((StringTypeNode) node); }
+        else if (node instanceof NothingTypeNode) { typeDescriptor = visit((NothingTypeNode) node); }
+        else if (node instanceof IDTypeNode) { typeDescriptor = visit((IDTypeNode) node); }
+        return typeDescriptor;
     }
 
     public MctlTypeDescriptor visit(IDTypeNode node) {
-        System.out.println("IDType");
-        return null; // TODO: Implement
-    }
+        MctlTypeDescriptor typeDescriptor = _symbolTable.searchType(node.get_type());
 
-    public MctlTypeDescriptor visit(ExpNode node) {
-        if (node instanceof IDExpNode) {
-            return visit((IDExpNode) node);
+        if (typeDescriptor == null) {
+            _problemCollection.addProblem(
+                    ProblemType.ERROR_UNKNOWN_TYPE,
+                    "The type: " + node.get_type() + " has not been declared",
+                    node.get_lineNumber()
+            );
         }
 
-
-        return null; // TODO: Implement
-    }
-
-    public MctlTypeDescriptor visit(UnaryExpNode node) {
-        System.out.println("UnaryExp");
-        return null; // TODO: Implement
-    }
-
-    public MctlTypeDescriptor visit(TypecastExpNode node) {
-        System.out.println("TypecastExp");
-        return null; // this visitor should not be visited, probably, I think.
+        return typeDescriptor;
     }
 
     public MctlTypeDescriptor visit(BinaryExpNode node) {
-        System.out.println("BinaryExp");
-        return null; // TODO: Implement
-    }
+        MctlTypeDescriptor typeDescriptor = null;
 
-    public MctlTypeDescriptor visit(MulExpNode node) {
-        System.out.println("MulExp");
-        return null; // TODO: Implement
-    }
+        if (node instanceof AddExpNode) { typeDescriptor = visit((AddExpNode) node); }
+        else if (node instanceof AndExpNode) { typeDescriptor = visit((AndExpNode) node); }
+        else if (node instanceof CompExpNode) { typeDescriptor = visit((CompExpNode) node); }
+        else if (node instanceof EqualExpNode) { typeDescriptor = visit((EqualExpNode) node); }
+        else if (node instanceof MulExpNode) { typeDescriptor = visit((MulExpNode) node); }
+        else if (node instanceof OrExpNode) { typeDescriptor = visit((OrExpNode) node); }
 
-    public MctlTypeDescriptor visit(AddExpNode node) {
-        System.out.println("AddExp");
-        return null; // TODO: Implement
-    }
-
-    public MctlTypeDescriptor visit(AndExpNode node) {
-        System.out.println("AndExp");
-        return null; // TODO: Implement
-    }
-
-    public MctlTypeDescriptor visit(OrExpNode node) {
-        System.out.println("OrExp");
-        return null; // TODO: Implement
-    }
-
-    public MctlTypeDescriptor visit(CompExpNode node) {
-        System.out.println("CompExp");
-        return null; // TODO: Implement
+        return typeDescriptor;
     }
 
     public MctlTypeDescriptor visit(EqualExpNode node) {
-        System.out.println("EqualExp");
-        return null; // TODO: Implement
-    }
+        String type1 = visit((ExpNode) node.get_children().get(0)).get_type_literal();
+        String type2 = visit((ExpNode) node.get_children().get(1)).get_type_literal();
 
-    public MctlTypeDescriptor visit(IDExpNode node){
-        System.out.println("IDExp");
-        // TODO: Why are these nodes not automatically visited by the correct visitor?
-        if(node instanceof IDArrayExpNode){
-            return this.visit((IDArrayExpNode) node);
-        }else if(node instanceof IDStructNode){
-            return this.visit((IDStructNode) node);
-        }else if(node instanceof ActualIDExpNode){
-            return this.visit((ActualIDExpNode) node);
-        }
+        if (!type1.equals(type2)) {
+            _problemCollection.addProblem(
+                    ProblemType.ERROR_TYPE_MISMATCH,
+                    "Expected both expressions to be of the same type, but got type: " + type1 + " and type: " + type2,
+                    node.get_lineNumber()
+            );
 
-        if(node.get_idNode() != null){
-            return visit(node.get_idNode());
-        } else {
             return null;
         }
+
+        return _symbolTable.searchType(type1);
+    }
+
+    public MctlTypeDescriptor visit(IDExpNode node) {
+        MctlTypeDescriptor typeDescriptor = null;
+
+        if (node instanceof IDArrayExpNode) { typeDescriptor = visit((IDArrayExpNode) node); }
+        else if (node instanceof IDStructNode) { typeDescriptor = visit((IDStructNode) node); }
+        else if (node instanceof ActualIDExpNode) { typeDescriptor = visit((ActualIDExpNode) node); }
+
+        return typeDescriptor;
     }
 
     public MctlTypeDescriptor visit(ActualIDExpNode node) {
-        System.out.println("ActualIDExp");
         Symbol symbol = _symbolTable.searchSymbol(node.get_id());
 
-        if (!symbol.get_is_isInstantiated()) {
+        if (symbol != null && !symbol.get_isInstantiated()) {
             return _symbolTable.searchType("NOTHING");
+        } else if (symbol == null) {
+            return null;
         }
 
         return symbol.get_type();
-    }
-
-    public MctlTypeDescriptor visit(IDArrayExpNode node) {
-        System.out.println("IDArrayExp");
-        return visit(node.get_idNode());
     }
 
     public MctlTypeDescriptor visit(IDStructNode node) {
@@ -230,7 +169,6 @@ public class TypeCheckingVisitor {
 
         IDStructNode currNode = node;
         MctlTypeDescriptor accessorType;
-        String accessorTypeLiteral;
 
         MctlStructDescriptor mctlTypeDescriptor;
         mctlTypeDescriptor = (MctlStructDescriptor) visit(currNode.get_idNode());
@@ -239,56 +177,113 @@ public class TypeCheckingVisitor {
             return mctlTypeDescriptor;
         }
 
-        System.out.println(currNode.get_idNode());
-
         do {
             // Get id of accessor
             IDExpNode accessor = currNode.get_accessor();
-            while (!(accessor instanceof ActualIDExpNode)) {
+            while (!(accessor instanceof ActualIDExpNode actualIDExpNode)) {
                 accessor = accessor.get_idNode();
             }
 
             // Get type of accessor
-            String accessorId = ((ActualIDExpNode) accessor).get_id();
+            String accessorId = actualIDExpNode.get_id();
+
             if (mctlTypeDescriptor.get_structVariables().containsKey(accessorId)) {
                 accessorType = mctlTypeDescriptor.get_structsymbol(accessorId);
-                accessorTypeLiteral = accessorType.get_type_literal();
             } else {
-                // Type does not exist on this Struct type error
-                // TODO: Add error of type does not exist
+                _problemCollection.addProblem(
+                        ProblemType.ERROR_UNKNOWN_TYPE,
+                        "The struct " + mctlTypeDescriptor.get_type_literal() + " does not contain a member with ID: " + accessorId,
+                        node.get_lineNumber()
+                );
+
                 return null;
             }
 
+            System.out.println("ID: " + actualIDExpNode.get_id() + " Type: " + accessorType.get_type_literal());
+
             // Check if accessor type is a primitive type
-            if (accessorTypeLiteral.equals("BOOLEAN") || accessorTypeLiteral.equals("STRING") || accessorTypeLiteral.equals("NUMBER") || accessorTypeLiteral.equals("NOTHING")) {
-                foundPrimitiveType = true;
-            }
-            else {
+            if ((currNode.get_accessor() instanceof IDStructNode idStructNode)) {
                 mctlTypeDescriptor = (MctlStructDescriptor) accessorType;
-                currNode = (IDStructNode) currNode.get_accessor();
+                currNode = idStructNode;
+            } else {
+                foundPrimitiveType = true;
             }
         } while(!foundPrimitiveType);
 
         return accessorType;
     }
 
-    public MctlTypeDescriptor visit(BoolExpNode node) {
-        System.out.println("BoolExp");
-        return _symbolTable.searchType("BOOLEAN");
+    public MctlTypeDescriptor visit(ExpNode node) {
+        MctlTypeDescriptor typeDescriptor = null;
+
+        if (node instanceof IDExpNode) { typeDescriptor = visit((IDExpNode) node); }
+        else if (node instanceof BinaryExpNode) { typeDescriptor = visit((BinaryExpNode) node); }
+        else if (node instanceof BoolExpNode) { typeDescriptor = visit((BoolExpNode) node); }
+        else if (node instanceof InvokeExpNode) { typeDescriptor = visit((InvokeExpNode) node); }
+        else if (node instanceof NumExpNode) { typeDescriptor = visit((NumExpNode) node); }
+        else if (node instanceof StringExpNode) { typeDescriptor = visit((StringExpNode) node); }
+        else if (node instanceof TypecastExpNode) { typeDescriptor = visit((TypecastExpNode) node); }
+        else if (node instanceof UnaryExpNode) { typeDescriptor = visit((UnaryExpNode) node); }
+
+        return typeDescriptor;
     }
 
-    public MctlTypeDescriptor visit(NumExpNode node) {
-        System.out.println("NumExp");
-        return _symbolTable.searchType("NUMBER");
-    }
 
-    public MctlTypeDescriptor visit(StringExpNode node) {
-        System.out.println("StringExp");
-        return _symbolTable.searchType("STRING");
-    }
+    public MctlTypeDescriptor visit(MulExpNode node) { return expectsType(node, "NUMBER"); }
+    public MctlTypeDescriptor visit(AddExpNode node) { return expectsType(node, "NUMBER"); }
+    public MctlTypeDescriptor visit(AndExpNode node) { return expectsType(node, "BOOLEAN"); }
+    public MctlTypeDescriptor visit(OrExpNode node) { return expectsType(node, "BOOLEAN"); }
+    public MctlTypeDescriptor visit(CompExpNode node) { return expectsType(node, "NUMBER"); }
 
-    public MctlTypeDescriptor visit(CommentNode node) {
-        System.out.println("Comment");
-        return null;
+    public MctlTypeDescriptor visit(BoolTypeNode node) { return _symbolTable.searchType("BOOLEAN"); }
+    public MctlTypeDescriptor visit(NumTypeNode node) { return _symbolTable.searchType("NUMBER"); }
+    public MctlTypeDescriptor visit(StringTypeNode node) { return _symbolTable.searchType("STRING"); }
+    public MctlTypeDescriptor visit(NothingTypeNode node) { return _symbolTable.searchType("NOTHING"); }
+    public MctlTypeDescriptor visit(BoolExpNode node) { return _symbolTable.searchType("BOOLEAN"); }
+    public MctlTypeDescriptor visit(NumExpNode node) { return _symbolTable.searchType("NUMBER"); }
+    public MctlTypeDescriptor visit(StringExpNode node) { return _symbolTable.searchType("STRING"); }
+    public MctlTypeDescriptor visit(IDArrayExpNode node) { return visit(node.get_idNode()); }
+    public MctlTypeDescriptor visit(UnaryExpNode node) { return visit(node.get_unaryExp()); }
+    public MctlTypeDescriptor visit(TypecastExpNode node) { return visit(node.get_expression_node()); }
+    public MctlTypeDescriptor visit(ReturnNode node) { return visit(node.get_returnExp()); }
+
+    public MctlTypeDescriptor visit(MctlNode node) { return null; }
+    public MctlTypeDescriptor visit(LineNode node) { return null; }
+    public MctlTypeDescriptor visit(BlockNode node) { return null; }
+    public MctlTypeDescriptor visit(FuncInvokeNode node) { return null; }
+    public MctlTypeDescriptor visit(VarMethodInvokeNode node) { return null; }
+    public MctlTypeDescriptor visit(StringMethodInvokeNode node) { return null; }
+    public MctlTypeDescriptor visit(FormalParamNode node) { return null; }
+    public MctlTypeDescriptor visit(StopNode node) { return null; }
+    public MctlTypeDescriptor visit(CommentNode node) { return null; }
+    public MctlTypeDescriptor visit(VarDecNode node) { return null; }
+    public MctlTypeDescriptor visit(FuncDecNode node) { return null; }
+    public MctlTypeDescriptor visit(StructDecNode node) { return null; }
+
+    public MctlTypeDescriptor expectsType(BaseNode node, String typeLiteral) {
+        String typeChildOne = visit((ExpNode) node.get_children().get(0)).get_type_literal();
+        String typeChildTwo = visit((ExpNode) node.get_children().get(1)).get_type_literal();
+
+        if (!typeChildOne.equals(typeLiteral)) {
+            _problemCollection.addProblem(
+                    ProblemType.ERROR_TYPE_MISMATCH,
+                    "Expected type " + typeLiteral + " but got " + typeChildOne,
+                    node.get_lineNumber()
+            );
+        }
+
+        if (!typeChildTwo.equals(typeLiteral)) {
+            _problemCollection.addProblem(
+                    ProblemType.ERROR_TYPE_MISMATCH,
+                    "Expected type " + typeLiteral + " but got " + typeChildTwo,
+                    node.get_lineNumber()
+            );
+        }
+
+        if (!(typeChildOne.equals(typeLiteral) && typeChildTwo.equals(typeLiteral))) {
+            return null;
+        }
+
+        return _symbolTable.searchType(typeLiteral);
     }
 }

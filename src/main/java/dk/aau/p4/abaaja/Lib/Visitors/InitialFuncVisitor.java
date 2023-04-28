@@ -75,6 +75,8 @@ public class InitialFuncVisitor implements INodeVisitor {
     }
 
     @Override
+    public void visit(InvokeExpNode node) {}
+    @Override
     public void visit(StructDecNode node) {}
     @Override
     public void visit(MctlNode node) {}

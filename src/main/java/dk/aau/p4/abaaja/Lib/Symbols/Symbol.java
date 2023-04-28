@@ -9,7 +9,7 @@ import java.util.List;
 public class Symbol {
     private String _name;
     private MctlTypeDescriptor _type;
-    private boolean _isInstantiated;
+    private boolean _isInstantiated = false;
     private List<List<MctlTypeDescriptor>> _types = new ArrayList<>();
 
     public Symbol() {}
@@ -41,7 +41,7 @@ public class Symbol {
         this._type = _type;
     }
 
-    public boolean get_is_isInstantiated() {
+    public boolean get_isInstantiated() {
         return _isInstantiated;
     }
     public void set_isInstantiated(boolean _isInstantiated) {

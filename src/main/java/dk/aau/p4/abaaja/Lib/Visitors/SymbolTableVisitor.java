@@ -14,9 +14,13 @@ public class SymbolTableVisitor implements INodeVisitor {
     private ProblemCollection problemCollection;
     SymbolTable symbolTable;
     VisitorTools visitorTools;
+    TypeCheckingVisitor typeCheckingVisitor;
 
     public SymbolTableVisitor (ProblemCollection problemCollection) {
+        this.symbolTable = new SymbolTable();
+        this.visitorTools = new VisitorTools(this.symbolTable);
         this.problemCollection = problemCollection;
+        typeCheckingVisitor = new TypeCheckingVisitor(this.problemCollection, this.symbolTable);
     }
 
     private void visitChildren(List<BaseNode> nodes) {
@@ -57,10 +61,6 @@ public class SymbolTableVisitor implements INodeVisitor {
     }
 
     public void visit(MctlNode node) {
-        //Initializes symboltable and sets current scope to "Global"
-        symbolTable = new SymbolTable();
-        visitorTools = new VisitorTools(symbolTable);
-
         initialScopeVisit(node.get_children());
 
         // Visit remaining lines
@@ -111,23 +111,18 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(VarDecNode node) {
         MctlTypeDescriptor typeDescriptor;
 
-        if(visitorTools.isDeclared(node.get_id())) {
+        if (visitorTools.isDeclared(node.get_id())) {
             problemCollection.addProblem(ProblemType.ERROR_IDENTIFIER_CANNOT_BE_REUSED, "The identifier \"" + node.get_id() + "\" cannot be redeclared", node.get_lineNumber());
         } else {
             typeDescriptor = visitorTools.getTypeDescriptor(node.get_varDecType());
-
             if (typeDescriptor != null) {
                 Symbol symbol = new Symbol(node.get_id(), typeDescriptor);
                 symbol.set_isInstantiated(true);
-                symbolTable.insertSymbol(symbol);
+                this.symbolTable.insertSymbol(symbol);
             } else {
                 problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_varDecType().get_type() + "\" does not exist", node.get_lineNumber());
             }
 
-        }
-
-        for (BaseNode child : node.get_children()) {
-            child.accept(this);
         }
     }
 
@@ -182,10 +177,48 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(AssStateNode node) {
-        TypeCheckingVisitor typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, symbolTable);
+        Symbol variable;
 
-        MctlTypeDescriptor mctlTypeDescriptor = typeCheckingVisitor.visit(node.get_assignExp());
-        System.out.println(node.get_assignExp() + " : " + mctlTypeDescriptor.get_type_literal());
+        MctlTypeDescriptor idTypeDescriptor = typeCheckingVisitor.visit(node.get_assignId());
+        MctlTypeDescriptor expTypeDescriptor = typeCheckingVisitor.visit(node.get_assignExp());
+
+        IDExpNode idExpNode = node.get_assignId();
+
+        while (!(idExpNode instanceof ActualIDExpNode actualIDNode)) {
+            idExpNode = idExpNode.get_idNode();
+        }
+
+        if (idTypeDescriptor == null) {
+            problemCollection.addProblem(
+                    ProblemType.ERROR_UNDEFINED_IDENTIFIER,
+                    "The variable \"" + actualIDNode.get_id() + "\" has not yet been declared",
+                    node.get_lineNumber()
+            );
+        } else if (expTypeDescriptor == null) {
+            problemCollection.addProblem(
+                    ProblemType.ERROR_UNDEFINED_IDENTIFIER,
+                    "The variable \"" + actualIDNode.get_id() + "\" cannot be assigned to an expression containing undeclared variables",
+                    node.get_lineNumber()
+            );
+        } else if (idTypeDescriptor.get_type_literal().equals(expTypeDescriptor.get_type_literal())) {
+            variable = symbolTable.searchSymbol(actualIDNode.get_id());
+
+            if (variable == null) {
+                problemCollection.addProblem(
+                        ProblemType.ERROR_UNDEFINED_IDENTIFIER,
+                        "The variable \"" + actualIDNode.get_id() + "\" has not yet been declared",
+                        node.get_lineNumber()
+                );
+            } else {
+                variable.set_isInstantiated(true);
+            }
+        } else {
+            problemCollection.addProblem(
+                    ProblemType.ERROR_TYPE_MISMATCH,
+                    "Expected " + idTypeDescriptor.get_type_literal() + " but got " + expTypeDescriptor.get_type_literal(),
+                    node.get_lineNumber()
+            );
+        }
     }
 
     @Override
@@ -294,6 +327,14 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(ExpNode node) {
+
+        for (BaseNode child : node.get_children()) {
+            child.accept(this);
+        }
+    }
+
+    @Override
+    public void visit(InvokeExpNode node) {
 
         for (BaseNode child : node.get_children()) {
             child.accept(this);
