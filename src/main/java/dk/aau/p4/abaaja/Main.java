@@ -24,14 +24,15 @@ public class Main {
 
         // Parse test CharStream
         ParseTree tree = syntaxPhase( CharStreams.fromString("struct BING { variable baang: NUMBER };\n" +
-                "struct BONG { variable ooo: BING, variable bong: NUMBER };\n " +
+                "struct BONG { variable ooo: STRING, variable bong: NUMBER };\n " +
                 "variable a: BING;\n " +
                 "a.baang = 8;\n " +
                 "variable oof: BONG;\n " +
                 "oof.ooo = oof.ooo;\n " +
-                "oof.bong = 3;\n" +
                 "to remov(string : STRING) : NOTHING {}\n" +
-                "remov(\"bing\");"), problemCollection);
+                "remov(\"bing\");\n" +
+                "\"testString\".length();\n" +
+                "oof.ooo.length();"), problemCollection);
 
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here
