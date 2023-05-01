@@ -279,6 +279,9 @@ public class PrettyPrintVisitor implements INodeVisitor{
     }
     public void visit(TypeNode node){
         print(node.get_type());
+        for(int i = 0; i < node.get_arrayDegree(); i++){
+            print("[]");
+        }
     }
 
     public void visit(UnaryExpNode node){
