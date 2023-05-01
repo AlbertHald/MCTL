@@ -170,7 +170,14 @@ public class TypeCheckingVisitor {
         MctlTypeDescriptor accessorType;
 
         MctlStructDescriptor mctlTypeDescriptor;
-        mctlTypeDescriptor = (MctlStructDescriptor) visit(currNode.get_idNode());
+
+        MctlTypeDescriptor descriptor = visit(currNode.get_idNode());
+
+        if (descriptor instanceof MctlArrayTypeDescriptor) {
+            return descriptor;
+        } else {
+            mctlTypeDescriptor = (MctlStructDescriptor) descriptor;
+        }
 
         if (mctlTypeDescriptor.get_type_literal().equals("NOTHING")) {
             return mctlTypeDescriptor;
