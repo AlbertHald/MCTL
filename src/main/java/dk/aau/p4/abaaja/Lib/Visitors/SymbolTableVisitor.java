@@ -148,8 +148,6 @@ public class SymbolTableVisitor implements INodeVisitor {
         // Check lines of the function block
         for (BaseNode child : node.get_funcBlock().get_children()) {
             if (child instanceof ReturnNode returnNode) {
-                returnNodesPresent = true;
-
                 // Add problems for each return node it the function should return a value
                 if (!funcSymbol.get_type().get_type_literal().equals("NOTHING")) {
                     // Get expression return type and function symbol
