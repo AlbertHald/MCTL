@@ -17,4 +17,8 @@ public class MctlArrayTypeDescriptor extends MctlTypeDescriptor {
         }
         return result;
     }
+
+    public String get_type_literal_without_brackets_lol() {
+        return _type.get_type_literal();
+    }
 }

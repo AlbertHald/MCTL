@@ -174,7 +174,11 @@ public class TypeCheckingVisitor {
         MctlTypeDescriptor descriptor = visit(currNode.get_idNode());
 
         if (descriptor instanceof MctlArrayTypeDescriptor) {
-            return descriptor;
+            String no_brackets = ((MctlArrayTypeDescriptor) descriptor).get_type_literal_without_brackets_lol();
+            MctlStructDescriptor another_descriptor = (MctlStructDescriptor) _symbolTable.get_currentScope().get_types().get(no_brackets);
+            ActualIDExpNode another_node = (ActualIDExpNode) node.get_accessor();
+
+            return another_descriptor.get_structVariables().get(another_node.get_id());
         } else {
             mctlTypeDescriptor = (MctlStructDescriptor) descriptor;
         }
