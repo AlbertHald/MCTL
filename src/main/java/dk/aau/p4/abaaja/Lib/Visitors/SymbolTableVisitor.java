@@ -12,15 +12,19 @@ import java.util.List;
 
 public class SymbolTableVisitor implements INodeVisitor {
     private ProblemCollection problemCollection;
-    SymbolTable symbolTable;
-    VisitorTools visitorTools;
-    TypeCheckingVisitor typeCheckingVisitor;
+    private SymbolTable symbolTable;
+    private VisitorTools visitorTools;
+    private TypeCheckingVisitor typeCheckingVisitor;
 
     public SymbolTableVisitor (ProblemCollection problemCollection) {
         this.symbolTable = new SymbolTable();
         this.visitorTools = new VisitorTools(this.symbolTable);
         this.problemCollection = problemCollection;
         typeCheckingVisitor = new TypeCheckingVisitor(this.problemCollection, this.symbolTable);
+    }
+
+    public SymbolTable getSymbolTable() {
+        return symbolTable;
     }
 
     private void visitChildren(List<BaseNode> nodes) {

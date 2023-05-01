@@ -73,7 +73,6 @@ public class TypeCheckingVisitor {
         return _symbolTable.searchType(typeLiteral);
     }
 
-    public MctlTypeDescriptor visit(AssStateNode node) { return null; }
     public MctlTypeDescriptor visit(InvokeExpNode node) { return visit(node.getInvokeNode()); }
 
     public MctlTypeDescriptor visit(InvokeNode node) {
@@ -259,6 +258,7 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(VarDecNode node) { return null; }
     public MctlTypeDescriptor visit(FuncDecNode node) { return null; }
     public MctlTypeDescriptor visit(StructDecNode node) { return null; }
+    public MctlTypeDescriptor visit(AssStateNode node) { return null; }
 
     public MctlTypeDescriptor expectsType(BaseNode node, String typeLiteral) {
         String typeChildOne = visit((ExpNode) node.get_children().get(0)).get_type_literal();

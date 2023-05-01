@@ -638,7 +638,7 @@ public class AstBuilderUnitTests {
         UnaryExpNode unaryExpNode = (UnaryExpNode) assStateNode.get_assignExp();
 
         softAssert.assertTrue(unaryExpNode.get_operatorLiteral().equals(operator), "Operator");
-        softAssert.assertTrue(unaryExpNode.get_children().size() == 1, "Children Size");
+        softAssert.assertTrue(unaryExpNode.get_unaryExp() != null, "Unary Exp");
         softAssert.assertAll();
     }
 
