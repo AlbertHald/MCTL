@@ -29,7 +29,7 @@ public class Main {
                 "a.baang = 8;\n " +
                 "variable oof: BONG;\n " +
                 "oof.ooo = oof.ooo;\n " +
-                "to remov(string : STRING) : NOTHING {}\n" +
+                "to remov(string : STRING) : BOOLEAN {return 2+2;}\n" +
                 "remov(\"bing\");\n" +
                 "\"testString\".length();\n" +
                 "oof.ooo.length();"), problemCollection);

@@ -1,6 +1,7 @@
 package dk.aau.p4.abaaja.Lib.Visitors;
 
 import dk.aau.p4.abaaja.Lib.Nodes.*;
+import dk.aau.p4.abaaja.Lib.ProblemHandling.Problem;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Symbols.FuncSymbol;
@@ -10,6 +11,7 @@ import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlTypeDescriptor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SymbolTableVisitor implements INodeVisitor {
@@ -66,16 +68,11 @@ public class SymbolTableVisitor implements INodeVisitor {
         initialScopeVisit(node.get_children());
 
         // Visit remaining lines
-        for (BaseNode child : node.get_children()) {
-            child.accept(this);
-        }
+        for (BaseNode child : node.get_children()) { child.accept(this); }
     }
 
     public void visit(LineNode node) {
-
-        for (BaseNode child : node.get_children()) {
-            child.accept(this);
-        }
+        for (BaseNode child : node.get_children()) { child.accept(this); }
     }
 
     @Override
@@ -96,17 +93,13 @@ public class SymbolTableVisitor implements INodeVisitor {
     // Fully Implemented
     @Override
     public void visit(DecNode node) {
-        for (BaseNode child : node.get_children()) {
-            child.accept(this);
-        }
+        for (BaseNode child : node.get_children()) { child.accept(this); }
     }
 
     // Fully Implemented
     @Override
     public void visit(StateNode node) {
-        for (BaseNode child : node.get_children()) {
-            child.accept(this);
-        }
+        for (BaseNode child : node.get_children()) { child.accept(this); }
     }
 
     @Override
@@ -130,6 +123,10 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(FuncDecNode node) {
+        boolean returnNodesPresent = false;
+        List<Problem> problems = new ArrayList<Problem>();
+        FuncSymbol funcSymbol = (FuncSymbol) symbolTable.searchSymbol(node.get_id());
+
         // Create scope for function block and create parameter symbols
         symbolTable.createScope();
         for (FormalParamNode formalParam : node.get_paramList()) {
@@ -149,8 +146,28 @@ public class SymbolTableVisitor implements INodeVisitor {
         initialScopeVisit(node.get_funcBlock().get_children());
 
         // Check lines of the function block
-        for (BaseNode line : node.get_funcBlock().get_children()) {
-            line.accept(this);
+        for (BaseNode child : node.get_funcBlock().get_children()) {
+            if (child instanceof ReturnNode returnNode) {
+                returnNodesPresent = true;
+
+                // Add problems for each return node it the function should return a value
+                if (!funcSymbol.get_type().get_type_literal().equals("NOTHING")) {
+                    // Get expression return type and function symbol
+                    MctlTypeDescriptor returnNodeType = typeCheckingVisitor.visit(returnNode.get_returnExp());
+
+                    // Check if return node expression is of the correct type
+                    if (!returnNodeType.get_type_literal().equals(funcSymbol.get_type().get_type_literal())) {
+                        problemCollection.addProblem(ProblemType.ERROR_TYPE_MISMATCH,
+                                "The return expression resolves to type \"" + funcSymbol.get_type().get_type_literal() + "\" but resolves to the type \"" + returnNodeType.get_type_literal() + "\"",
+                                returnNode.get_lineNumber());
+                    }
+                } else {
+                    // Encountered unexpected return nodes
+                    problemCollection.addProblem(ProblemType.ERROR_UNEXPECTED_RETURN, "Encountered an unexpected return. The function is defined to return NOTHING", returnNode.get_lineNumber());
+                }
+            } else {
+                child.accept(this);
+            }
         }
 
         symbolTable.closeScope();
@@ -277,7 +294,7 @@ public class SymbolTableVisitor implements INodeVisitor {
                 for (MctlTypeDescriptor typeDescriptor : funcSymbol.get_types().get(counter)) {
                     typeLiterals.append("\"").append(typeDescriptor.get_type_literal()).append("\", ");
                 }
-                
+
                 problemCollection.addProblem(
                         ProblemType.ERROR_TYPE_MISMATCH,
                         "Expected one of the following types " + typeLiterals + " for parameter " + counter + " but got \"" + expressionType.get_type_literal() + "\"",
