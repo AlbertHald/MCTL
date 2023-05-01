@@ -843,17 +843,17 @@ public class TypeCheckingVisitorUnitTests {
     public Object[][] visitIDStructTestData() {
         return new Object[][] {
                 {"struct STRUCTURE { variable num: NUMBER }; variable var: STRUCTURE; var.num = 1;", "NUMBER"},
-                {"struct STRUCTURE { variable num: NUMBER[] }; variable var: STRUCTURE; var.num[0] = 2;", "NUMBER"},
+                {"struct STRUCTURE { variable num: NUMBER[] }; variable var: STRUCTURE; var.num[0] = 2;", "NUMBER[]"},
                 {"struct STRUCTURE { variable num: NUMBER }; variable var: STRUCTURE[]; var[0].num = 3;", "NUMBER"},
-                {"struct STRUCTURE { variable num: NUMBER[] }; variable var: STRUCTURE[]; var[0].num[0] = 4;", "NUMBER"},
+                {"struct STRUCTURE { variable num: NUMBER[] }; variable var: STRUCTURE[]; var[0].num[0] = 4;", "NUMBER[]"},
                 {"struct STRUCTURE { variable str: STRING }; variable var: STRUCTURE; var.str = \"1\";", "STRING"},
-                {"struct STRUCTURE { variable str: STRING[] }; variable var: STRUCTURE; var.str[0] = \"2\";", "STRING"},
+                {"struct STRUCTURE { variable str: STRING[] }; variable var: STRUCTURE; var.str[0] = \"2\";", "STRING[]"},
                 {"struct STRUCTURE { variable str: STRING }; variable var: STRUCTURE[]; var[0].str = \"3\";", "STRING"},
-                {"struct STRUCTURE { variable str: STRING[] }; variable var: STRUCTURE[]; var[0].str[0] = \"4\";", "STRING"},
+                {"struct STRUCTURE { variable str: STRING[] }; variable var: STRUCTURE[]; var[0].str[0] = \"4\";", "STRING[]"},
                 {"struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE; var.bool = true;", "BOOLEAN"},
-                {"struct STRUCTURE { variable bool: BOOLEAN[] }; variable var: STRUCTURE; var.bool[0] = false;", "BOOLEAN"},
+                {"struct STRUCTURE { variable bool: BOOLEAN[] }; variable var: STRUCTURE; var.bool[0] = false;", "BOOLEAN[]"},
                 {"struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE[]; var[0].bool = true;", "BOOLEAN"},
-                {"struct STRUCTURE { variable bool: BOOLEAN[] }; variable var: STRUCTURE[]; var[0].bool[0] = false;", "BOOLEAN"}
+                {"struct STRUCTURE { variable bool: BOOLEAN[] }; variable var: STRUCTURE[]; var[0].bool[0] = false;", "BOOLEAN[]"}
         };
     }
 
