@@ -91,17 +91,17 @@ public class SymbolTableVisitor implements INodeVisitor {
         symbolTable.closeScope();
     }
 
+    // Fully Implemented
     @Override
     public void visit(DecNode node) {
-
         for (BaseNode child : node.get_children()) {
             child.accept(this);
         }
     }
 
+    // Fully Implemented
     @Override
     public void visit(StateNode node) {
-
         for (BaseNode child : node.get_children()) {
             child.accept(this);
         }
@@ -154,24 +154,38 @@ public class SymbolTableVisitor implements INodeVisitor {
         symbolTable.closeScope();
     }
 
+    // Fully Implemented
     @Override
-    public void visit(StructDecNode node) {
-        MctlStructDescriptor structDeclaration = new MctlStructDescriptor(node.get_id(), node);
-    }
+    public void visit(StructDecNode node) {}
 
     @Override
     public void visit(IfStateNode node) {
+        // Check if and else if statements for types
+        for (ExpNode expressionNode: node.get_expChildren()) {
+            MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(expressionNode);
 
-        for (BaseNode child : node.get_children()) {
-            child.accept(this);
+            // Check expression type
+            if (!typeDescriptor.get_type_literal().equals("BOOLEAN")) {
+                problemCollection.addProblem(
+                        ProblemType.ERROR_TYPE_MISMATCH,
+                        "Expected type \"BOOLEAN\" but got \"" + typeDescriptor.get_type_literal() + "\"",
+                        expressionNode.get_lineNumber()
+                );
+            }
         }
     }
 
     @Override
     public void visit(RepeatStateNode node) {
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(node.get_repeatExp());
 
-        for (BaseNode child : node.get_children()) {
-            child.accept(this);
+        // Check expression type
+        if (!(typeDescriptor.get_type_literal().equals("BOOLEAN") || typeDescriptor.get_type_literal().equals("NUMBER"))) {
+            problemCollection.addProblem(
+                    ProblemType.ERROR_TYPE_MISMATCH,
+                    "Expected type \"NUMBER\" or \"BOOLEAN\" but got \"" + typeDescriptor.get_type_literal() + "\"",
+                    node.get_lineNumber()
+            );
         }
     }
 
@@ -221,25 +235,81 @@ public class SymbolTableVisitor implements INodeVisitor {
         }
     }
 
+    // Fully Implemented
     @Override
     public void visit(InvokeNode node) {
-
-        for (BaseNode child : node.get_children()) {
-            child.accept(this);
-        }
+        if (node instanceof FuncInvokeNode) { visit((FuncInvokeNode) node); }
+        else if (node instanceof VarMethodInvokeNode) { visit((VarMethodInvokeNode) node); }
+        else if (node instanceof StringMethodInvokeNode) { visit((StringMethodInvokeNode) node); }
     }
 
     @Override
     public void visit(FuncInvokeNode node) {
+        Symbol funcSymbol = symbolTable.searchSymbol(node.get_id().get_id());
 
-        for (BaseNode child : node.get_children()) {
-            child.accept(this);
+        if (funcSymbol == null) {
+            // Function has not been declared
+            problemCollection.addProblem(
+                    ProblemType.ERROR_UNDEFINED_IDENTIFIER,
+                    "The function \"" + node.get_id().get_id() + "\" has not yet been declared",
+                    node.get_lineNumber()
+            );
+        } else if ((funcSymbol.get_types().size() == 0 && node.get_paramExps().size() != 0) || funcSymbol.get_types().size() != node.get_paramExps().size()) {
+            // Number of parameters does not match
+            problemCollection.addProblem(
+                    ProblemType.ERROR_PARAMETERS_DOES_NOT_MATCH,
+                    "The provided number of parameters: \"" + node.get_paramExps().size() + "\" does not match the expected: \"" + funcSymbol.get_types().size() + "\" parameters",
+                    node.get_lineNumber()
+            );
+        }
+        else {
+            int counter = 0;
+
+            // Check if the parameter types match
+            for (ExpNode expressionNode : node.get_paramExps()) {
+                boolean typeMatched = false;
+
+                MctlTypeDescriptor expressionType = typeCheckingVisitor.visit(expressionNode);
+
+                // Check if the expression is also an invoke node
+                if (expressionNode instanceof InvokeExpNode) { visit(expressionNode); }
+
+                // Check if type of parameter is ANY or one of the expected types
+                if (!funcSymbol.get_types().get(counter).get(0).get_type_literal().equals("ANY")){
+                    for (MctlTypeDescriptor typeDescriptor : funcSymbol.get_types().get(counter)) {
+                        if(typeDescriptor.get_type_literal().equals(expressionType.get_type_literal())) {
+                            // Parameter type matched
+                            typeMatched = true;
+                            break;
+                        }
+                    }
+                }
+                else {
+                    typeMatched = true;
+                }
+
+                // Add problem
+                if (!typeMatched) {
+                    StringBuilder typeLiterals = new StringBuilder();
+                    for (MctlTypeDescriptor typeDescriptor : funcSymbol.get_types().get(counter)) {
+                        typeLiterals.append("\"").append(typeDescriptor.get_type_literal()).append("\", ");
+                    }
+
+                    // Number of parameters does not match
+                    problemCollection.addProblem(
+                            ProblemType.ERROR_TYPE_MISMATCH,
+                            "Expected one of the following types " + typeLiterals + " for parameter " + counter + " but got \"" + expressionType.get_type_literal() + "\"",
+                            node.get_lineNumber()
+                    );
+                }
+
+                counter++;
+            }
         }
     }
 
     @Override
     public void visit(VarMethodInvokeNode node) {
-
         for (BaseNode child : node.get_children()) {
             child.accept(this);
         }
@@ -247,7 +317,6 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(StringMethodInvokeNode node) {
-
         for (BaseNode child : node.get_children()) {
             child.accept(this);
         }
@@ -334,12 +403,7 @@ public class SymbolTableVisitor implements INodeVisitor {
     }
 
     @Override
-    public void visit(InvokeExpNode node) {
-
-        for (BaseNode child : node.get_children()) {
-            child.accept(this);
-        }
-    }
+    public void visit(InvokeExpNode node) { visit(node.getInvokeNode()); }
 
     @Override
     public void visit(UnaryExpNode node) {

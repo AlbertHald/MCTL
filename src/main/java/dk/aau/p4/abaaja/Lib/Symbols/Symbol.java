@@ -31,7 +31,10 @@ public class Symbol {
     /**
      * Getter / Setters for the types ArrayList
      */
-    public List<List<MctlTypeDescriptor>> get_types() { return _types; }
+    public List<List<MctlTypeDescriptor>> get_types() {
+        if (_types == null) return new ArrayList<>();
+        return _types;
+    }
     public void set_types(List<List<MctlTypeDescriptor>> types) { this._types = types; }
 
     public void set_name(String _name) {

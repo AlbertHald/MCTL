@@ -28,8 +28,9 @@ public class Main {
                 "variable a: BING;\n " +
                 "a.baang = 8;\n " +
                 "variable oof: BONG;\n " +
-                "oof.ooo = oof.ooo.baang;\n " +
-                "oof.bong = 3;\n"), problemCollection);
+                "oof.ooo = oof.ooo;\n " +
+                "oof.bong = 3;\n" +
+                "remov(\"bing\");"), problemCollection);
 
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here

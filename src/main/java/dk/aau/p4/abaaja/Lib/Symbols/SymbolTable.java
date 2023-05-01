@@ -16,10 +16,10 @@ public class SymbolTable {
     // Predefined functions of the programming language
     private List<PredefinedFunction> predefinedFunctions = Arrays.asList(
             new PredefinedFunction("add", Arrays.asList(Arrays.asList(new MctlTypeDescriptor())), new MctlNothingDescriptor()),
-            new PredefinedFunction("remove", null, new MctlNothingDescriptor()),
-            new PredefinedFunction("length", null, new MctlNumberDescriptor()),
+            new PredefinedFunction("remove", new ArrayList<>(), new MctlNothingDescriptor()),
+            new PredefinedFunction("length", new ArrayList<>(), new MctlNumberDescriptor()),
             new PredefinedFunction("print", Arrays.asList(Arrays.asList(new MctlStringDescriptor())), new MctlNothingDescriptor()),
-            new PredefinedFunction("read", null, new MctlStringDescriptor()),
+            new PredefinedFunction("read", new ArrayList<>(), new MctlStringDescriptor()),
             new PredefinedFunction("indexesOf",
                     Arrays.asList(Arrays.asList(new MctlStringDescriptor(), new MctlBooleanDescriptor(), new MctlNumberDescriptor(), new MctlNothingDescriptor())),
                     new MctlArrayTypeDescriptor(new MctlNumberDescriptor(), 1)),
@@ -49,6 +49,9 @@ public class SymbolTable {
             Symbol functionSymbol = new Symbol(predefinedFunction.get_id());
             functionSymbol.set_type(predefinedFunction.get_returnType());
             functionSymbol.set_types(predefinedFunction.get_parameters());
+
+            // Add function
+            insertSymbol(functionSymbol);
         }
     }
 
