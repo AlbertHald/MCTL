@@ -3,6 +3,7 @@ package dk.aau.p4.abaaja.Lib.Visitors;
 import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
+import dk.aau.p4.abaaja.Lib.Symbols.FuncSymbol;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlStructDescriptor;
 import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
@@ -245,75 +246,89 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     @Override
     public void visit(FuncInvokeNode node) {
-        Symbol funcSymbol = symbolTable.searchSymbol(node.get_id().get_id());
+        Symbol symbol = symbolTable.searchSymbol(node.get_id().get_id());
 
-        if (funcSymbol == null) {
+        if (symbol == null) {
             // Function has not been declared
             problemCollection.addProblem(
                     ProblemType.ERROR_UNDEFINED_IDENTIFIER,
                     "The function \"" + node.get_id().get_id() + "\" has not yet been declared",
                     node.get_lineNumber()
             );
-        } else if ((funcSymbol.get_types().size() == 0 && node.get_paramExps().size() != 0) || funcSymbol.get_types().size() != node.get_paramExps().size()) {
-            // Number of parameters does not match
+        } else if (!(symbol instanceof FuncSymbol)) {
+            // ID refers to variable
             problemCollection.addProblem(
-                    ProblemType.ERROR_PARAMETERS_DOES_NOT_MATCH,
-                    "The provided number of parameters: \"" + node.get_paramExps().size() + "\" does not match the expected: \"" + funcSymbol.get_types().size() + "\" parameters",
+                    ProblemType.ERROR_ID_NOT_FUNCTION,
+                    "The ID \"" + node.get_id().get_id() + "\" refers to a variable and can therefore not be invoked",
                     node.get_lineNumber()
             );
-        }
-        else {
-            int counter = 0;
+        } else {
+            // Is valid function symbol
+            FuncSymbol funcSymbol = (FuncSymbol) symbol;
+            if (funcSymbol.getIsStringFunction() || funcSymbol.getIsVarFunction()) {
+                // Function should be called on string or var
+                problemCollection.addProblem(
+                        ProblemType.ERROR_UTILITY_FUNCTION_INVOKED_IN_WRONG_CONTEXT,
+                        "The function \"" + node.get_id().get_id() + "\" is called in the wrong context",
+                        node.get_lineNumber()
+                );
+            } else if ((funcSymbol.get_types().size() == 0 && node.get_paramExps().size() != 0) || funcSymbol.get_types().size() != node.get_paramExps().size()) {
+                // Number of parameters does not match
+                problemCollection.addProblem(
+                        ProblemType.ERROR_PARAMETERS_DOES_NOT_MATCH,
+                        "The provided number of parameters: " + node.get_paramExps().size() + " does not match the expected: " + funcSymbol.get_types().size() + " parameters",
+                        node.get_lineNumber()
+                );
+            }
+            else {
+                int counter = 0;
 
-            // Check if the parameter types match
-            for (ExpNode expressionNode : node.get_paramExps()) {
-                boolean typeMatched = false;
+                // Check if the parameter types match
+                for (ExpNode expressionNode : node.get_paramExps()) {
+                    boolean typeMatched = false;
 
-                MctlTypeDescriptor expressionType = typeCheckingVisitor.visit(expressionNode);
+                    MctlTypeDescriptor expressionType = typeCheckingVisitor.visit(expressionNode);
 
-                // Check if the expression is also an invoke node
-                if (expressionNode instanceof InvokeExpNode) { visit(expressionNode); }
+                    // Check if the expression is also an invoke node
+                    if (expressionNode instanceof InvokeExpNode) { visit(expressionNode); }
 
-                // Check if type of parameter is ANY or one of the expected types
-                if (!funcSymbol.get_types().get(counter).get(0).get_type_literal().equals("ANY")){
-                    for (MctlTypeDescriptor typeDescriptor : funcSymbol.get_types().get(counter)) {
-                        if(typeDescriptor.get_type_literal().equals(expressionType.get_type_literal())) {
-                            // Parameter type matched
-                            typeMatched = true;
-                            break;
+                    // Check if type of parameter is ANY or one of the expected types
+                    if (!funcSymbol.get_types().get(counter).get(0).get_type_literal().equals("ANY")){
+                        for (MctlTypeDescriptor typeDescriptor : funcSymbol.get_types().get(counter)) {
+                            if(typeDescriptor.get_type_literal().equals(expressionType.get_type_literal())) {
+                                // Parameter type matched
+                                typeMatched = true;
+                                break;
+                            }
                         }
                     }
-                }
-                else {
-                    typeMatched = true;
-                }
-
-                // Add problem
-                if (!typeMatched) {
-                    StringBuilder typeLiterals = new StringBuilder();
-                    for (MctlTypeDescriptor typeDescriptor : funcSymbol.get_types().get(counter)) {
-                        typeLiterals.append("\"").append(typeDescriptor.get_type_literal()).append("\", ");
+                    else {
+                        typeMatched = true;
                     }
 
-                    // Number of parameters does not match
-                    problemCollection.addProblem(
-                            ProblemType.ERROR_TYPE_MISMATCH,
-                            "Expected one of the following types " + typeLiterals + " for parameter " + counter + " but got \"" + expressionType.get_type_literal() + "\"",
-                            node.get_lineNumber()
-                    );
-                }
+                    // Add problem
+                    if (!typeMatched) {
+                        StringBuilder typeLiterals = new StringBuilder();
+                        for (MctlTypeDescriptor typeDescriptor : funcSymbol.get_types().get(counter)) {
+                            typeLiterals.append("\"").append(typeDescriptor.get_type_literal()).append("\", ");
+                        }
 
-                counter++;
+                        // Number of parameters does not match
+                        problemCollection.addProblem(
+                                ProblemType.ERROR_TYPE_MISMATCH,
+                                "Expected one of the following types " + typeLiterals + " for parameter " + counter + " but got \"" + expressionType.get_type_literal() + "\"",
+                                node.get_lineNumber()
+                        );
+                    }
+
+                    counter++;
+                }
             }
         }
     }
 
     @Override
-    public void visit(VarMethodInvokeNode node) {
-        for (BaseNode child : node.get_children()) {
-            child.accept(this);
-        }
-    }
+    public void visit(VarMethodInvokeNode node) {}
 
     @Override
     public void visit(StringMethodInvokeNode node) {

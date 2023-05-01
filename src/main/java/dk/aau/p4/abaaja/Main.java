@@ -30,6 +30,7 @@ public class Main {
                 "variable oof: BONG;\n " +
                 "oof.ooo = oof.ooo;\n " +
                 "oof.bong = 3;\n" +
+                "to remov(string : STRING) : NOTHING {}\n" +
                 "remov(\"bing\");"), problemCollection);
 
         if (!problemCollection.getHasErrors()) {
