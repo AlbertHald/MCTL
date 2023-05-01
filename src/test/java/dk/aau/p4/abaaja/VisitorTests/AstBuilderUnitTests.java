@@ -91,7 +91,6 @@ public class AstBuilderUnitTests {
         softAssert.assertAll();
     }
 
-
     /**
      * visitBoolExpr unit test
      */

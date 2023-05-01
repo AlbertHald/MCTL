@@ -198,8 +198,6 @@ public class TypeCheckingVisitor {
                 return null;
             }
 
-            System.out.println("ID: " + actualIDExpNode.get_id() + " Type: " + accessorType.get_type_literal());
-
             // Check if accessor type is a primitive type
             if ((currNode.get_accessor() instanceof IDStructNode idStructNode)) {
                 mctlTypeDescriptor = (MctlStructDescriptor) accessorType;
@@ -226,7 +224,6 @@ public class TypeCheckingVisitor {
 
         return typeDescriptor;
     }
-
 
     public MctlTypeDescriptor visit(MulExpNode node) { return expectsType(node, "NUMBER"); }
     public MctlTypeDescriptor visit(AddExpNode node) { return expectsType(node, "NUMBER"); }

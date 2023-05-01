@@ -52,7 +52,7 @@ public class TypeCheckingVisitorUnitTests {
         return new Object[][] {
                 {"a = \"a\";"},
                 {"a = \"a\"; a = \"a\";"},
-                {"a = \"a\"; a = \"a\"; a = \"a\";"},
+                {"a = \"a\"; a = \"a\"; a = \"a\";"}
         };
     }
 
@@ -113,7 +113,7 @@ public class TypeCheckingVisitorUnitTests {
                 {"variable a: NUMBER; a = a + 1;"},
                 {"variable a: NUMBER; a = a + a;"},
                 {"variable a: NUMBER; a = a + 123456789;"},
-                {"variable a: STRING; a = \"henlo\";"},
+                {"variable a: STRING; a = \"hello\";"}
         };
     }
 
@@ -150,7 +150,7 @@ public class TypeCheckingVisitorUnitTests {
         return new Object[][] {
                 {"to _functionId():BOOLEAN { return a; }"},
                 {"to function1(id1: NUMBER):NUMBER { return a; }"},
-                {"to test_func(id1:NUMBER, id2:NUMBER):STRING { return a; }"},
+                {"to test_func(id1:NUMBER, id2:NUMBER):STRING { return a; }"}
         };
     }
 
@@ -196,7 +196,7 @@ public class TypeCheckingVisitorUnitTests {
     public Object[][] visitCommentTestData() {
         return new Object[][] {
                 {"#{ comment }"},
-                {"#{comment}"},
+                {"#{comment}"}
         };
     }
 
@@ -217,7 +217,7 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitStopTestData() {
         return new Object[][] {
-                {"stop;"},
+                {"stop;"}
         };
     }
 
@@ -240,7 +240,7 @@ public class TypeCheckingVisitorUnitTests {
         return new Object[][] {
                 {"to func(id0: NUMBER):NUMBER {}"},
                 {"to func(id1: STRING):NUMBER {}"},
-                {"to func(id2: BOOLEAN):NUMBER {}"},
+                {"to func(id2: BOOLEAN):NUMBER {}"}
         };
     }
 
@@ -262,9 +262,9 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitStringMethodInvokeTestData() {
         return new Object[][] {
-                {"\"var\".rav(bing, bong);"},
+                {"\"var\".accessor(bing, bong);"},
                 {"\"vroom vroom\".go();"},
-                {"\"1\".toString(2);"},
+                {"\"1\".toString(2);"}
         };
     }
 
@@ -285,9 +285,9 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitVarMethodInvokeTestData() {
         return new Object[][] {
-                {"var.rav(bing, bong);"},
+                {"var.accessor(bing, bong);"},
                 {"vroom.go();"},
-                {"_1.toString(2);"},
+                {"_1.toString(2);"}
         };
     }
 
@@ -310,7 +310,7 @@ public class TypeCheckingVisitorUnitTests {
         return new Object[][] {
                 {"var(bing, bong);"},
                 {"vroom();"},
-                {"_1(2);"},
+                {"_1(2);"}
         };
     }
 
@@ -334,7 +334,7 @@ public class TypeCheckingVisitorUnitTests {
                 {"if(true){}"},
                 {"if(true){id=val;id=val;}"},
                 {"if(true){id=val;id=val;id=val;}"},
-                {"if(true){id=val;id=val;id=val;id=val;}"},
+                {"if(true){id=val;id=val;id=val;id=val;}"}
         };
     }
 
@@ -358,7 +358,7 @@ public class TypeCheckingVisitorUnitTests {
         return new Object[][] {
                 {"if(true){id=val;id=val;}"},
                 {"if(true){id=val;id=val;id=val;}"},
-                {"if(true){id=val;id=val;id=val;id=val;}"},
+                {"if(true){id=val;id=val;id=val;id=val;}"}
         };
     }
 
@@ -386,7 +386,7 @@ public class TypeCheckingVisitorUnitTests {
                 {"struct x_y_z {variable hasCoordinates : BOOLEAN}"},
                 {"if (true) { var = a; } else if (true) { var = b; } else { var = c; }"},
                 {"if (a == b) { var = 1; } methodMan(); arr[y] = arr[i + 2]; repeat(10) { y++; }"},
-                {"var1 = 1; var2 = 2; var3 = 3; var4 = 4; var5 = 5;"},
+                {"var1 = 1; var2 = 2; var3 = 3; var4 = 4; var5 = 5;"}
         };
     }
 
@@ -405,18 +405,18 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitReturnTestData() {
         return new Object[][] {
-                {"variable a: NUMBER; return 4;", "NUMBER"},
-                {"variable a: NUMBER; return \"yo\";", "STRING"},
-                {"variable a: NUMBER; return true;", "BOOLEAN"},
-                {"variable a: NUMBER; return a;", "NUMBER"},
-                {"variable b: STRING; return b;", "STRING"},
-                {"variable c: BOOLEAN; return c;", "BOOLEAN"},
-                {"variable d: NUMBER[]; return d[0];", "NUMBER[]"},
-                {"variable e: STRING[]; return e[0];", "STRING[]"},
-                {"variable f: BOOLEAN[]; return f[0];", "BOOLEAN[]"},
-                {"variable g: NUMBER[][]; return g[0];", "NUMBER[][]"},
-                {"variable h: STRING[][]; return h[0];", "STRING[][]"},
-                {"variable i: BOOLEAN[][]; return i[0];", "BOOLEAN[][]"}
+                {"variable var: NUMBER; return 4;", "NUMBER"},
+                {"variable var: NUMBER; return \"yo\";", "STRING"},
+                {"variable var: NUMBER; return true;", "BOOLEAN"},
+                {"variable var: NUMBER; return var;", "NUMBER"},
+                {"variable var: STRING; return var;", "STRING"},
+                {"variable var BOOLEAN; return var;", "BOOLEAN"},
+                {"variable var: NUMBER[]; return var[0];", "NUMBER[]"},
+                {"variable var STRING[]; return var[0];", "STRING[]"},
+                {"variable var: BOOLEAN[]; return var[0];", "BOOLEAN[]"},
+                {"variable var: NUMBER[][]; return var[0];", "NUMBER[][]"},
+                {"variable var: STRING[][]; return var[0];", "STRING[][]"},
+                {"variable var: BOOLEAN[][]; return var[0];", "BOOLEAN[][]"}
         };
     }
 
@@ -456,7 +456,7 @@ public class TypeCheckingVisitorUnitTests {
 
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(typecastExpNode);
 
-        softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit Return: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
+        softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit Typecast: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
     }
 
@@ -481,32 +481,395 @@ public class TypeCheckingVisitorUnitTests {
 
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(unaryExpNode);
 
-        softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit Return: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
+        softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit UnaryExp: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
     }
 
     @DataProvider
-    public Object[][] visitIdArrayTestData() {
+    public Object[][] visitIDArrayExpTestData() {
         return new Object[][] {
-                {"a[0] = 1;"},
-                {"a[0][1] = 2;"},
-                {"a[0][1][3][4][5] = 5;"}
+                {"variable b: STRING; variable a: NUMBER[]; a[0] = 1;", "NUMBER[]"},
+                {"variable b: STRING; variable a: NUMBER[][]; a[0][1] = 2;", "NUMBER[][]"},
+                {"variable b: STRING; variable a: NUMBER[][][]; a[0][1][3][4][5] = 5;", "NUMBER[][][]"},
+                {"variable b: STRING; variable a: STRING[]; a[0] = \"1\";", "STRING[]"},
+                {"variable b: STRING; variable a: STRING[][]; a[0][1] = \"2\";", "STRING[][]"},
+                {"variable b: STRING; variable a: STRING[][][]; a[0][1][3][4][5] = \"5\";", "STRING[][][]"},
+                {"variable b: STRING; variable a: BOOLEAN[]; a[0] = true;", "BOOLEAN[]"},
+                {"variable b: STRING; variable a: BOOLEAN[][]; a[0][1] = true;", "BOOLEAN[][]"},
+                {"variable b: STRING; variable a: BOOLEAN[][][]; a[0][1][3][4][5] = false;", "BOOLEAN[][][]"},
+                {"struct test { variable a: NUMBER[] }; variable a: test; a.a[0] = 1;", "NUMBER[]"}
         };
     }
 
-    @Test(dataProvider = "visitIdArrayTestData")
-    public void visitIdArray_ValidInput_CreatesCorrectIdArrayExpNode(String code, String type) {
+    @Test(dataProvider = "visitIDArrayExpTestData")
+    public void visitIDArrayExp_ValidInput_ReturnsCorrectType(String code, String type) {
         ParseTree parseTree = createParseTree(code);
         MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
 
         symbolTableVisitor.visit(mctlNode);
 
-        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(1);
-        UnaryExpNode unaryExpNode = (UnaryExpNode) assStateNode.get_assignExp();
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(2);
+        IDArrayExpNode idArrayExpNode = (IDArrayExpNode) assStateNode.get_assignId();
 
-        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(unaryExpNode);
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(idArrayExpNode);
 
-        softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit Return: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
+        softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit IDArrayExp: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
+        softAssert.assertAll();
+    }
+
+    @DataProvider
+    public Object[][] visitStringExpTestData() {
+        return new Object[][] {
+                {"test = \"This is a String\";"},
+                {"test = \"1234 string 8078.,/()&\";"},
+                {"test = \"'Double Quoted String'\";"},
+                {"test = 'Single Quoted String';"},
+                {"test = \"Newline: \n Carriage return: \r Tab: \t Backslash: \\ \";"},
+                {"test = \"Unicode: Ωαφω\";"}
+        };
+    }
+
+    @Test(dataProvider = "visitStringExpTestData")
+    public void visitStringExp_ValidInput_ReturnsCorrectType(String code) {
+        ParseTree parseTree = createParseTree(code);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+
+        symbolTableVisitor.visit(mctlNode);
+
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+        StringExpNode stringExpNode = (StringExpNode) assStateNode.get_assignExp();
+
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(stringExpNode);
+
+        softAssert.assertTrue(typeDescriptor.get_type_literal().equals("STRING"), "Visit StringExp: Expected type STRING for '" + code + "' but got: " + typeDescriptor.get_type_literal());
+        softAssert.assertAll();
+    }
+
+    @DataProvider
+    public Object[][] visitNumExpTestData() {
+        return new Object[][]{
+                {"test = 0.0;"},
+                {"test = 1.0;"},
+                {"test = 1.0;"},
+                {"test = 1234.56789;"},
+                {"test = 9876.54321;"},
+                {"test = 0;"},
+                {"test = 1;"},
+                {"test = 12345;"},
+                {"test = 67890;"},
+                {"test = 2147483647;"}
+        };
+    }
+
+    @Test(dataProvider = "visitNumExpTestData")
+    public void visitNumExp_ValidInput_ReturnsCorrectType(String code) {
+        ParseTree parseTree = createParseTree(code);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+
+        symbolTableVisitor.visit(mctlNode);
+
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
+        NumExpNode numExpNode = (NumExpNode) assStateNode.get_assignExp();
+
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(numExpNode);
+
+        softAssert.assertTrue(typeDescriptor.get_type_literal().equals("NUMBER"), "Visit NumExp: Expected type NUMBER for '" + code + "' but got: " + typeDescriptor.get_type_literal());
+        softAssert.assertAll();
+    }
+
+    @DataProvider
+    public Object[][] visitNothingTypeTestData() {
+        return new Object[][] {
+                {"to test(): NOTHING {}"},
+                {"to test(): NOTHING { variable x: NUMBER; x = 5; }"},
+                {"to test(): NOTHING { test(); }"}
+        };
+    }
+
+    @Test(dataProvider = "visitNothingTypeTestData")
+    public void visitNothingType_ValidInput_ReturnsCorrectType(String code) {
+        ParseTree parseTree = createParseTree(code);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+
+        symbolTableVisitor.visit(mctlNode);
+
+        FuncDecNode funcDecNode = (FuncDecNode) mctlNode.get_children().get(0);
+        NothingTypeNode nothingTypeNode = (NothingTypeNode) funcDecNode.get_returnType();
+
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(nothingTypeNode);
+
+        softAssert.assertTrue(typeDescriptor.get_type_literal().equals("NOTHING"), "Visit Nothing: Expected type NOTHING for '" + code + "' but got: " + typeDescriptor.get_type_literal());
+        softAssert.assertAll();
+    }
+
+    @DataProvider
+    public Object[][] visitTypeTestData() {
+        return new Object[][] {
+                {"variable x: STRING; variable test: STRING;", "STRING"},
+                {"variable x: STRING; variable test: STRING[];", "STRING"},
+                {"variable x: STRING; variable test: STRING[][];", "STRING"},
+                {"variable x: STRING; variable test: NUMBER;", "NUMBER"},
+                {"variable x: STRING; variable test: NUMBER[];", "NUMBER"},
+                {"variable x: STRING; variable test: NUMBER[][];", "NUMBER"},
+                {"variable x: STRING; variable test: BOOLEAN;", "BOOLEAN"},
+                {"variable x: STRING; variable test: BOOLEAN[];", "BOOLEAN"},
+                {"variable x: STRING; variable test: BOOLEAN[][];", "BOOLEAN"},
+                {"struct STRUCTURE { variable x: NUMBER }; variable test: STRUCTURE;", "STRUCTURE"},
+                {"struct testStructId { variable x: NUMBER }; variable test: testStructId[];", "testStructId"},
+                {"struct struct_test_id { variable x: NUMBER }; variable test: struct_test_id[][];", "struct_test_id"}
+        };
+    }
+
+    @Test(dataProvider = "visitTypeTestData")
+    public void visitType_ValidInput_ReturnsCorrectType(String code, String type) {
+        ParseTree parseTree = createParseTree(code);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+
+        symbolTableVisitor.visit(mctlNode);
+
+        VarDecNode varDecNode = (VarDecNode) mctlNode.get_children().get(1);
+        TypeNode typeNode = varDecNode.get_varDecType();
+
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(typeNode);
+
+        softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit Type: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
+        softAssert.assertAll();
+    }
+
+    @DataProvider
+    public Object[][] visitCompExpTestData() {
+        return new Object[][] {
+                {"variable var1: NUMBER; variable var2: NUMBER; test = -1 > -2;"},
+                {"variable var1: NUMBER; variable var2: NUMBER; test = 1 > 2;"},
+                {"variable var1: NUMBER; variable var2: NUMBER; test = var1 > var2;"},
+                {"variable var1: NUMBER; variable var2: NUMBER; test = 1 < 2;"},
+                {"variable var1: NUMBER; variable var2: NUMBER; test = var1 < var2;"},
+                {"variable var1: NUMBER; variable var2: NUMBER; test = 1 >= 2;"},
+                {"variable var1: NUMBER; variable var2: NUMBER; test = var1 >= var2;"},
+                {"variable var1: NUMBER; variable var2: NUMBER; test = 1 <= 2;"},
+                {"variable var1: NUMBER; variable var2: NUMBER; test = var1 <= var2;"}
+        };
+    }
+
+    @Test(dataProvider = "visitCompExpTestData")
+    public void visitCompExp_ValidInput_ReturnsCorrectType(String code) {
+        ParseTree parseTree = createParseTree(code);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+
+        symbolTableVisitor.visit(mctlNode);
+
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(2);
+        CompExpNode compExpNode = (CompExpNode) assStateNode.get_assignExp();
+
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(compExpNode);
+
+        softAssert.assertTrue(typeDescriptor.get_type_literal().equals("NUMBER"), "Visit CompExp: Expected type NUMBER for '" + code + "' but got: " + typeDescriptor.get_type_literal());
+        softAssert.assertAll();
+    }
+
+    @DataProvider
+    public Object[][] visitOrExpTestData() {
+        return new Object[][] {
+                {"variable var1: BOOLEAN;" +
+                        "variable var2: BOOLEAN;" +
+                        "variable var3: BOOLEAN;" +
+                        "variable var4: BOOLEAN;" +
+                        "variable var5: BOOLEAN;" +
+                        "test = var1 or var2;"},
+                {"variable var1: BOOLEAN;" +
+                        "variable var2: BOOLEAN;" +
+                        "variable var3: BOOLEAN;" +
+                        "variable var4: BOOLEAN;" +
+                        "variable var5: BOOLEAN;" +
+                        "test = var1 or var2 or var3 or var4 or var5;"}
+        };
+    }
+
+    @Test(dataProvider = "visitOrExpTestData")
+    public void visitOrExp_ValidInput_ReturnsCorrectType(String code) {
+        ParseTree parseTree = createParseTree(code);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+
+        symbolTableVisitor.visit(mctlNode);
+
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(5);
+        OrExpNode orExpNode = (OrExpNode) assStateNode.get_assignExp();
+
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(orExpNode);
+
+        softAssert.assertTrue(typeDescriptor.get_type_literal().equals("BOOLEAN"), "Visit OrExp: Expected type BOOLEAN for '" + code + "' but got: " + typeDescriptor.get_type_literal());
+        softAssert.assertAll();
+    }
+
+    @DataProvider
+    public Object[][] visitAndExpTestData() {
+        return new Object[][] {
+                {"variable var1: BOOLEAN;" +
+                        "variable var2: BOOLEAN;" +
+                        "variable var3: BOOLEAN;" +
+                        "variable var4: BOOLEAN;" +
+                        "variable var5: BOOLEAN;" +
+                        "test = var1 and var2;"},
+                {"variable var1: BOOLEAN;" +
+                        "variable var2: BOOLEAN;" +
+                        "variable var3: BOOLEAN;" +
+                        "variable var4: BOOLEAN;" +
+                        "variable var5: BOOLEAN;" +
+                        "test = var1 and var2 and var3 and var4 and var5;"}
+        };
+    }
+
+    @Test(dataProvider = "visitAndExpTestData")
+    public void visitAndExp_ValidInput_ReturnsCorrectType(String code) {
+        ParseTree parseTree = createParseTree(code);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+
+        symbolTableVisitor.visit(mctlNode);
+
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(5);
+        AndExpNode andExpNode = (AndExpNode) assStateNode.get_assignExp();
+
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(andExpNode);
+
+        softAssert.assertTrue(typeDescriptor.get_type_literal().equals("BOOLEAN"), "Visit AndExp: Expected type BOOLEAN for '" + code + "' but got: " + typeDescriptor.get_type_literal());
+        softAssert.assertAll();
+    }
+
+    @DataProvider
+    public Object[][] visitAddExpTestData() {
+        return new Object[][] {
+                {"variable var1: NUMBER;" +
+                        "variable var2: NUMBER;" +
+                        "variable var3: NUMBER;" +
+                        "variable var4: NUMBER;" +
+                        "variable var5: NUMBER;" +
+                        "test = var1 + var2;"},
+                {"variable var1: NUMBER;" +
+                        "variable var2: NUMBER;" +
+                        "variable var3: NUMBER;" +
+                        "variable var4: NUMBER;" +
+                        "variable var5: NUMBER;" +
+                        "test = var1 + var2 + var3 + var4 + var5;"},
+                {"variable var1: NUMBER;" +
+                        "variable var2: NUMBER;" +
+                        "variable var3: NUMBER;" +
+                        "variable var4: NUMBER;" +
+                        "variable var5: NUMBER;" +
+                        "test = var1 - var2;"},
+                {"variable var1: NUMBER;" +
+                        "variable var2: NUMBER;" +
+                        "variable var3: NUMBER;" +
+                        "variable var4: NUMBER;" +
+                        "variable var5: NUMBER;" +
+                        "test = var1 - var2 - var3 - var4 - var5;"}
+        };
+    }
+
+    @Test(dataProvider = "visitAddExpTestData")
+    public void visitAddExp_ValidInput_ReturnsCorrectType(String code) {
+        ParseTree parseTree = createParseTree(code);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+
+        symbolTableVisitor.visit(mctlNode);
+
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(5);
+        AddExpNode addExpNode = (AddExpNode) assStateNode.get_assignExp();
+
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(addExpNode);
+
+        softAssert.assertTrue(typeDescriptor.get_type_literal().equals("NUMBER"), "Visit AddExp: Expected type NUMBER for '" + code + "' but got: " + typeDescriptor.get_type_literal());
+        softAssert.assertAll();
+    }
+
+    @DataProvider
+    public Object[][] visitMulExpTestData() {
+        return new Object[][] {
+                {"variable var1: NUMBER;" +
+                        "variable var2: NUMBER;" +
+                        "variable var3: NUMBER;" +
+                        "variable var4: NUMBER;" +
+                        "variable var5: NUMBER;" +
+                        "test = var1 * var2;"},
+                {"variable var1: NUMBER;" +
+                        "variable var2: NUMBER;" +
+                        "variable var3: NUMBER;" +
+                        "variable var4: NUMBER;" +
+                        "variable var5: NUMBER;" +
+                        "test = var1 * var2 * var3 * var4 * var5;"},
+                {"variable var1: NUMBER;" +
+                        "variable var2: NUMBER;" +
+                        "variable var3: NUMBER;" +
+                        "variable var4: NUMBER;" +
+                        "variable var5: NUMBER;" +
+                        "test = var1 / var2;"},
+                {"variable var1: NUMBER;" +
+                        "variable var2: NUMBER;" +
+                        "variable var3: NUMBER;" +
+                        "variable var4: NUMBER;" +
+                        "variable var5: NUMBER;" +
+                        "test = var1 / var2 / var3 / var4 / var5;"},
+                {"variable var1: NUMBER;" +
+                        "variable var2: NUMBER;" +
+                        "variable var3: NUMBER;" +
+                        "variable var4: NUMBER;" +
+                        "variable var5: NUMBER;" +
+                        "test = var1 % var2;"},
+                {"variable var1: NUMBER;" +
+                        "variable var2: NUMBER;" +
+                        "variable var3: NUMBER;" +
+                        "variable var4: NUMBER;" +
+                        "variable var5: NUMBER;" +
+                        "test = var1 % var2 % var3 % var4 % var5;"}
+        };
+    }
+
+    @Test(dataProvider = "visitMulExpTestData")
+    public void visitMulExp_ValidInput_ReturnsCorrectType(String code) {
+        ParseTree parseTree = createParseTree(code);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+
+        symbolTableVisitor.visit(mctlNode);
+
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(5);
+        MulExpNode mulExpNode = (MulExpNode) assStateNode.get_assignExp();
+
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(mulExpNode);
+
+        softAssert.assertTrue(typeDescriptor.get_type_literal().equals("NUMBER"), "Visit MulExp: Expected type NUMBER for '" + code + "' but got: " + typeDescriptor.get_type_literal());
+        softAssert.assertAll();
+    }
+
+    @DataProvider
+    public Object[][] visitIDStructTestData() {
+        return new Object[][] {
+                {"struct STRUCTURE { variable num: NUMBER }; variable var: STRUCTURE; var.num = 1;", "NUMBER"},
+                {"struct STRUCTURE { variable num: NUMBER[] }; variable var: STRUCTURE; var.num[0] = 2;", "NUMBER"},
+                {"struct STRUCTURE { variable num: NUMBER }; variable var: STRUCTURE[]; var[0].num = 3;", "NUMBER"},
+                {"struct STRUCTURE { variable num: NUMBER[] }; variable var: STRUCTURE[]; var[0].num[0] = 4;", "NUMBER"},
+                {"struct STRUCTURE { variable str: STRING }; variable var: STRUCTURE; var.str = \"1\";", "STRING"},
+                {"struct STRUCTURE { variable str: STRING[] }; variable var: STRUCTURE; var.str[0] = \"2\";", "STRING"},
+                {"struct STRUCTURE { variable str: STRING }; variable var: STRUCTURE[]; var[0].str = \"3\";", "STRING"},
+                {"struct STRUCTURE { variable str: STRING[] }; variable var: STRUCTURE[]; var[0].str[0] = \"4\";", "STRING"},
+                {"struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE; var.bool = true;", "BOOLEAN"},
+                {"struct STRUCTURE { variable bool: BOOLEAN[] }; variable var: STRUCTURE; var.bool[0] = false;", "BOOLEAN"},
+                {"struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE[]; var[0].bool = true;", "BOOLEAN"},
+                {"struct STRUCTURE { variable bool: BOOLEAN[] }; variable var: STRUCTURE[]; var[0].bool[0] = false;", "BOOLEAN"}
+        };
+    }
+
+    @Test(dataProvider = "visitIDStructTestData")
+    public void visitIDStruct_ValidInput_ReturnsCorrectType(String code, String type) {
+        ParseTree parseTree = createParseTree(code);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+
+        symbolTableVisitor.visit(mctlNode);
+
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(2);
+        IDStructNode idStructNode = (IDStructNode) assStateNode.get_assignId();
+
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(idStructNode);
+
+        softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit IDStruct: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
     }
 }
