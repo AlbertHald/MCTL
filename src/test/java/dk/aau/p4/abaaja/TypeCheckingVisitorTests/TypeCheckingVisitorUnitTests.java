@@ -854,6 +854,7 @@ public class TypeCheckingVisitorUnitTests {
                 {"variable empty: STRING; struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE; var.bool = true;", "BOOLEAN"},
                 {"variable empty: STRING; struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE[]; var[0].bool = true;", "BOOLEAN"},
                 {"variable empty: STRING; struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE[][]; var[0][0].bool = true;", "BOOLEAN"},
+                {"struct STRUCTURE1 { variable bool: BOOLEAN }; struct STRUCTURE2 { variable inner: STRUCTURE1 }; variable var: STRUCTURE2; var.inner.bool = true;", "BOOLEAN"},
                 {"struct STRUCTURE1 { variable bool: BOOLEAN }; struct STRUCTURE2 { variable inner: STRUCTURE1[] }; variable var: STRUCTURE2[][]; var[0][0].inner.bool = true;", "BOOLEAN"}
         };
     }
