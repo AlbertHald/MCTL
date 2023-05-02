@@ -168,5 +168,5 @@ Repeat: 'repeat';
 ID: [a-zA-Z_] [a-zA-Z0-9_]*;
 NUMBER: [0-9]+('.'[0-9]*)?;
 
-COMMENT: '#{' .*? '}';
+COMMENT: '#{' .*? '}' -> skip;
 WS: [ \n\t\r]+ -> skip;
