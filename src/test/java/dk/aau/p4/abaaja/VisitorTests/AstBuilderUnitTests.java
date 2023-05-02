@@ -520,7 +520,6 @@ public class AstBuilderUnitTests {
         softAssert.assertAll();
     }
 
-
     /**
      * visitIdVar unit tests
      */

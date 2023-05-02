@@ -502,6 +502,7 @@ public class TypeCheckingVisitorUnitTests {
                 {"variable c: STRING; struct test { variable b: NUMBER[][] }; variable a: test[]; a[0].b[0][0] = 1;", "NUMBER[][]"},
                 {"variable c: STRING; struct test { variable b: NUMBER[][] }; variable a: test[][]; a[0][0].b[0][0] = 1;", "NUMBER[][]"},
                 {"variable c: STRING; struct test { variable b: NUMBER[][][] }; variable a: test[][][]; a[0][0][0].b[0][0][0] = 1;", "NUMBER[][][]"},
+                {"struct STRUCTURE1 { variable bool: BOOLEAN[] }; struct STRUCTURE2 { variable inner: STRUCTURE1 }; variable var: STRUCTURE2; var.inner.bool[0] = true;", "BOOLEAN[]"},
                 {"struct test2 { variable b: test[][][] }; struct test { variable c: NUMBER[][][] }; variable a: test2[][][]; a[0][0][0].b[0][0][0].c[0][0][0] = 1;", "NUMBER[][][]"}
         };
     }
@@ -855,7 +856,7 @@ public class TypeCheckingVisitorUnitTests {
                 {"variable empty: STRING; struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE[]; var[0].bool = true;", "BOOLEAN"},
                 {"variable empty: STRING; struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE[][]; var[0][0].bool = true;", "BOOLEAN"},
                 {"struct STRUCTURE1 { variable bool: BOOLEAN }; struct STRUCTURE2 { variable inner: STRUCTURE1 }; variable var: STRUCTURE2; var.inner.bool = true;", "BOOLEAN"},
-                {"struct STRUCTURE1 { variable bool: BOOLEAN }; struct STRUCTURE2 { variable inner: STRUCTURE1[] }; variable var: STRUCTURE2[][]; var[0][0].inner.bool = true;", "BOOLEAN"}
+                {"struct STRUCTURE1 { variable bool: BOOLEAN }; struct STRUCTURE2 { variable inner: STRUCTURE1[] }; variable var: STRUCTURE2[][]; var[0][0].inner[0].bool = true;", "BOOLEAN"}
         };
     }
 
@@ -872,6 +873,32 @@ public class TypeCheckingVisitorUnitTests {
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(idStructNode);
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit IDStruct: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
+        softAssert.assertAll();
+    }
+
+    @DataProvider
+    public Object[][] visitActualIDExpTestData() {
+        return new Object[][] {
+                {"variable var: NUMBER; var = 1; test = var;", "NUMBER"},
+                {"variable var: STRING; var = \"1\"; test = var;", "STRING"},
+                {"variable var: BOOLEAN; var = true; test = var;", "BOOLEAN"},
+                {"variable var: NUMBER; empty(); test = var;", "NOTHING"}
+        };
+    }
+
+    @Test(dataProvider = "visitActualIDExpTestData")
+    public void visitActualIDExp_ValidInput_ReturnsCorrectType(String code, String type) {
+        ParseTree parseTree = createParseTree(code);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+
+        symbolTableVisitor.visit(mctlNode);
+
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(2);
+        ActualIDExpNode actualIDExpNode = (ActualIDExpNode) assStateNode.get_assignExp();
+
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(actualIDExpNode);
+
+        softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit ActualIDExp: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
     }
 }
