@@ -171,7 +171,17 @@ public class TypeCheckingVisitor {
         MctlTypeDescriptor accessorType;
 
         MctlStructDescriptor mctlTypeDescriptor;
-        mctlTypeDescriptor = (MctlStructDescriptor) visit(currNode.get_idNode());
+        MctlTypeDescriptor descriptor = visit(currNode.get_idNode());
+
+        if (descriptor instanceof MctlArrayTypeDescriptor) {
+            String no_brackets = ((MctlArrayTypeDescriptor) descriptor).get_contained_type_literal();
+            MctlStructDescriptor another_descriptor = (MctlStructDescriptor) _symbolTable.searchType(no_brackets);
+            ActualIDExpNode another_node = (ActualIDExpNode) node.get_accessor();
+
+            return another_descriptor.get_structVariables().get(another_node.get_id());
+        } else {
+            mctlTypeDescriptor = (MctlStructDescriptor) descriptor;
+        }
 
         if (mctlTypeDescriptor.get_type_literal().equals("NOTHING")) {
             return mctlTypeDescriptor;

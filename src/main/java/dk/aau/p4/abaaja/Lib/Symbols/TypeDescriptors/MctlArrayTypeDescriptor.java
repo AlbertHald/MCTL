@@ -24,4 +24,8 @@ public class MctlArrayTypeDescriptor extends MctlTypeDescriptor {
 
     public int getDegree() { return this._degree; }
     public void setDegree(int degree) { this._degree = degree; }
+
+    public MctlTypeDescriptor getType() {
+        return _type;
+    }
 }

@@ -10,6 +10,9 @@ public class ActualIDExpNode extends IDExpNode {
     }
 
     @Override
+    public int get_degree() { return 0; }
+
+    @Override
     public IDExpNode get_idNode() {
         return null;
     }
