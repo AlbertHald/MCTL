@@ -488,19 +488,21 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitIDArrayExpTestData() {
         return new Object[][] {
-                {"variable b: STRING; variable a: NUMBER[]; a[0] = 1;", "NUMBER[]"},
-                {"variable b: STRING; variable a: NUMBER[][]; a[0][1] = 2;", "NUMBER[][]"},
-                {"variable b: STRING; variable a: NUMBER[][][]; a[0][1][3][4][5] = 5;", "NUMBER[][][]"},
-                {"variable b: STRING; variable a: STRING[]; a[0] = \"1\";", "STRING[]"},
-                {"variable b: STRING; variable a: STRING[][]; a[0][1] = \"2\";", "STRING[][]"},
-                {"variable b: STRING; variable a: STRING[][][]; a[0][1][3][4][5] = \"5\";", "STRING[][][]"},
-                {"variable b: STRING; variable a: BOOLEAN[]; a[0] = true;", "BOOLEAN[]"},
-                {"variable b: STRING; variable a: BOOLEAN[][]; a[0][1] = true;", "BOOLEAN[][]"},
-                {"variable b: STRING; variable a: BOOLEAN[][][]; a[0][1][3][4][5] = false;", "BOOLEAN[][][]"},
-                {"struct test { variable b: NUMBER[] }; variable a: test; a.b[0] = 1;", "NUMBER[]"},
-                {"struct test { variable b: NUMBER[] }; variable a: test[]; a[0].b[0] = 1;", "NUMBER[]"},
-                {"struct test { variable b: NUMBER[][] }; variable a: test[]; a[0].b[0][0] = 1;", "NUMBER[][]"},
-                {"struct test { variable b: NUMBER[][] }; variable a: test[][]; a[0][0].b[0][0] = 1;", "NUMBER[][]"}
+                {"variable c: STRING; variable b: STRING; variable a: NUMBER[]; a[0] = 1;", "NUMBER[]"},
+                {"variable c: STRING; variable b: STRING; variable a: NUMBER[][]; a[0][1] = 2;", "NUMBER[][]"},
+                {"variable c: STRING; variable b: STRING; variable a: NUMBER[][][]; a[0][1][3][4][5] = 5;", "NUMBER[][][]"},
+                {"variable c: STRING; variable b: STRING; variable a: STRING[]; a[0] = \"1\";", "STRING[]"},
+                {"variable c: STRING; variable b: STRING; variable a: STRING[][]; a[0][1] = \"2\";", "STRING[][]"},
+                {"variable c: STRING; variable b: STRING; variable a: STRING[][][]; a[0][1][3][4][5] = \"5\";", "STRING[][][]"},
+                {"variable c: STRING; variable b: STRING; variable a: BOOLEAN[]; a[0] = true;", "BOOLEAN[]"},
+                {"variable c: STRING; variable b: STRING; variable a: BOOLEAN[][]; a[0][1] = true;", "BOOLEAN[][]"},
+                {"variable c: STRING; variable b: STRING; variable a: BOOLEAN[][][]; a[0][1][3][4][5] = false;", "BOOLEAN[][][]"},
+                {"variable c: STRING; struct test { variable b: NUMBER[] }; variable a: test; a.b[0] = 1;", "NUMBER[]"},
+                {"variable c: STRING; struct test { variable b: NUMBER[] }; variable a: test[]; a[0].b[0] = 1;", "NUMBER[]"},
+                {"variable c: STRING; struct test { variable b: NUMBER[][] }; variable a: test[]; a[0].b[0][0] = 1;", "NUMBER[][]"},
+                {"variable c: STRING; struct test { variable b: NUMBER[][] }; variable a: test[][]; a[0][0].b[0][0] = 1;", "NUMBER[][]"},
+                {"variable c: STRING; struct test { variable b: NUMBER[][][] }; variable a: test[][][]; a[0][0][0].b[0][0][0] = 1;", "NUMBER[][][]"},
+                {"struct test2 { variable b: test[][][] }; struct test { variable c: NUMBER[][][] }; variable a: test2[][][]; a[0][0][0].b[0][0][0].c[0][0][0] = 1;", "NUMBER[][][]"}
         };
     }
 
@@ -511,7 +513,7 @@ public class TypeCheckingVisitorUnitTests {
 
         symbolTableVisitor.visit(mctlNode);
 
-        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(2);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(3);
         IDArrayExpNode idArrayExpNode = (IDArrayExpNode) assStateNode.get_assignId();
 
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(idArrayExpNode);
@@ -852,7 +854,7 @@ public class TypeCheckingVisitorUnitTests {
                 {"variable empty: STRING; struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE; var.bool = true;", "BOOLEAN"},
                 {"variable empty: STRING; struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE[]; var[0].bool = true;", "BOOLEAN"},
                 {"variable empty: STRING; struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE[][]; var[0][0].bool = true;", "BOOLEAN"},
-                {"struct STRUCTURE1 { variable bool: BOOLEAN }; struct STRUCTURE2 { variable inner: STRUCTURE1 }; variable var: STRUCTURE2[][]; var[0][0].inner.bool = true;", "BOOLEAN"}
+                {"struct STRUCTURE1 { variable bool: BOOLEAN }; struct STRUCTURE2 { variable inner: STRUCTURE1[] }; variable var: STRUCTURE2[][]; var[0][0].inner.bool = true;", "BOOLEAN"}
         };
     }
 
