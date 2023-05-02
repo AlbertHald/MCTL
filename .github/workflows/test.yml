@@ -1,0 +1,35 @@
+name: "Test"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ "main" ]
+
+jobs:
+  test:
+    name: Test
+    runs-on: 'ubuntu-latest'
+    permissions:
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'java' ]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin' # https://github.com/actions/setup-java#supported-distributions
+        java-version: '19'
+        cache: 'maven'
+
+    - name: Run all tests
+      run: mvn test
