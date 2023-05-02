@@ -13,6 +13,11 @@ public class ActualIDExpNode extends IDExpNode {
     public int get_degree() { return 0; }
 
     @Override
+    public String get_contained_id() {
+        return get_id();
+    }
+
+    @Override
     public IDExpNode get_idNode() {
         return null;
     }

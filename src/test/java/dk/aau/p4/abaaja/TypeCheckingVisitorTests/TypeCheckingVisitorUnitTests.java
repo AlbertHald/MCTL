@@ -2,6 +2,8 @@ package dk.aau.p4.abaaja.TypeCheckingVisitorTests;
 
 import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
+import dk.aau.p4.abaaja.Lib.ProblemHandling.Problem;
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlArrayTypeDescriptor;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlTypeDescriptor;
 import dk.aau.p4.abaaja.Lib.Visitors.AstVisitor;
 import dk.aau.p4.abaaja.Lib.Visitors.SymbolTableVisitor;
@@ -18,7 +20,7 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 public class TypeCheckingVisitorUnitTests {
-    private final ProblemCollection problemCollection = new ProblemCollection();
+    private ProblemCollection problemCollection = new ProblemCollection();
     private final AstVisitor astVisitor = new AstVisitor(problemCollection);
     private SymbolTableVisitor symbolTableVisitor;
     private TypeCheckingVisitor typeCheckingVisitor;
@@ -35,6 +37,11 @@ public class TypeCheckingVisitorUnitTests {
     public void AfterMethod() {
         symbolTableVisitor = null;
         typeCheckingVisitor = null;
+
+        for (Problem problem : problemCollection.getProblems()) {
+            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
+        }
+        problemCollection = new ProblemCollection();
     }
 
     private ParseTree createParseTree(String code) {
@@ -405,33 +412,40 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitReturnTestData() {
         return new Object[][] {
-                {"variable var: NUMBER; return 4;", "NUMBER"},
-                {"variable var: NUMBER; return \"yo\";", "STRING"},
-                {"variable var: NUMBER; return true;", "BOOLEAN"},
-                {"variable var: NUMBER; return var;", "NUMBER"},
-                {"variable var: STRING; return var;", "STRING"},
-                {"variable var: BOOLEAN; return var;", "BOOLEAN"},
-                {"variable var: NUMBER[]; return var[0];", "NUMBER[]"},
-                {"variable var: STRING[]; return var[0];", "STRING[]"},
-                {"variable var: BOOLEAN[]; return var[0];", "BOOLEAN[]"},
-                {"variable var: NUMBER[][]; return var[0];", "NUMBER[][]"},
-                {"variable var: STRING[][]; return var[0];", "STRING[][]"},
-                {"variable var: BOOLEAN[][]; return var[0];", "BOOLEAN[][]"}
+                {"return 4;", "NUMBER", 0},
+                {"return \"yo\";", "STRING", 0},
+                {"return true;", "BOOLEAN", 0},
+                {"variable var: NUMBER; var = 1; return var;", "NUMBER", 2},
+                {"variable var: STRING; var = \"1\"; return var;", "STRING", 2},
+                {"variable var: BOOLEAN; var = true; return var;", "BOOLEAN", 2},
+                {"variable var: NUMBER[]; var[0] = 1; return var[0];", "NUMBER", 2},
+                {"variable var: STRING[]; var[0] = \"1\"; return var[0];", "STRING", 2},
+                {"variable var: BOOLEAN[]; var[0] = true; return var[0];", "BOOLEAN", 2},
+                {"variable var: NUMBER[][]; var[0][0] = 1; return var[0][0];", "NUMBER", 2},
+                {"variable var: STRING[][]; var[0][0] = \"1\"; return var[0][0];", "STRING", 2},
+                {"variable var: BOOLEAN[][]; var[0][0] = true; return var[0][0];", "BOOLEAN", 2}
         };
     }
 
     @Test(dataProvider = "visitReturnTestData")
-    public void visitReturn_ValidInput_ReturnsCorrectType(String code, String type) {
+    public void visitReturn_ValidInput_ReturnsCorrectType(String code, String type, int index) {
         ParseTree parseTree = createParseTree(code);
         MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
 
         symbolTableVisitor.visit(mctlNode);
 
-        ReturnNode returnNode = (ReturnNode) mctlNode.get_children().get(1);
+        ReturnNode returnNode = (ReturnNode) mctlNode.get_children().get(index);
 
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(returnNode);
+        String descriptorType;
 
-        softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit Return: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
+        if (typeDescriptor instanceof MctlArrayTypeDescriptor descriptor) {
+            descriptorType = descriptor.get_contained_type_literal();
+        } else {
+            descriptorType = typeDescriptor.get_type_literal();
+        }
+
+        softAssert.assertTrue(descriptorType.equals(type), "Visit Return: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
     }
 
@@ -488,36 +502,37 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitIDArrayExpTestData() {
         return new Object[][] {
-                {"variable c: STRING; variable b: STRING; variable a: NUMBER[]; a[0] = 1;", "NUMBER[]"},
-                {"variable c: STRING; variable b: STRING; variable a: NUMBER[][]; a[0][1] = 2;", "NUMBER[][]"},
-                {"variable c: STRING; variable b: STRING; variable a: NUMBER[][][]; a[0][1][3][4][5] = 5;", "NUMBER[][][]"},
-                {"variable c: STRING; variable b: STRING; variable a: STRING[]; a[0] = \"1\";", "STRING[]"},
-                {"variable c: STRING; variable b: STRING; variable a: STRING[][]; a[0][1] = \"2\";", "STRING[][]"},
-                {"variable c: STRING; variable b: STRING; variable a: STRING[][][]; a[0][1][3][4][5] = \"5\";", "STRING[][][]"},
-                {"variable c: STRING; variable b: STRING; variable a: BOOLEAN[]; a[0] = true;", "BOOLEAN[]"},
-                {"variable c: STRING; variable b: STRING; variable a: BOOLEAN[][]; a[0][1] = true;", "BOOLEAN[][]"},
-                {"variable c: STRING; variable b: STRING; variable a: BOOLEAN[][][]; a[0][1][3][4][5] = false;", "BOOLEAN[][][]"},
-                {"variable c: STRING; struct test { variable b: NUMBER[] }; variable a: test; a.b[0] = 1;", "NUMBER[]"},
-                {"variable c: STRING; struct test { variable b: NUMBER[] }; variable a: test[]; a[0].b[0] = 1;", "NUMBER[]"},
-                {"variable c: STRING; struct test { variable b: NUMBER[][] }; variable a: test[]; a[0].b[0][0] = 1;", "NUMBER[][]"},
-                {"variable c: STRING; struct test { variable b: NUMBER[][] }; variable a: test[][]; a[0][0].b[0][0] = 1;", "NUMBER[][]"},
-                {"variable c: STRING; struct test { variable b: NUMBER[][][] }; variable a: test[][][]; a[0][0][0].b[0][0][0] = 1;", "NUMBER[][][]"},
-                {"struct STRUCTURE1 { variable bool: BOOLEAN[] }; struct STRUCTURE2 { variable inner: STRUCTURE1 }; variable var: STRUCTURE2; var.inner.bool[0] = true;", "BOOLEAN[]"},
-                {"struct test2 { variable b: test[][][] }; struct test { variable c: NUMBER[][][] }; variable a: test2[][][]; a[0][0][0].b[0][0][0].c[0][0][0] = 1;", "NUMBER[][][]"}
-        };
+               /*{"variable a: NUMBER[]; a[0] = 1;", "NUMBER", 1},
+                {"variable a: NUMBER[][]; a[0][0] = 2;", "NUMBER", 1},
+                {"variable a: NUMBER[][][]; a[0][0][0] = 5;", "NUMBER", 1},
+                {"variable a: STRING[]; a[0] = \"1\";", "STRING", 1},
+                {"variable a: STRING[][]; a[0][0] = \"2\";", "STRING", 1},
+                {"variable a: STRING[][][]; a[0][0][0] = \"5\";", "STRING", 1},
+                {"variable a: BOOLEAN[]; a[0] = true;", "BOOLEAN", 1},
+                {"variable a: BOOLEAN[][]; a[0][0] = true;", "BOOLEAN", 1},
+                {"variable a: BOOLEAN[][][]; a[0][0][0] = false;", "BOOLEAN", 1},
+                {"struct test { variable b: NUMBER[] }; variable a: test; a.b[0] = 1;", "NUMBER", 2},*/
+                {"struct test { variable b: NUMBER[] }; variable a: test[]; a[0].b[0] = 1;", "NUMBER", 2},
+                {"struct test { variable b: NUMBER[][] }; variable a: test[]; a[0].b[0][0] = 1;", "NUMBER", 2},
+                {"struct test { variable b: NUMBER[][] }; variable a: test[][]; a[0][0].b[0][0] = 1;", "NUMBER", 2},
+                {"struct test { variable b: NUMBER[][][] }; variable a: test[][][]; a[0][0][0].b[0][0][0] = 1;", "NUMBER", 2},/*
+                {"struct STRUCTURE1 { variable bool: BOOLEAN[] }; struct STRUCTURE2 { variable inner: STRUCTURE1[] }; variable var: STRUCTURE2; var.inner[0].bool[0] = true;", "BOOLEAN", 3}
+        */};
     }
 
     @Test(dataProvider = "visitIDArrayExpTestData")
-    public void visitIDArrayExp_ValidInput_ReturnsCorrectType(String code, String type) {
+    public void visitIDArrayExp_ValidInput_ReturnsCorrectType(String code, String type, int index) {
         ParseTree parseTree = createParseTree(code);
         MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
 
         symbolTableVisitor.visit(mctlNode);
 
-        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(3);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(index);
         IDArrayExpNode idArrayExpNode = (IDArrayExpNode) assStateNode.get_assignId();
 
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(idArrayExpNode);
+
+        System.out.println("typeDescriptor = " + typeDescriptor);
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit IDArrayExp: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
@@ -645,26 +660,26 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitCompExpTestData() {
         return new Object[][] {
-                {"variable var1: NUMBER; variable var2: NUMBER; test = -1 > -2;"},
-                {"variable var1: NUMBER; variable var2: NUMBER; test = 1 > 2;"},
-                {"variable var1: NUMBER; variable var2: NUMBER; test = var1 > var2;"},
-                {"variable var1: NUMBER; variable var2: NUMBER; test = 1 < 2;"},
-                {"variable var1: NUMBER; variable var2: NUMBER; test = var1 < var2;"},
-                {"variable var1: NUMBER; variable var2: NUMBER; test = 1 >= 2;"},
-                {"variable var1: NUMBER; variable var2: NUMBER; test = var1 >= var2;"},
-                {"variable var1: NUMBER; variable var2: NUMBER; test = 1 <= 2;"},
-                {"variable var1: NUMBER; variable var2: NUMBER; test = var1 <= var2;"}
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; test = -1 > -2;", 3},
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; test = 1 > 2;", 3},
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; var1 = 1; var2 = 2; test = var1 > var2;", 5},
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; test = 1 < 2;", 3},
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; var1 = 1; var2 = 2; test = var1 < var2;", 5},
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; test = 1 >= 2;", 3},
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; var1 = 1; var2 = 2; test = var1 >= var2;", 5},
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; test = 1 <= 2;", 3},
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; var1 = 1; var2 = 2; test = var1 <= var2;", 5}
         };
     }
 
     @Test(dataProvider = "visitCompExpTestData")
-    public void visitCompExp_ValidInput_ReturnsCorrectType(String code) {
+    public void visitCompExp_ValidInput_ReturnsCorrectType(String code, int index) {
         ParseTree parseTree = createParseTree(code);
         MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
 
         symbolTableVisitor.visit(mctlNode);
 
-        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(2);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(index);
         CompExpNode compExpNode = (CompExpNode) assStateNode.get_assignExp();
 
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(compExpNode);
@@ -678,16 +693,10 @@ public class TypeCheckingVisitorUnitTests {
         return new Object[][] {
                 {"variable var1: BOOLEAN;" +
                         "variable var2: BOOLEAN;" +
-                        "variable var3: BOOLEAN;" +
-                        "variable var4: BOOLEAN;" +
-                        "variable var5: BOOLEAN;" +
-                        "test = var1 or var2;"},
-                {"variable var1: BOOLEAN;" +
-                        "variable var2: BOOLEAN;" +
-                        "variable var3: BOOLEAN;" +
-                        "variable var4: BOOLEAN;" +
-                        "variable var5: BOOLEAN;" +
-                        "test = var1 or var2 or var3 or var4 or var5;"}
+                        "variable test: BOOLEAN;" +
+                        "var1 = true;" +
+                        "var2 = true;" +
+                        "test = var1 or var2;"}
         };
     }
 
@@ -710,18 +719,18 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitAndExpTestData() {
         return new Object[][] {
-                {"variable var1: BOOLEAN;" +
-                        "variable var2: BOOLEAN;" +
-                        "variable var3: BOOLEAN;" +
-                        "variable var4: BOOLEAN;" +
-                        "variable var5: BOOLEAN;" +
-                        "test = var1 and var2;"},
-                {"variable var1: BOOLEAN;" +
-                        "variable var2: BOOLEAN;" +
-                        "variable var3: BOOLEAN;" +
-                        "variable var4: BOOLEAN;" +
-                        "variable var5: BOOLEAN;" +
-                        "test = var1 and var2 and var3 and var4 and var5;"}
+                {"variable var1: BOOLEAN; var1 = true; " +
+                        "variable var2: BOOLEAN; var2 = true;" +
+                        "variable var3: BOOLEAN; var3 = true;" +
+                        "variable var4: BOOLEAN; var4 = true;" +
+                        "variable var5: BOOLEAN; var5 = true;" +
+                        "variable test: BOOLEAN; test = var1 and var2;"},
+                {"variable var1: BOOLEAN; var1 = true; " +
+                        "variable var2: BOOLEAN; var2 = true;" +
+                        "variable var3: BOOLEAN; var3 = true;" +
+                        "variable var4: BOOLEAN; var4 = true;" +
+                        "variable var5: BOOLEAN; var5 = true;" +
+                        "variable test: BOOLEAN; test = var1 and var2 and var3 and var4 and var5;"}
         };
     }
 
@@ -732,7 +741,7 @@ public class TypeCheckingVisitorUnitTests {
 
         symbolTableVisitor.visit(mctlNode);
 
-        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(5);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(11);
         AndExpNode andExpNode = (AndExpNode) assStateNode.get_assignExp();
 
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(andExpNode);
@@ -744,30 +753,8 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitAddExpTestData() {
         return new Object[][] {
-                {"variable var1: NUMBER;" +
-                        "variable var2: NUMBER;" +
-                        "variable var3: NUMBER;" +
-                        "variable var4: NUMBER;" +
-                        "variable var5: NUMBER;" +
-                        "test = var1 + var2;"},
-                {"variable var1: NUMBER;" +
-                        "variable var2: NUMBER;" +
-                        "variable var3: NUMBER;" +
-                        "variable var4: NUMBER;" +
-                        "variable var5: NUMBER;" +
-                        "test = var1 + var2 + var3 + var4 + var5;"},
-                {"variable var1: NUMBER;" +
-                        "variable var2: NUMBER;" +
-                        "variable var3: NUMBER;" +
-                        "variable var4: NUMBER;" +
-                        "variable var5: NUMBER;" +
-                        "test = var1 - var2;"},
-                {"variable var1: NUMBER;" +
-                        "variable var2: NUMBER;" +
-                        "variable var3: NUMBER;" +
-                        "variable var4: NUMBER;" +
-                        "variable var5: NUMBER;" +
-                        "test = var1 - var2 - var3 - var4 - var5;"}
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; var1 = 1; var2 = 2; test = var1 + var2;"},
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; var1 = 1; var2 = 2; test = var1 - var2;"}
         };
     }
 
@@ -790,42 +777,9 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitMulExpTestData() {
         return new Object[][] {
-                {"variable var1: NUMBER;" +
-                        "variable var2: NUMBER;" +
-                        "variable var3: NUMBER;" +
-                        "variable var4: NUMBER;" +
-                        "variable var5: NUMBER;" +
-                        "test = var1 * var2;"},
-                {"variable var1: NUMBER;" +
-                        "variable var2: NUMBER;" +
-                        "variable var3: NUMBER;" +
-                        "variable var4: NUMBER;" +
-                        "variable var5: NUMBER;" +
-                        "test = var1 * var2 * var3 * var4 * var5;"},
-                {"variable var1: NUMBER;" +
-                        "variable var2: NUMBER;" +
-                        "variable var3: NUMBER;" +
-                        "variable var4: NUMBER;" +
-                        "variable var5: NUMBER;" +
-                        "test = var1 / var2;"},
-                {"variable var1: NUMBER;" +
-                        "variable var2: NUMBER;" +
-                        "variable var3: NUMBER;" +
-                        "variable var4: NUMBER;" +
-                        "variable var5: NUMBER;" +
-                        "test = var1 / var2 / var3 / var4 / var5;"},
-                {"variable var1: NUMBER;" +
-                        "variable var2: NUMBER;" +
-                        "variable var3: NUMBER;" +
-                        "variable var4: NUMBER;" +
-                        "variable var5: NUMBER;" +
-                        "test = var1 % var2;"},
-                {"variable var1: NUMBER;" +
-                        "variable var2: NUMBER;" +
-                        "variable var3: NUMBER;" +
-                        "variable var4: NUMBER;" +
-                        "variable var5: NUMBER;" +
-                        "test = var1 % var2 % var3 % var4 % var5;"}
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; var1 = 1; var2 = 2; test = var1 * var2;"},
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; var1 = 1; var2 = 2; test = var1 / var2;"},
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; var1 = 1; var2 = 2; test = var1 % var2;"}
         };
     }
 

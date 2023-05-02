@@ -10,10 +10,12 @@ public class IDExpNode extends ExpNode {
     public void set_idNode(IDExpNode idNode) {
         this._idNode = idNode;
     }
+
     public String get_id() {
         return _idNode.get_id();
     }
     public int get_degree() { return _idNode.get_degree(); }
+    public String get_contained_id() { return _idNode.get_contained_id(); }
 
     @Override
     public void accept(INodeVisitor visitor) {

@@ -222,7 +222,7 @@ public class SymbolTableVisitor implements INodeVisitor {
                     "The variable \"" + actualIDNode.get_id() + "\" cannot be assigned to an expression containing undeclared variables",
                     node.get_lineNumber()
             );
-        } else if (idTypeDescriptor.get_type_literal().equals(expTypeDescriptor.get_type_literal())) {
+        } else {
             variable = symbolTable.searchSymbol(actualIDNode.get_id());
 
             if (variable == null) {
@@ -233,13 +233,16 @@ public class SymbolTableVisitor implements INodeVisitor {
                 );
             } else {
                 variable.set_isInstantiated(true);
+                idTypeDescriptor = typeCheckingVisitor.visit(node.get_assignId());
+                if (!(idTypeDescriptor.get_type_literal().equals(expTypeDescriptor.get_type_literal()))) {
+                    problemCollection.addProblem(
+                            ProblemType.ERROR_TYPE_MISMATCH,
+                            "Expected " + idTypeDescriptor.get_type_literal() + " but got " + expTypeDescriptor.get_type_literal(),
+                            node.get_lineNumber()
+                    );
+                    variable.set_isInstantiated(false);
+                }
             }
-        } else {
-            problemCollection.addProblem(
-                    ProblemType.ERROR_TYPE_MISMATCH,
-                    "Expected " + idTypeDescriptor.get_type_literal() + " but got " + expTypeDescriptor.get_type_literal(),
-                    node.get_lineNumber()
-            );
         }
     }
 
