@@ -15,15 +15,15 @@ public class SymbolTable {
 
     // Predefined functions of the programming language
     private List<PredefinedFunction> predefinedFunctions = Arrays.asList(
-            new PredefinedFunction("add", Arrays.asList(Arrays.asList(new MctlTypeDescriptor())), new MctlNothingDescriptor()),
-            new PredefinedFunction("remove", null, new MctlNothingDescriptor()),
-            new PredefinedFunction("length", null, new MctlNumberDescriptor()),
-            new PredefinedFunction("print", Arrays.asList(Arrays.asList(new MctlStringDescriptor())), new MctlNothingDescriptor()),
-            new PredefinedFunction("read", null, new MctlStringDescriptor()),
+            new PredefinedFunction("add", Arrays.asList(Arrays.asList(new MctlTypeDescriptor())), new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0), true, true, new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0)),
+            new PredefinedFunction("remove", new ArrayList<>(), new MctlNothingDescriptor(), true, false, new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0)),
+            new PredefinedFunction("length", new ArrayList<>(), new MctlNumberDescriptor(), true, true, new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0)),
+            new PredefinedFunction("print", Arrays.asList(Arrays.asList(new MctlStringDescriptor())), new MctlNothingDescriptor(), false, false, new MctlNothingDescriptor()),
+            new PredefinedFunction("read", new ArrayList<>(), new MctlStringDescriptor(), false, false, new MctlNothingDescriptor()),
             new PredefinedFunction("indexesOf",
                     Arrays.asList(Arrays.asList(new MctlStringDescriptor(), new MctlBooleanDescriptor(), new MctlNumberDescriptor(), new MctlNothingDescriptor())),
-                    new MctlArrayTypeDescriptor(new MctlNumberDescriptor(), 1)),
-            new PredefinedFunction("substring", Arrays.asList(Arrays.asList(new MctlNumberDescriptor()), Arrays.asList(new MctlNumberDescriptor())), new MctlStringDescriptor())
+                    new MctlArrayTypeDescriptor(new MctlNumberDescriptor(), 1), true, true, new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0)),
+            new PredefinedFunction("substring", Arrays.asList(Arrays.asList(new MctlNumberDescriptor()), Arrays.asList(new MctlNumberDescriptor())), new MctlStringDescriptor(), true, true, new MctlStringDescriptor())
     );
 
     // Predefined types of the programming language
@@ -46,9 +46,16 @@ public class SymbolTable {
 
         // Adding predefined functions to the symbol table
         for (PredefinedFunction predefinedFunction : predefinedFunctions) {
-            Symbol functionSymbol = new Symbol(predefinedFunction.get_id());
+            FuncSymbol functionSymbol = new FuncSymbol();
+            functionSymbol.set_name(predefinedFunction.get_id());
             functionSymbol.set_type(predefinedFunction.get_returnType());
             functionSymbol.set_types(predefinedFunction.get_parameters());
+            functionSymbol.setIsStringFunction(predefinedFunction.getIsStringFunction());
+            functionSymbol.setIsVarFunction(predefinedFunction.getIsVarFunction());
+            functionSymbol.setExpectedVarType(predefinedFunction.getExpectedVarType());
+
+            // Add function
+            insertSymbol((Symbol) functionSymbol);
         }
     }
 

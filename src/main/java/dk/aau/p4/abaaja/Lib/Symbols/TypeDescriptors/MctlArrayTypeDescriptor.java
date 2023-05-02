@@ -18,7 +18,14 @@ public class MctlArrayTypeDescriptor extends MctlTypeDescriptor {
         return result;
     }
 
-    public String get_type_literal_without_brackets_lol() {
+    public String get_contained_type_literal() {
         return _type.get_type_literal();
+    }
+
+    public int getDegree() { return this._degree; }
+    public void setDegree(int degree) { this._degree = degree; }
+
+    public MctlTypeDescriptor getType() {
+        return _type;
     }
 }
