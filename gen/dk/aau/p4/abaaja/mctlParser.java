@@ -1,4 +1,4 @@
-// Generated from dk/aau/p4/abaaja/mctl.g4 by ANTLR 4.12.0
+// Generated from /Users/bastianhansen/Library/CloudStorage/OneDrive-AalborgUniversitet/Semester 4/P4/Minecraft-Turtle-Language/src/main/java/dk/aau/p4/abaaja/mctl.g4 by ANTLR 4.12.0
 package dk.aau.p4.abaaja;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -21,9 +21,9 @@ public class mctlParser extends Parser {
 		COMMA=8, MULTIPLY=9, DIVIDE=10, MODULO=11, DECREMENT=12, INCREMENT=13, 
 		MINUS=14, PLUS=15, ASSIGN=16, LPAR=17, RPAR=18, LSQR=19, RSQR=20, LCURL=21, 
 		RCURL=22, STRING=23, COLON=24, SEMI=25, NOT=26, Nothing=27, String=28, 
-		Number=29, Boolean=30, Struct=31, True=32, False=33, IndexesOf=34, SubString=35, 
-		SubList=36, And=37, Or=38, Stop=39, Return=40, To=41, Variable=42, If=43, 
-		Else=44, Repeat=45, ID=46, NUMBER=47, COMMENT=48, WS=49;
+		Number=29, Boolean=30, Struct=31, True=32, False=33, And=34, Or=35, Stop=36, 
+		Return=37, To=38, Variable=39, If=40, Else=41, Repeat=42, ID=43, NUMBER=44, 
+		COMMENT=45, WS=46;
 	public static final int
 		RULE_mctl = 0, RULE_block = 1, RULE_comment = 2, RULE_declaration = 3, 
 		RULE_variableDeclaration = 4, RULE_id = 5, RULE_statement = 6, RULE_return = 7, 
@@ -46,9 +46,8 @@ public class mctlParser extends Parser {
 			null, "'=='", "'!='", "'<'", "'<='", "'>'", "'>='", "'.'", "','", "'*'", 
 			"'/'", "'%'", "'--'", "'++'", "'-'", "'+'", "'='", "'('", "')'", "'['", 
 			"']'", "'{'", "'}'", null, "':'", "';'", "'!'", "'NOTHING'", "'STRING'", 
-			"'NUMBER'", "'BOOLEAN'", "'struct'", "'true'", "'false'", "'indexesOf'", 
-			"'subString'", "'subList'", "'and'", "'or'", "'stop'", "'return'", "'to'", 
-			"'variable'", "'if'", "'else'", "'repeat'"
+			"'NUMBER'", "'BOOLEAN'", "'struct'", "'true'", "'false'", "'and'", "'or'", 
+			"'stop'", "'return'", "'to'", "'variable'", "'if'", "'else'", "'repeat'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -58,9 +57,8 @@ public class mctlParser extends Parser {
 			"DOT", "COMMA", "MULTIPLY", "DIVIDE", "MODULO", "DECREMENT", "INCREMENT", 
 			"MINUS", "PLUS", "ASSIGN", "LPAR", "RPAR", "LSQR", "RSQR", "LCURL", "RCURL", 
 			"STRING", "COLON", "SEMI", "NOT", "Nothing", "String", "Number", "Boolean", 
-			"Struct", "True", "False", "IndexesOf", "SubString", "SubList", "And", 
-			"Or", "Stop", "Return", "To", "Variable", "If", "Else", "Repeat", "ID", 
-			"NUMBER", "COMMENT", "WS"
+			"Struct", "True", "False", "And", "Or", "Stop", "Return", "To", "Variable", 
+			"If", "Else", "Repeat", "ID", "NUMBER", "COMMENT", "WS"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -168,7 +166,7 @@ public class mctlParser extends Parser {
 			setState(48);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 404072712634368L) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 50511004827648L) != 0)) {
 				{
 				setState(46);
 				_errHandler.sync(this);
@@ -284,7 +282,7 @@ public class mctlParser extends Parser {
 			setState(60);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 404072712634368L) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & 50511004827648L) != 0)) {
 				{
 				setState(58);
 				_errHandler.sync(this);
@@ -1491,7 +1489,7 @@ public class mctlParser extends Parser {
 				setState(176);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 211119193112576L) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 26401239646208L) != 0)) {
 					{
 					setState(175);
 					actualParameters();
@@ -1517,7 +1515,7 @@ public class mctlParser extends Parser {
 				setState(184);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 211119193112576L) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 26401239646208L) != 0)) {
 					{
 					setState(183);
 					actualParameters();
@@ -1543,7 +1541,7 @@ public class mctlParser extends Parser {
 				setState(193);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 211119193112576L) != 0)) {
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & 26401239646208L) != 0)) {
 					{
 					setState(192);
 					actualParameters();
@@ -2567,7 +2565,7 @@ public class mctlParser extends Parser {
 			{
 			setState(280);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 70370623225856L) != 0)) ) {
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 8797972070400L) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -2678,7 +2676,7 @@ public class mctlParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u00011\u011d\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0004\u0001.\u011d\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
 		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"+
 		"\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007\u0002"+
 		"\b\u0007\b\u0002\t\u0007\t\u0002\n\u0007\n\u0002\u000b\u0007\u000b\u0002"+
@@ -2724,7 +2722,7 @@ public class mctlParser extends Parser {
 		"\u0015\u0000\u0002\u0004\u0006\b\n\f\u000e\u0010\u0012\u0014\u0016\u0018"+
 		"\u001a\u001c\u001e \"$&(\u0000\b\u0001\u0000\f\r\u0002\u0000\u000e\u000f"+
 		"\u001a\u001a\u0001\u0000\t\u000b\u0001\u0000\u000e\u000f\u0001\u0000\u0003"+
-		"\u0006\u0001\u0000\u0001\u0002\u0002\u0000\u001c\u001e..\u0001\u0000 "+
+		"\u0006\u0001\u0000\u0001\u0002\u0002\u0000\u001c\u001e++\u0001\u0000 "+
 		"!\u0136\u00000\u0001\u0000\u0000\u0000\u00025\u0001\u0000\u0000\u0000"+
 		"\u0004A\u0001\u0000\u0000\u0000\u0006a\u0001\u0000\u0000\u0000\bc\u0001"+
 		"\u0000\u0000\u0000\nh\u0001\u0000\u0000\u0000\f\u0085\u0001\u0000\u0000"+
@@ -2746,22 +2744,22 @@ public class mctlParser extends Parser {
 		"\u0000:9\u0001\u0000\u0000\u0000;>\u0001\u0000\u0000\u0000<:\u0001\u0000"+
 		"\u0000\u0000<=\u0001\u0000\u0000\u0000=?\u0001\u0000\u0000\u0000><\u0001"+
 		"\u0000\u0000\u0000?@\u0005\u0016\u0000\u0000@\u0003\u0001\u0000\u0000"+
-		"\u0000AB\u00050\u0000\u0000B\u0005\u0001\u0000\u0000\u0000CD\u0003\b\u0004"+
-		"\u0000DE\u0005\u0019\u0000\u0000Eb\u0001\u0000\u0000\u0000FG\u0005)\u0000"+
-		"\u0000GH\u0005.\u0000\u0000HJ\u0005\u0011\u0000\u0000IK\u0003\u001a\r"+
+		"\u0000AB\u0005-\u0000\u0000B\u0005\u0001\u0000\u0000\u0000CD\u0003\b\u0004"+
+		"\u0000DE\u0005\u0019\u0000\u0000Eb\u0001\u0000\u0000\u0000FG\u0005&\u0000"+
+		"\u0000GH\u0005+\u0000\u0000HJ\u0005\u0011\u0000\u0000IK\u0003\u001a\r"+
 		"\u0000JI\u0001\u0000\u0000\u0000JK\u0001\u0000\u0000\u0000KL\u0001\u0000"+
 		"\u0000\u0000LM\u0005\u0012\u0000\u0000MN\u0005\u0018\u0000\u0000NO\u0003"+
 		"\"\u0011\u0000OP\u0003\u0002\u0001\u0000Pb\u0001\u0000\u0000\u0000QR\u0005"+
-		"\u001f\u0000\u0000RS\u0005.\u0000\u0000ST\u0005\u0015\u0000\u0000TY\u0003"+
+		"\u001f\u0000\u0000RS\u0005+\u0000\u0000ST\u0005\u0015\u0000\u0000TY\u0003"+
 		"\b\u0004\u0000UV\u0005\b\u0000\u0000VX\u0003\b\u0004\u0000WU\u0001\u0000"+
 		"\u0000\u0000X[\u0001\u0000\u0000\u0000YW\u0001\u0000\u0000\u0000YZ\u0001"+
 		"\u0000\u0000\u0000Z]\u0001\u0000\u0000\u0000[Y\u0001\u0000\u0000\u0000"+
 		"\\^\u0005\b\u0000\u0000]\\\u0001\u0000\u0000\u0000]^\u0001\u0000\u0000"+
 		"\u0000^_\u0001\u0000\u0000\u0000_`\u0005\u0016\u0000\u0000`b\u0001\u0000"+
 		"\u0000\u0000aC\u0001\u0000\u0000\u0000aF\u0001\u0000\u0000\u0000aQ\u0001"+
-		"\u0000\u0000\u0000b\u0007\u0001\u0000\u0000\u0000cd\u0005*\u0000\u0000"+
-		"de\u0005.\u0000\u0000ef\u0005\u0018\u0000\u0000fg\u0003$\u0012\u0000g"+
-		"\t\u0001\u0000\u0000\u0000hi\u0006\u0005\uffff\uffff\u0000ij\u0005.\u0000"+
+		"\u0000\u0000\u0000b\u0007\u0001\u0000\u0000\u0000cd\u0005\'\u0000\u0000"+
+		"de\u0005+\u0000\u0000ef\u0005\u0018\u0000\u0000fg\u0003$\u0012\u0000g"+
+		"\t\u0001\u0000\u0000\u0000hi\u0006\u0005\uffff\uffff\u0000ij\u0005+\u0000"+
 		"\u0000ju\u0001\u0000\u0000\u0000kl\n\u0002\u0000\u0000lm\u0005\u0007\u0000"+
 		"\u0000mt\u0003\n\u0005\u0003no\n\u0001\u0000\u0000op\u0005\u0013\u0000"+
 		"\u0000pq\u0003 \u0010\u0000qr\u0005\u0014\u0000\u0000rt\u0001\u0000\u0000"+
@@ -2771,24 +2769,24 @@ public class mctlParser extends Parser {
 		"\b\u0000y\u0086\u0003\u0014\n\u0000z{\u0003\u0016\u000b\u0000{|\u0005"+
 		"\u0019\u0000\u0000|\u0086\u0001\u0000\u0000\u0000}~\u0003\u0018\f\u0000"+
 		"~\u007f\u0005\u0019\u0000\u0000\u007f\u0086\u0001\u0000\u0000\u0000\u0080"+
-		"\u0081\u0005\'\u0000\u0000\u0081\u0086\u0005\u0019\u0000\u0000\u0082\u0083"+
+		"\u0081\u0005$\u0000\u0000\u0081\u0086\u0005\u0019\u0000\u0000\u0082\u0083"+
 		"\u0003\u000e\u0007\u0000\u0083\u0084\u0005\u0019\u0000\u0000\u0084\u0086"+
 		"\u0001\u0000\u0000\u0000\u0085x\u0001\u0000\u0000\u0000\u0085y\u0001\u0000"+
 		"\u0000\u0000\u0085z\u0001\u0000\u0000\u0000\u0085}\u0001\u0000\u0000\u0000"+
 		"\u0085\u0080\u0001\u0000\u0000\u0000\u0085\u0082\u0001\u0000\u0000\u0000"+
-		"\u0086\r\u0001\u0000\u0000\u0000\u0087\u0088\u0005(\u0000\u0000\u0088"+
+		"\u0086\r\u0001\u0000\u0000\u0000\u0087\u0088\u0005%\u0000\u0000\u0088"+
 		"\u0089\u0003 \u0010\u0000\u0089\u000f\u0001\u0000\u0000\u0000\u008a\u008b"+
 		"\u0003\u0012\t\u0000\u008b\u0092\u0003\u0002\u0001\u0000\u008c\u008d\u0005"+
-		",\u0000\u0000\u008d\u008e\u0003\u0012\t\u0000\u008e\u008f\u0003\u0002"+
+		")\u0000\u0000\u008d\u008e\u0003\u0012\t\u0000\u008e\u008f\u0003\u0002"+
 		"\u0001\u0000\u008f\u0091\u0001\u0000\u0000\u0000\u0090\u008c\u0001\u0000"+
 		"\u0000\u0000\u0091\u0094\u0001\u0000\u0000\u0000\u0092\u0090\u0001\u0000"+
 		"\u0000\u0000\u0092\u0093\u0001\u0000\u0000\u0000\u0093\u0097\u0001\u0000"+
-		"\u0000\u0000\u0094\u0092\u0001\u0000\u0000\u0000\u0095\u0096\u0005,\u0000"+
+		"\u0000\u0000\u0094\u0092\u0001\u0000\u0000\u0000\u0095\u0096\u0005)\u0000"+
 		"\u0000\u0096\u0098\u0003\u0002\u0001\u0000\u0097\u0095\u0001\u0000\u0000"+
 		"\u0000\u0097\u0098\u0001\u0000\u0000\u0000\u0098\u0011\u0001\u0000\u0000"+
-		"\u0000\u0099\u009a\u0005+\u0000\u0000\u009a\u009b\u0005\u0011\u0000\u0000"+
+		"\u0000\u0099\u009a\u0005(\u0000\u0000\u009a\u009b\u0005\u0011\u0000\u0000"+
 		"\u009b\u009c\u0003 \u0010\u0000\u009c\u009d\u0005\u0012\u0000\u0000\u009d"+
-		"\u0013\u0001\u0000\u0000\u0000\u009e\u009f\u0005-\u0000\u0000\u009f\u00a0"+
+		"\u0013\u0001\u0000\u0000\u0000\u009e\u009f\u0005*\u0000\u0000\u009f\u00a0"+
 		"\u0005\u0011\u0000\u0000\u00a0\u00a1\u0003 \u0010\u0000\u00a1\u00a2\u0005"+
 		"\u0012\u0000\u0000\u00a2\u00a3\u0003\u0002\u0001\u0000\u00a3\u0015\u0001"+
 		"\u0000\u0000\u0000\u00a4\u00a5\u0003\n\u0005\u0000\u00a5\u00a6\u0005\u0010"+
@@ -2796,16 +2794,16 @@ public class mctlParser extends Parser {
 		"\u0000\u00a8\u00a9\u0003\n\u0005\u0000\u00a9\u00aa\u0007\u0000\u0000\u0000"+
 		"\u00aa\u00ac\u0001\u0000\u0000\u0000\u00ab\u00a4\u0001\u0000\u0000\u0000"+
 		"\u00ab\u00a8\u0001\u0000\u0000\u0000\u00ac\u0017\u0001\u0000\u0000\u0000"+
-		"\u00ad\u00ae\u0005.\u0000\u0000\u00ae\u00b0\u0005\u0011\u0000\u0000\u00af"+
+		"\u00ad\u00ae\u0005+\u0000\u0000\u00ae\u00b0\u0005\u0011\u0000\u0000\u00af"+
 		"\u00b1\u0003\u001e\u000f\u0000\u00b0\u00af\u0001\u0000\u0000\u0000\u00b0"+
 		"\u00b1\u0001\u0000\u0000\u0000\u00b1\u00b2\u0001\u0000\u0000\u0000\u00b2"+
 		"\u00c5\u0005\u0012\u0000\u0000\u00b3\u00b4\u0003\n\u0005\u0000\u00b4\u00b5"+
-		"\u0005\u0007\u0000\u0000\u00b5\u00b6\u0005.\u0000\u0000\u00b6\u00b8\u0005"+
+		"\u0005\u0007\u0000\u0000\u00b5\u00b6\u0005+\u0000\u0000\u00b6\u00b8\u0005"+
 		"\u0011\u0000\u0000\u00b7\u00b9\u0003\u001e\u000f\u0000\u00b8\u00b7\u0001"+
 		"\u0000\u0000\u0000\u00b8\u00b9\u0001\u0000\u0000\u0000\u00b9\u00ba\u0001"+
 		"\u0000\u0000\u0000\u00ba\u00bb\u0005\u0012\u0000\u0000\u00bb\u00c5\u0001"+
 		"\u0000\u0000\u0000\u00bc\u00bd\u0005\u0017\u0000\u0000\u00bd\u00be\u0005"+
-		"\u0007\u0000\u0000\u00be\u00bf\u0005.\u0000\u0000\u00bf\u00c1\u0005\u0011"+
+		"\u0007\u0000\u0000\u00be\u00bf\u0005+\u0000\u0000\u00bf\u00c1\u0005\u0011"+
 		"\u0000\u0000\u00c0\u00c2\u0003\u001e\u000f\u0000\u00c1\u00c0\u0001\u0000"+
 		"\u0000\u0000\u00c1\u00c2\u0001\u0000\u0000\u0000\u00c2\u00c3\u0001\u0000"+
 		"\u0000\u0000\u00c3\u00c5\u0005\u0012\u0000\u0000\u00c4\u00ad\u0001\u0000"+
@@ -2817,7 +2815,7 @@ public class mctlParser extends Parser {
 		"\u0000\u00cc\u00ce\u0001\u0000\u0000\u0000\u00cd\u00cb\u0001\u0000\u0000"+
 		"\u0000\u00ce\u00d0\u0003\u001c\u000e\u0000\u00cf\u00d1\u0005\b\u0000\u0000"+
 		"\u00d0\u00cf\u0001\u0000\u0000\u0000\u00d0\u00d1\u0001\u0000\u0000\u0000"+
-		"\u00d1\u001b\u0001\u0000\u0000\u0000\u00d2\u00d3\u0005.\u0000\u0000\u00d3"+
+		"\u00d1\u001b\u0001\u0000\u0000\u0000\u00d2\u00d3\u0005+\u0000\u0000\u00d3"+
 		"\u00d4\u0005\u0018\u0000\u0000\u00d4\u00d5\u0003$\u0012\u0000\u00d5\u001d"+
 		"\u0001\u0000\u0000\u0000\u00d6\u00d7\u0003 \u0010\u0000\u00d7\u00d8\u0005"+
 		"\b\u0000\u0000\u00d8\u00da\u0001\u0000\u0000\u0000\u00d9\u00d6\u0001\u0000"+
@@ -2832,7 +2830,7 @@ public class mctlParser extends Parser {
 		"\u00e9\u0007\u0001\u0000\u0000\u00e9\u00f4\u0003 \u0010\f\u00ea\u00eb"+
 		"\u0005\u0011\u0000\u0000\u00eb\u00ec\u0003$\u0012\u0000\u00ec\u00ed\u0005"+
 		"\u0012\u0000\u0000\u00ed\u00ee\u0003 \u0010\u000b\u00ee\u00f4\u0001\u0000"+
-		"\u0000\u0000\u00ef\u00f4\u0003(\u0014\u0000\u00f0\u00f4\u0005/\u0000\u0000"+
+		"\u0000\u0000\u00ef\u00f4\u0003(\u0014\u0000\u00f0\u00f4\u0005,\u0000\u0000"+
 		"\u00f1\u00f4\u0003\n\u0005\u0000\u00f2\u00f4\u0005\u0017\u0000\u0000\u00f3"+
 		"\u00e2\u0001\u0000\u0000\u0000\u00f3\u00e4\u0001\u0000\u0000\u0000\u00f3"+
 		"\u00e8\u0001\u0000\u0000\u0000\u00f3\u00ea\u0001\u0000\u0000\u0000\u00f3"+
@@ -2844,9 +2842,9 @@ public class mctlParser extends Parser {
 		" \u0010\u0006\u00fb\u00fc\n\u0004\u0000\u0000\u00fc\u00fd\u0007\u0004"+
 		"\u0000\u0000\u00fd\u0108\u0003 \u0010\u0005\u00fe\u00ff\n\u0003\u0000"+
 		"\u0000\u00ff\u0100\u0007\u0005\u0000\u0000\u0100\u0108\u0003 \u0010\u0004"+
-		"\u0101\u0102\n\u0002\u0000\u0000\u0102\u0103\u0005%\u0000\u0000\u0103"+
+		"\u0101\u0102\n\u0002\u0000\u0000\u0102\u0103\u0005\"\u0000\u0000\u0103"+
 		"\u0108\u0003 \u0010\u0003\u0104\u0105\n\u0001\u0000\u0000\u0105\u0106"+
-		"\u0005&\u0000\u0000\u0106\u0108\u0003 \u0010\u0002\u0107\u00f5\u0001\u0000"+
+		"\u0005#\u0000\u0000\u0106\u0108\u0003 \u0010\u0002\u0107\u00f5\u0001\u0000"+
 		"\u0000\u0000\u0107\u00f8\u0001\u0000\u0000\u0000\u0107\u00fb\u0001\u0000"+
 		"\u0000\u0000\u0107\u00fe\u0001\u0000\u0000\u0000\u0107\u0101\u0001\u0000"+
 		"\u0000\u0000\u0107\u0104\u0001\u0000\u0000\u0000\u0108\u010b\u0001\u0000"+

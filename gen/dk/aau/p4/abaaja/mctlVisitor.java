@@ -1,4 +1,4 @@
-// Generated from dk/aau/p4/abaaja/mctl.g4 by ANTLR 4.12.0
+// Generated from /Users/bastianhansen/Library/CloudStorage/OneDrive-AalborgUniversitet/Semester 4/P4/Minecraft-Turtle-Language/src/main/java/dk/aau/p4/abaaja/mctl.g4 by ANTLR 4.12.0
 package dk.aau.p4.abaaja;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
