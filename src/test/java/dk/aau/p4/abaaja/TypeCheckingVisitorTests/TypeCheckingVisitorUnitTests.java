@@ -502,7 +502,7 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitIDArrayExpTestData() {
         return new Object[][] {
-               /*{"variable a: NUMBER[]; a[0] = 1;", "NUMBER", 1},
+                {"variable a: NUMBER[]; a[0] = 1;", "NUMBER", 1},
                 {"variable a: NUMBER[][]; a[0][0] = 2;", "NUMBER", 1},
                 {"variable a: NUMBER[][][]; a[0][0][0] = 5;", "NUMBER", 1},
                 {"variable a: STRING[]; a[0] = \"1\";", "STRING", 1},
@@ -515,10 +515,10 @@ public class TypeCheckingVisitorUnitTests {
                 {"struct test { variable b: NUMBER[] }; variable a: test[]; a[0].b[0] = 1;", "NUMBER", 2},
                 {"struct test { variable b: NUMBER[][] }; variable a: test[]; a[0].b[0][0] = 1;", "NUMBER", 2},
                 {"struct test { variable b: NUMBER[][] }; variable a: test[][]; a[0][0].b[0][0] = 1;", "NUMBER", 2},
-                {"struct test { variable b: NUMBER[][][] }; variable a: test[][][]; a[0][0][0].b[0][0][0] = 1;", "NUMBER", 2},*/
-                {"struct test { variable b: test2[] }; struct test2 { variable c: NUMBER[] }; variable a: test[]; a[0].b[0].c[0] = 1;", "NUMBER", 3,},/*
+                {"struct test { variable b: NUMBER[][][] }; variable a: test[][][]; a[0][0][0].b[0][0][0] = 1;", "NUMBER", 2},
+                {"struct test { variable b: test2[] }; struct test2 { variable c: NUMBER[] }; variable a: test[]; a[0].b[0].c[0] = 1;", "NUMBER", 3,},
                 {"struct STRUCTURE1 { variable bool: BOOLEAN[] }; struct STRUCTURE2 { variable inner: STRUCTURE1[] }; variable var: STRUCTURE2; var.inner[0].bool[0] = true;", "BOOLEAN", 3}
-        */};
+        };
     }
 
     @Test(dataProvider = "visitIDArrayExpTestData")
