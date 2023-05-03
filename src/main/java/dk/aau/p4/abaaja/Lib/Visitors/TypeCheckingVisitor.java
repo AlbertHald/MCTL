@@ -173,15 +173,33 @@ public class TypeCheckingVisitor {
         }
 
         if (symbol.get_type() instanceof MctlArrayTypeDescriptor arrayTypeDescriptor) {
+            System.out.println("This is entered the arrayTypeDecriptor if statement. arrayTypeDescriptor.getDegree(): " + arrayTypeDescriptor.getDegree() + " arrayDegree: " + arrayDegree);
             int accessorDegree = arrayTypeDescriptor.getDegree() - arrayDegree;
 
-            // The type referred to is not an array
-            if (accessorDegree == 0) {
-                accessorArrayTypeDescriptor = arrayTypeDescriptor.getType();
-            } else if (accessorDegree < 0) {
-                // TODO: User trying to access degree larger than the defined
-            } else {
-                accessorArrayTypeDescriptor = new MctlArrayTypeDescriptor(arrayTypeDescriptor.getType(), accessorDegree);
+            // The contained type is a struct type
+            if (arrayTypeDescriptor.getType() instanceof MctlStructDescriptor structTypeDescriptor) {
+                // Struct Type
+                System.out.println(tempIdNode);
+                MctlTypeDescriptor descriptor = getStructDerivedType(structTypeDescriptor, (IDStructNode) tempIdNode);
+
+                // The type referred to is a primitive type
+                if (accessorDegree == 0) {
+                    accessorArrayTypeDescriptor = descriptor;
+                } else if (accessorDegree < 0) {
+                    // TODO: User trying to access degree larger than the defined
+                } else {
+                    accessorArrayTypeDescriptor = new MctlArrayTypeDescriptor(descriptor, accessorDegree);
+                }
+            }
+            else {
+                // The type referred to is a primitive type
+                if (accessorDegree == 0) {
+                    accessorArrayTypeDescriptor = arrayTypeDescriptor.getType();
+                } else if (accessorDegree < 0) {
+                    // TODO: User trying to access degree larger than the defined
+                } else {
+                    accessorArrayTypeDescriptor = new MctlArrayTypeDescriptor(arrayTypeDescriptor.getType(), accessorDegree);
+                }
             }
         }
         else if (symbol.get_type() instanceof MctlStructDescriptor structTypeDescriptor) {
@@ -213,7 +231,6 @@ public class TypeCheckingVisitor {
             );
         }
 
-        System.out.println(accessorArrayTypeDescriptor);
         return accessorArrayTypeDescriptor;
     }
 
