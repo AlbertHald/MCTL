@@ -278,15 +278,7 @@ public class TypeCheckingVisitor {
                 }
             } else if (idExp instanceof IDArrayExpNode tempIDArrayExpNode) {
                 if (accessorType instanceof MctlArrayTypeDescriptor accessorDescriptor) {
-                    // Counting array nodes
-                    int arrayDegree = 0;
-                    IDExpNode tempIdNode = tempIDArrayExpNode;
-                    while (tempIdNode instanceof IDArrayExpNode) {
-                        arrayDegree++;
-                        tempIdNode = tempIdNode.get_idNode();
-                    }
-
-                    int accessorDegree = accessorDescriptor.getDegree() - arrayDegree;
+                    int accessorDegree = accessorDescriptor.getDegree() - 1;
 
                     accessorType = getArrayType(accessorDescriptor.getType(), accessorDegree);
                 }

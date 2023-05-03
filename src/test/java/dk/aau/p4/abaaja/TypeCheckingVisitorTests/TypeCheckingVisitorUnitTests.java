@@ -517,6 +517,9 @@ public class TypeCheckingVisitorUnitTests {
                 {"struct test { variable b: NUMBER[][] }; variable a: test[][]; a[0][0].b[0][0] = 1;", "NUMBER", 2},
                 {"struct test { variable b: NUMBER[][][] }; variable a: test[][][]; a[0][0][0].b[0][0][0] = 1;", "NUMBER", 2},
                 {"struct test { variable b: test2[] }; struct test2 { variable c: NUMBER[] }; variable a: test[]; a[0].b[0].c[0] = 1;", "NUMBER", 3,},
+                {"struct test { variable b: test2[] }; struct test2 { variable c: test3[] }; struct test3 { variable d: NUMBER[] }; variable a: test[]; a[0].b[0].c[0].d[0] = 1;", "NUMBER", 4,},
+                {"struct test { variable b: test2[][][][] }; struct test2 { variable c: test3[] }; struct test3 { variable d: NUMBER[][][] }; variable a: test[][]; a[0][0].b[0][0][0][0].c[0].d[0][0][0] = 1;", "NUMBER", 4,},
+                {"struct test { variable b: test2[][][][][][][][][][][][] }; struct test2 { variable c: test3 }; struct test3 { variable d: NUMBER[][][][][][] }; variable a: test[][]; a[0][0].b[0][0][0][0][0][0][0][0][0][0][0][0].c.d[0][0][0][0][0][0] = 1;", "NUMBER", 4,},
                 {"struct STRUCTURE1 { variable bool: BOOLEAN[] }; struct STRUCTURE2 { variable inner: STRUCTURE1[] }; variable var: STRUCTURE2; var.inner[0].bool[0] = true;", "BOOLEAN", 3}
         };
     }
