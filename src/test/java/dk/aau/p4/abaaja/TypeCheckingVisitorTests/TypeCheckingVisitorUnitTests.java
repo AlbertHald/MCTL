@@ -806,26 +806,26 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitIDStructTestData() {
         return new Object[][] {
-                {"variable empty: STRING; struct STRUCTURE { variable num: NUMBER }; variable var: STRUCTURE; var.num = 1;", "NUMBER"},
-                {"variable empty: STRING; struct STRUCTURE { variable num: NUMBER }; variable var: STRUCTURE[]; var[0].num = 3;", "NUMBER"},
-                {"variable empty: STRING; struct STRUCTURE { variable str: STRING }; variable var: STRUCTURE; var.str = \"1\";", "STRING"},
-                {"variable empty: STRING; struct STRUCTURE { variable str: STRING }; variable var: STRUCTURE[]; var[0].str = \"3\";", "STRING"},
-                {"variable empty: STRING; struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE; var.bool = true;", "BOOLEAN"},
-                {"variable empty: STRING; struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE[]; var[0].bool = true;", "BOOLEAN"},
-                {"variable empty: STRING; struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE[][]; var[0][0].bool = true;", "BOOLEAN"},
-                {"struct STRUCTURE1 { variable bool: BOOLEAN }; struct STRUCTURE2 { variable inner: STRUCTURE1 }; variable var: STRUCTURE2; var.inner.bool = true;", "BOOLEAN"},
-                {"struct STRUCTURE1 { variable bool: BOOLEAN }; struct STRUCTURE2 { variable inner: STRUCTURE1[] }; variable var: STRUCTURE2[][]; var[0][0].inner[0].bool = true;", "BOOLEAN"}
+                {"struct STRUCTURE { variable num: NUMBER }; variable var: STRUCTURE; var.num = 1;", "NUMBER", 2},
+                {"struct STRUCTURE { variable num: NUMBER }; variable var: STRUCTURE[]; var[0].num = 3;", "NUMBER", 2},
+                {"struct STRUCTURE { variable str: STRING }; variable var: STRUCTURE; var.str = \"1\";", "STRING", 2},
+                {"struct STRUCTURE { variable str: STRING }; variable var: STRUCTURE[]; var[0].str = \"3\";", "STRING", 2},
+                {"struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE; var.bool = true;", "BOOLEAN", 2},
+                {"struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE[]; var[0].bool = true;", "BOOLEAN", 2},
+                {"struct STRUCTURE { variable bool: BOOLEAN }; variable var: STRUCTURE[][]; var[0][0].bool = true;", "BOOLEAN", 2},
+                {"struct STRUCTURE1 { variable bool: BOOLEAN }; struct STRUCTURE2 { variable inner: STRUCTURE1 }; variable var: STRUCTURE2; var.inner.bool = true;", "BOOLEAN", 3},
+                {"struct STRUCTURE1 { variable bool: BOOLEAN }; struct STRUCTURE2 { variable inner: STRUCTURE1[] }; variable var: STRUCTURE2[][]; var[0][0].inner[0].bool = true;", "BOOLEAN", 3}
         };
     }
 
     @Test(dataProvider = "visitIDStructTestData")
-    public void visitIDStruct_ValidInput_ReturnsCorrectType(String code, String type) {
+    public void visitIDStruct_ValidInput_ReturnsCorrectType(String code, String type, int index) {
         ParseTree parseTree = createParseTree(code);
         MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
 
         symbolTableVisitor.visit(mctlNode);
 
-        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(3);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(index);
         IDStructNode idStructNode = (IDStructNode) assStateNode.get_assignId();
 
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(idStructNode);
