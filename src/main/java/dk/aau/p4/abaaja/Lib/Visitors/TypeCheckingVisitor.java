@@ -173,13 +173,11 @@ public class TypeCheckingVisitor {
         }
 
         if (symbol.get_type() instanceof MctlArrayTypeDescriptor arrayTypeDescriptor) {
-            System.out.println("This is entered the arrayTypeDecriptor if statement. arrayTypeDescriptor.getDegree(): " + arrayTypeDescriptor.getDegree() + " arrayDegree: " + arrayDegree);
             int accessorDegree = arrayTypeDescriptor.getDegree() - arrayDegree;
 
             // The contained type is a struct type
             if (arrayTypeDescriptor.getType() instanceof MctlStructDescriptor structTypeDescriptor) {
                 // Struct Type
-                System.out.println(tempIdNode);
                 MctlTypeDescriptor descriptor = getStructDerivedType(structTypeDescriptor, (IDStructNode) tempIdNode);
 
                 if (descriptor instanceof MctlArrayTypeDescriptor arrayDescriptor) {
@@ -278,6 +276,7 @@ public class TypeCheckingVisitor {
                 }
             } else if (idExp instanceof IDArrayExpNode tempIDArrayExpNode) {
                 if (accessorType instanceof MctlArrayTypeDescriptor accessorDescriptor) {
+
                     int accessorDegree = accessorDescriptor.getDegree() - 1;
 
                     accessorType = getArrayType(accessorDescriptor.getType(), accessorDegree);
