@@ -155,9 +155,9 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitFunctionDecTestData() {
         return new Object[][] {
-                {"to _functionId():BOOLEAN { return a; }"},
-                {"to function1(id1: NUMBER):NUMBER { return a; }"},
-                {"to test_func(id1:NUMBER, id2:NUMBER):STRING { return a; }"}
+                {"to _functionId():BOOLEAN { return false; }"},
+                {"to function1(id1: NUMBER):NUMBER { return 2; }"},
+                {"to test_func(id1:NUMBER, id2:NUMBER):STRING { return \"false\"; }"}
         };
     }
 
