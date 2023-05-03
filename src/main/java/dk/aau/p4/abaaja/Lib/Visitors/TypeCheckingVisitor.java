@@ -182,13 +182,20 @@ public class TypeCheckingVisitor {
                 System.out.println(tempIdNode);
                 MctlTypeDescriptor descriptor = getStructDerivedType(structTypeDescriptor, (IDStructNode) tempIdNode);
 
-                // The type referred to is a primitive type
-                if (accessorDegree == 0) {
-                    accessorArrayTypeDescriptor = descriptor;
-                } else if (accessorDegree < 0) {
-                    // TODO: User trying to access degree larger than the defined
-                } else {
-                    accessorArrayTypeDescriptor = new MctlArrayTypeDescriptor(descriptor, accessorDegree);
+                if (descriptor instanceof MctlArrayTypeDescriptor arrayDescriptor) {
+                    accessorDegree = arrayDescriptor.getDegree() - arrayDegree;
+
+                    // The type referred to is a primitive type
+                    if (accessorDegree == 0) {
+                        accessorArrayTypeDescriptor = arrayDescriptor.getType();
+                    } else if (accessorDegree < 0) {
+                        // TODO: User trying to access degree larger than the defined
+                    } else {
+                        accessorArrayTypeDescriptor = new MctlArrayTypeDescriptor(arrayDescriptor.getType(), accessorDegree);
+                    }
+                }
+                else {
+                    // TODO: Will we ever end here?
                 }
             }
             else {
