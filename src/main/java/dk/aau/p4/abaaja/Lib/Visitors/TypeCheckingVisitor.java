@@ -254,7 +254,7 @@ public class TypeCheckingVisitor {
         return accessorType;
     }
 
-    private MctlTypeDescriptor getStructDerivedType(MctlStructDescriptor parsedStructDescriptor, IDStructNode idStructNode) {
+    private MctlTypeDescriptor getStructDerivedType(MctlTypeDescriptor parsedStructDescriptor, IDStructNode idStructNode) {
         IDExpNode idExpNode = idStructNode;
         MctlTypeDescriptor accessorType = parsedStructDescriptor;
 
@@ -272,17 +272,26 @@ public class TypeCheckingVisitor {
                 if (accessorType instanceof MctlStructDescriptor accessorDescriptor) {
                     accessorType = accessorDescriptor.get_structsymbol(tempIDStructNode.get_accessor().get_contained_id());
                 } else {
-                    // TODO: Implement error here. Happens if user is trying to access a struct on a type that is not a struct and so on
+                    // Happens if user is trying to access a struct on a type that is not a struct and so on
+                    _problemCollection.addProblem(
+                            ProblemType.ERROR_TYPE_MISMATCH,
+                            "The type " + accessorType.get_type_literal() + " cannot be accessed as a struct",
+                            idExp.get_lineNumber()
+                    );
                 }
             } else if (idExp instanceof IDArrayExpNode tempIDArrayExpNode) {
                 if (accessorType instanceof MctlArrayTypeDescriptor accessorDescriptor) {
-
                     int accessorDegree = accessorDescriptor.getDegree() - 1;
 
                     accessorType = getArrayType(accessorDescriptor.getType(), accessorDegree);
                 }
                 else {
-                    // TODO: Implement error here. Happens if user is trying to access an array type on a type that is not an array
+                    // Happens if user is trying to access an array type on a type that is not an array
+                    _problemCollection.addProblem(
+                            ProblemType.ERROR_TYPE_MISMATCH,
+                            "The type " + accessorType.get_type_literal() + " cannot be accessed using []",
+                            idExp.get_lineNumber()
+                    );
                 }
             }
         }
@@ -303,60 +312,41 @@ public class TypeCheckingVisitor {
     }
 
     public MctlTypeDescriptor visit(IDStructNode node) {
-        boolean foundPrimitiveType = false;
+        Symbol symbol = _symbolTable.searchSymbol(node.get_contained_id());
+        MctlTypeDescriptor type;
 
-        IDStructNode currNode = node;
-        MctlTypeDescriptor accessorType;
-
-        MctlStructDescriptor mctlTypeDescriptor;
-        MctlTypeDescriptor descriptor = visit(currNode.get_idNode());
-
-        if (descriptor instanceof MctlArrayTypeDescriptor) {
-            String no_brackets = ((MctlArrayTypeDescriptor) descriptor).get_contained_type_literal();
-            MctlStructDescriptor another_descriptor = (MctlStructDescriptor) _symbolTable.searchType(no_brackets);
-            ActualIDExpNode another_node = (ActualIDExpNode) node.get_accessor();
-
-            return another_descriptor.get_structsymbol(another_node.get_id());
-        } else {
-            mctlTypeDescriptor = (MctlStructDescriptor) descriptor;
+        // Return if the variable has not yet been instantiated
+        if (symbol != null && !symbol.get_isInstantiated()) {
+            return _symbolTable.searchType("NOTHING");
+        } else if (symbol == null) {
+            return null;
         }
 
-        if (mctlTypeDescriptor.get_type_literal().equals("NOTHING")) {
-            return mctlTypeDescriptor;
+        type = symbol.get_type();
+
+        if (symbol.get_type() instanceof MctlArrayTypeDescriptor arrayTypeDescriptor) {
+
+            // The contained type is a struct type
+            if (arrayTypeDescriptor.getType() instanceof MctlStructDescriptor structTypeDescriptor) {
+                // Struct Type
+                type = getStructDerivedType(structTypeDescriptor, node);
+            }
+            else {
+                // Unforeseen error!
+            }
+        }
+        else if (type instanceof MctlStructDescriptor structTypeDescriptor) {
+            type = getStructDerivedType(structTypeDescriptor, node);
+        }
+        else {
+            _problemCollection.addProblem(
+                    ProblemType.ERROR_TYPE_MISMATCH,
+                    "The variable " + symbol.get_name() + " is not of the correct type",
+                    node.get_lineNumber()
+            );
         }
 
-        do {
-            // Get id of accessor
-            IDExpNode accessor = currNode.get_accessor();
-            while (!(accessor instanceof ActualIDExpNode actualIDExpNode)) {
-                accessor = accessor.get_idNode();
-            }
-
-            // Get type of accessor
-            String accessorId = actualIDExpNode.get_id();
-
-            if (mctlTypeDescriptor.get_structVariables().containsKey(accessorId)) {
-                accessorType = mctlTypeDescriptor.get_structsymbol(accessorId);
-            } else {
-                _problemCollection.addProblem(
-                        ProblemType.ERROR_UNKNOWN_TYPE,
-                        "The struct " + mctlTypeDescriptor.get_type_literal() + " does not contain a member with ID: " + accessorId,
-                        node.get_lineNumber()
-                );
-
-                return null;
-            }
-
-            // Check if accessor type is a primitive type
-            if ((currNode.get_accessor() instanceof IDStructNode idStructNode)) {
-                mctlTypeDescriptor = (MctlStructDescriptor) accessorType;
-                currNode = idStructNode;
-            } else {
-                foundPrimitiveType = true;
-            }
-        } while(!foundPrimitiveType);
-
-        return accessorType;
+        return type;
     }
 
     public MctlTypeDescriptor visit(ExpNode node) {
@@ -397,6 +387,7 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(FuncInvokeNode node) { return null; }
     public MctlTypeDescriptor visit(VarMethodInvokeNode node) { return null; }
     public MctlTypeDescriptor visit(StringMethodInvokeNode node) { return null; }
+
     public MctlTypeDescriptor visit(FormalParamNode node) { return null; }
     public MctlTypeDescriptor visit(StopNode node) { return null; }
     public MctlTypeDescriptor visit(CommentNode node) { return null; }
