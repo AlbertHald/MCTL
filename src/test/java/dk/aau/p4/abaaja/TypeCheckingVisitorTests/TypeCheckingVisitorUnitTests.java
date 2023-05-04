@@ -68,10 +68,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(parseTree != null, "Create Parse Tree: " + code);
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -104,10 +100,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "ExpectsType: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -143,10 +135,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor == null, "Visit AssState: " + code);
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @Test(dataProvider = "visitStructDecTestData")
@@ -161,10 +149,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor == null, "Visit StructDec: " + code);
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -188,10 +172,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor == null, "Visit FuncDec: " + code);
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -216,10 +196,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor == null, "Visit VarDec: " + code);
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -242,10 +218,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor == null, "Visit Comment: " + code);
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -267,10 +239,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor == null, "Visit Stop: " + code);
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -295,10 +263,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor == null, "Visit FormalParam: " + code);
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -322,10 +286,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor == null, "Visit StringMethodInvoke: " + code);
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -349,10 +309,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor == null, "Visit VarMethodInvoke: " + code);
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -377,10 +333,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor == null, "Visit FuncInvoke: " + code);
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -406,10 +358,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor == null, "Visit Block: " + code);
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -435,10 +383,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor == null, "Visit Line: " + code);
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -463,10 +407,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor == null, "Visit Mctl: " + code);
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -507,10 +447,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(descriptorType.equals(type), "Visit Return: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -538,10 +474,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit Typecast: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -568,10 +500,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit UnaryExp: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -613,10 +541,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit IDArrayExp: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -645,10 +569,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals("STRING"), "Visit StringExp: Expected type STRING for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -681,10 +601,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals("NUMBER"), "Visit NumExp: Expected type NUMBER for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -710,10 +626,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals("NOTHING"), "Visit Nothing: Expected type NOTHING for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -748,10 +660,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit Type: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -783,10 +691,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals("NUMBER"), "Visit CompExp: Expected type NUMBER for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -815,10 +719,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals("BOOLEAN"), "Visit OrExp: Expected type BOOLEAN for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -853,10 +753,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals("BOOLEAN"), "Visit AndExp: Expected type BOOLEAN for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -881,10 +777,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals("NUMBER"), "Visit AddExp: Expected type NUMBER for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -910,10 +802,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals("NUMBER"), "Visit MulExp: Expected type NUMBER for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -946,10 +834,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit IDStruct: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -976,9 +860,5 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit ActualIDExp: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 }
