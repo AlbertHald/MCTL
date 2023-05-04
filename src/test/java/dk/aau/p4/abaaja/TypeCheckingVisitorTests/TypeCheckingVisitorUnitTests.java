@@ -244,9 +244,9 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitFormalParamTestData() {
         return new Object[][] {
-                {"to func(id0: NUMBER):NUMBER {}"},
-                {"to func(id1: STRING):NUMBER {}"},
-                {"to func(id2: BOOLEAN):NUMBER {}"}
+                {"to func(id0: NUMBER): NUMBER {}"},
+                {"to func(id1: STRING): NUMBER {}"},
+                {"to func(id2: BOOLEAN): NUMBER {}"}
         };
     }
 
