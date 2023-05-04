@@ -1,0 +1,6 @@
+
+variable bastians: STRING[];
+
+variable crossing: TRAFFICLIGHT[][];
+
+variable ridiculous: NUMBER[][][][][][];

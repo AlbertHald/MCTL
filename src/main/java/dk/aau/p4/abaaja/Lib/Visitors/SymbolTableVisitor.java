@@ -16,15 +16,19 @@ import java.util.List;
 
 public class SymbolTableVisitor implements INodeVisitor {
     private ProblemCollection problemCollection;
-    SymbolTable symbolTable;
-    VisitorTools visitorTools;
-    TypeCheckingVisitor typeCheckingVisitor;
+    private SymbolTable symbolTable;
+    private VisitorTools visitorTools;
+    private TypeCheckingVisitor typeCheckingVisitor;
 
     public SymbolTableVisitor (ProblemCollection problemCollection) {
         this.symbolTable = new SymbolTable();
         this.visitorTools = new VisitorTools(this.symbolTable);
         this.problemCollection = problemCollection;
         typeCheckingVisitor = new TypeCheckingVisitor(this.problemCollection, this.symbolTable);
+    }
+
+    public SymbolTable getSymbolTable() {
+        return symbolTable;
     }
 
     private void visitChildren(List<BaseNode> nodes) {
@@ -106,7 +110,6 @@ public class SymbolTableVisitor implements INodeVisitor {
             typeDescriptor = visitorTools.getTypeDescriptor(node.get_varDecType());
             if (typeDescriptor != null) {
                 Symbol symbol = new Symbol(node.get_id(), typeDescriptor);
-                symbol.set_isInstantiated(true);
                 this.symbolTable.insertSymbol(symbol);
             } else {
                 problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_varDecType().get_type() + "\" does not exist", node.get_lineNumber());
@@ -132,7 +135,6 @@ public class SymbolTableVisitor implements INodeVisitor {
             }
 
             // Adding parameter to functionSymbol and current symbol table
-            paramSymbol.set_isInstantiated(true);
             symbolTable.insertSymbol(paramSymbol);
         }
 
@@ -194,6 +196,17 @@ public class SymbolTableVisitor implements INodeVisitor {
                     node.get_lineNumber()
             );
         }
+
+        // Visit the repeat block
+        symbolTable.createScope("repeat");
+
+        // Visit all function and struct declarations and add them to the symbol table
+        initialScopeVisit(node.get_expBlock().get_children());
+
+        // Visit all remaining line
+        for (BaseNode child : node.get_expBlock().get_children()) { child.accept(this); }
+
+        symbolTable.closeScope();
     }
 
     public void visit(AssStateNode node) {
@@ -220,7 +233,7 @@ public class SymbolTableVisitor implements INodeVisitor {
                     "The variable \"" + actualIDNode.get_id() + "\" cannot be assigned to an expression containing undeclared variables",
                     node.get_lineNumber()
             );
-        } else if (idTypeDescriptor.get_type_literal().equals(expTypeDescriptor.get_type_literal())) {
+        } else {
             variable = symbolTable.searchSymbol(actualIDNode.get_id());
 
             if (variable == null) {
@@ -231,24 +244,27 @@ public class SymbolTableVisitor implements INodeVisitor {
                 );
             } else {
                 variable.set_isInstantiated(true);
+                idTypeDescriptor = typeCheckingVisitor.visit(node.get_assignId());
+                if (!(idTypeDescriptor.get_type_literal().equals(expTypeDescriptor.get_type_literal()))) {
+                    problemCollection.addProblem(
+                            ProblemType.ERROR_TYPE_MISMATCH,
+                            "Expected " + idTypeDescriptor.get_type_literal() + " but got " + expTypeDescriptor.get_type_literal(),
+                            node.get_lineNumber()
+                    );
+                    variable.set_isInstantiated(false);
+                }
             }
-        } else {
-            problemCollection.addProblem(
-                    ProblemType.ERROR_TYPE_MISMATCH,
-                    "Expected " + idTypeDescriptor.get_type_literal() + " but got " + expTypeDescriptor.get_type_literal(),
-                    node.get_lineNumber()
-            );
         }
     }
 
     // Fully Implemented
     public void visit(InvokeNode node) {
-        if (node instanceof FuncInvokeNode) { visit((FuncInvokeNode) node); }
-        else if (node instanceof VarMethodInvokeNode) { visit((VarMethodInvokeNode) node); }
-        else if (node instanceof StringMethodInvokeNode) { visit((StringMethodInvokeNode) node); }
+        if (node instanceof FuncInvokeNode funcInvokeNode) { visit(funcInvokeNode); }
+        else if (node instanceof VarMethodInvokeNode varMethodInvokeNode) { visit(varMethodInvokeNode); }
+        else if (node instanceof StringMethodInvokeNode stringMethodInvokeNode) { visit(stringMethodInvokeNode); }
     }
 
-    // FUnction for checking the type of parameters
+    // Function for checking the type of parameters
     private void checkFunctionParams (List<ExpNode> expresionNodes, FuncSymbol funcSymbol, int lineNumber) {
         int counter = 0;
 
@@ -462,7 +478,14 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(FormalParamNode node) {}
 
     public void visit(InvokeExpNode node) { visit(node.getInvokeNode()); }
-    public void visit(StopNode node) {}
+    public void visit(StopNode node) {
+        // If the current scope is not a repeat statement an error should be created
+        if (!symbolTable.get_currentScope().get_Name().equals("repeat")) {
+            problemCollection.addProblem(ProblemType.ERROR_UNEXPECTED_STOP,
+                    "Encountered an unexpected \"stop\" statement. Only repeat statements can contain \"stop\" nodes",
+                    node.get_lineNumber());
+        }
+    }
     public void visit(TypeNode node) {}
     public void visit(BoolTypeNode node) {}
     public void visit(NumTypeNode node) {}
