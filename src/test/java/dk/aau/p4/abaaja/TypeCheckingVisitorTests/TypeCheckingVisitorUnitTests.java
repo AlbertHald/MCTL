@@ -2,10 +2,9 @@ package dk.aau.p4.abaaja.TypeCheckingVisitorTests;
 
 import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
-import dk.aau.p4.abaaja.Lib.ProblemHandling.Problem;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlArrayTypeDescriptor;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlTypeDescriptor;
-import dk.aau.p4.abaaja.Lib.Visitors.AstVisitor;
+import dk.aau.p4.abaaja.Lib.Visitors.AstBuilder;
 import dk.aau.p4.abaaja.Lib.Visitors.SymbolTableVisitor;
 import dk.aau.p4.abaaja.Lib.Visitors.TypeCheckingVisitor;
 import dk.aau.p4.abaaja.mctlLexer;
@@ -21,7 +20,7 @@ import org.testng.asserts.SoftAssert;
 
 public class TypeCheckingVisitorUnitTests {
     private ProblemCollection problemCollection = new ProblemCollection();
-    private final AstVisitor astVisitor = new AstVisitor(problemCollection);
+    private final AstBuilder astBuilder = new AstBuilder(problemCollection);
     private SymbolTableVisitor symbolTableVisitor;
     private TypeCheckingVisitor typeCheckingVisitor;
     private SoftAssert softAssert;
@@ -90,7 +89,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "expectsTypeTestData")
     public void expectsType_ValidInput_ReturnsCorrectType(String code, String type, int index) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         symbolTableVisitor.visit(mctlNode);
 
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(index);
@@ -115,7 +114,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitStructDecTestData")
     public void visitStructDec_ValidInput_ReturnsNull(String code) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         symbolTableVisitor.visit(mctlNode);
 
         StructDecNode structDecNode = (StructDecNode) mctlNode.get_children().get(0);
@@ -140,7 +139,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitAssStateTestData")
     public void visitAssState_ValidInput_ReturnsNull(String code, int index) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         symbolTableVisitor.visit(mctlNode);
 
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(index);
@@ -163,7 +162,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitFunctionDecTestData")
     public void visitFunctionDec_ValidInput_ReturnsNull(String code) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         symbolTableVisitor.visit(mctlNode);
 
         FuncDecNode funcDecNode = (FuncDecNode) mctlNode.get_children().get(0);
@@ -187,7 +186,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitVarDecTestData")
     public void visitVarDec_ValidInput_ReturnsNull(String code) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         symbolTableVisitor.visit(mctlNode);
 
         VarDecNode varDecNode = (VarDecNode) mctlNode.get_children().get(0);
@@ -209,7 +208,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitCommentTestData")
     public void visitComment_ValidInput_ReturnsNull(String code) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         symbolTableVisitor.visit(mctlNode);
 
         CommentNode commentNode = (CommentNode) mctlNode.get_children().get(0);
@@ -230,7 +229,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitStopTestData")
     public void visitStop_ValidInput_ReturnsNull(String code) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         symbolTableVisitor.visit(mctlNode);
 
         StopNode stopNode = (StopNode) mctlNode.get_children().get(0);
@@ -253,7 +252,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitFormalParamTestData")
     public void visitFormalParam_ValidInput_ReturnsNull(String code) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         symbolTableVisitor.visit(mctlNode);
 
         FuncDecNode funcDecNode = (FuncDecNode) mctlNode.get_children().get(0);
@@ -277,7 +276,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitStringMethodInvokeTestData")
     public void visitStringMethodInvoke_ValidInput_ReturnsNull(String code) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         symbolTableVisitor.visit(mctlNode);
 
         StringMethodInvokeNode stringMethodInvokeNode = (StringMethodInvokeNode) mctlNode.get_children().get(0);
@@ -300,7 +299,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitVarMethodInvokeTestData")
     public void visitVarMethodInvoke_ValidInput_ReturnsNull(String code, int index) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         symbolTableVisitor.visit(mctlNode);
 
         VarMethodInvokeNode varMethodInvokeNode = (VarMethodInvokeNode) mctlNode.get_children().get(index);
@@ -324,7 +323,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitFuncInvokeTestData")
     public void visitFuncInvoke_ValidInput_ReturnsNull(String code, int index) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         symbolTableVisitor.visit(mctlNode);
 
         FuncInvokeNode funcInvokeNode = (FuncInvokeNode) mctlNode.get_children().get(index);
@@ -348,7 +347,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitBlockTestData")
     public void visitBlock_ValidInput_ReturnsNull(String code) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         symbolTableVisitor.visit(mctlNode);
 
         IfStateNode ifStateNode = (IfStateNode) mctlNode.get_children().get(0);
@@ -372,7 +371,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitLineTestData")
     public void visitLine_ValidInput_ReturnsNull(String code) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         symbolTableVisitor.visit(mctlNode);
 
         IfStateNode ifStateNode = (IfStateNode) mctlNode.get_children().get(0);
@@ -400,7 +399,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitMctlTestData")
     public void visitMctl_ValidInput_ReturnsNull(String code) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         symbolTableVisitor.visit(mctlNode);
 
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(mctlNode);
@@ -430,7 +429,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitReturnTestData")
     public void visitReturn_ValidInput_ReturnsCorrectType(String code, String type, int index) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
@@ -464,7 +463,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitTypecastTestData")
     public void visitTypecast_ValidInput_ReturnsCorrectType(String code, String type, int index) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
@@ -490,7 +489,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitUnaryExpTestData")
     public void visitUnaryExp_ValidInput_ReturnsCorrectType(String code, String type, int index) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
@@ -518,7 +517,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitStringExpTestData")
     public void visitStringExp_ValidInput_ReturnsCorrectType(String code, int index) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
@@ -550,7 +549,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitNumExpTestData")
     public void visitNumExp_ValidInput_ReturnsCorrectType(String code, int index) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
@@ -575,7 +574,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitNothingTypeTestData")
     public void visitNothingType_ValidInput_ReturnsCorrectType(String code) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
@@ -609,7 +608,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitTypeTestData")
     public void visitType_ValidInput_ReturnsCorrectType(String code, String type) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
@@ -640,7 +639,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitCompExpTestData")
     public void visitCompExp_ValidInput_ReturnsCorrectType(String code, int index) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
@@ -668,7 +667,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitOrExpTestData")
     public void visitOrExp_ValidInput_ReturnsCorrectType(String code) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
@@ -702,7 +701,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitAndExpTestData")
     public void visitAndExp_ValidInput_ReturnsCorrectType(String code) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
@@ -726,7 +725,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitAddExpTestData")
     public void visitAddExp_ValidInput_ReturnsCorrectType(String code) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
@@ -751,7 +750,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitMulExpTestData")
     public void visitMulExp_ValidInput_ReturnsCorrectType(String code) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
@@ -783,7 +782,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitIDStructTestData")
     public void visitIDStruct_ValidInput_ReturnsCorrectType(String code, String type, int index) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
@@ -809,7 +808,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitActualIDExpTestData")
     public void visitActualIDExp_ValidInput_ReturnsCorrectType(String code, String type, int index) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
@@ -850,7 +849,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitIDArrayExpTestData")
     public void visitIDArrayExp_ValidInput_ReturnsCorrectType(String code, String type, int index) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
@@ -884,7 +883,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitEqualExpTestData")
     public void visitEqualExp_ValidInput_ReturnsCorrectType(String code, int index) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
@@ -910,7 +909,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitRepeatStateTestData")
     public void visitRepeatState_ValidInput_ReturnsCorrectType(String code, String type, int index) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
@@ -935,7 +934,7 @@ public class TypeCheckingVisitorUnitTests {
     @Test(dataProvider = "visitIfStateTestData")
     public void visitIfState_ValidInput_ReturnsCorrectType(String code) {
         ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 

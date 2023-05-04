@@ -1,7 +1,6 @@
 package dk.aau.p4.abaaja.PrettyPrinterTests;
 
 import java.io.*;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Iterator;
@@ -19,7 +18,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import dk.aau.p4.abaaja.mctlParser;
 import dk.aau.p4.abaaja.mctlLexer;
 import dk.aau.p4.abaaja.Lib.Nodes.*;
-import dk.aau.p4.abaaja.Lib.Visitors.AstVisitor;
+import dk.aau.p4.abaaja.Lib.Visitors.AstBuilder;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.TextSinks.StringSink;
 import dk.aau.p4.abaaja.Lib.Visitors.PrettyPrintVisitor;
@@ -40,7 +39,7 @@ public class PrettyPrinterTests {
         parser.setBuildParseTree(true);
         ParseTree tree = parser.mctl();
 
-        MctlNode concreteNode = (MctlNode) tree.accept(new AstVisitor(new ProblemCollection()));
+        MctlNode concreteNode = (MctlNode) tree.accept(new AstBuilder(new ProblemCollection()));
 
         // Create pretty printed code from tree:
 
