@@ -135,32 +135,35 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(FuncDecNode node) {
         boolean returnNodesPresent = false;
         List<Problem> problems = new ArrayList<Problem>();
-        FuncSymbol funcSymbol = (FuncSymbol) symbolTable.searchSymbol(node.get_id()); // TODO: Check wether it is allowed to declare functions multiple times
+        Symbol symbol = symbolTable.searchSymbol(node.get_id());
 
-        // Create scope for function block and create parameter symbols
-        symbolTable.createScope("function");
-        symbolTable.get_currentScope().set_returnType(funcSymbol.get_type());
-        for (FormalParamNode formalParam : node.get_paramList()) {
-            Symbol paramSymbol = new Symbol(formalParam.get_id());
-            MctlTypeDescriptor tempType = visitorTools.getTypeDescriptor(formalParam.get_type());
-            if (tempType == null) {
-                problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + formalParam.get_type().get_type() + "\" is unknown", node.get_lineNumber());
-            } else {
-                paramSymbol.set_type(tempType);
+        // Only check the scope if has not yet been declared
+        if (symbol != null && symbol instanceof FuncSymbol funcSymbol) {
+            // Create scope for function block and create parameter symbols
+            symbolTable.createScope("function");
+            symbolTable.get_currentScope().set_returnType(funcSymbol.get_type());
+            for (FormalParamNode formalParam : node.get_paramList()) {
+                Symbol paramSymbol = new Symbol(formalParam.get_id());
+                MctlTypeDescriptor tempType = visitorTools.getTypeDescriptor(formalParam.get_type());
+                if (tempType == null) {
+                    problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + formalParam.get_type().get_type() + "\" is unknown", node.get_lineNumber());
+                } else {
+                    paramSymbol.set_type(tempType);
+                }
+
+                // Adding parameter to functionSymbol and current symbol table
+                symbolTable.insertSymbol(paramSymbol);
             }
 
-            // Adding parameter to functionSymbol and current symbol table
-            symbolTable.insertSymbol(paramSymbol);
+            initialScopeVisit(node.get_funcBlock().get_children());
+
+            // Check lines of the function block
+            for (BaseNode child : node.get_funcBlock().get_children()) {
+                child.accept(this);
+            }
+
+            symbolTable.closeScope();
         }
-
-        initialScopeVisit(node.get_funcBlock().get_children());
-
-        // Check lines of the function block
-        for (BaseNode child : node.get_funcBlock().get_children()) {
-            child.accept(this);
-        }
-
-        symbolTable.closeScope();
     }
 
     // Fully Implemented
