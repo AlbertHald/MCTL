@@ -262,7 +262,7 @@ public class TypeCheckingVisitor {
                             idExp.get_lineNumber()
                     );
                 }
-            } else if (idExp instanceof IDArrayExpNode tempIDArrayExpNode) {
+            } else if (idExp instanceof IDArrayExpNode) {
                 if (accessorType instanceof MctlArrayTypeDescriptor accessorDescriptor) {
                     int accessorDegree = accessorDescriptor.getDegree() - 1;
 
