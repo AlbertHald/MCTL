@@ -452,11 +452,12 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitTypecastTestData() {
         return new Object[][] {
-                {"variable var: NUMBER; variable test: NUMBER; var = 1; test = (NUMBER) var;", "NUMBER", 3},
                 {"variable var: STRING; variable test: STRING; var = \"hi\"; test = (STRING) var;", "STRING", 3},
+                {"variable var: NUMBER; variable test: NUMBER; var = 1; test = (NUMBER) var;", "NUMBER", 3},
                 {"variable var: BOOLEAN; variable test: BOOLEAN; var = true; test = (BOOLEAN) var;", "BOOLEAN", 3},
                 {"variable var: STRING; variable test: NUMBER; var = \"1\"; test = (NUMBER) var;", "NUMBER", 3},
                 {"variable var: NUMBER; variable test: STRING; var = 1; test = (STRING) var;", "STRING", 3},
+                {"variable var: BOOLEAN; variable test: STRING; var = true; test = (STRING) var;", "STRING", 3}
         };
     }
 
