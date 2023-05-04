@@ -37,6 +37,8 @@ public class InitialStructVisitor implements INodeVisitor {
     }
 
     @Override
+    public void visit(InvokeExpNode node) {}
+    @Override
     public void visit(FuncDecNode node) {}
     @Override
     public void visit(MctlNode node) {}

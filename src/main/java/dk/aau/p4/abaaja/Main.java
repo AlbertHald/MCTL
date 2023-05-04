@@ -23,7 +23,7 @@ public class Main {
         ProblemCollection problemCollection = new ProblemCollection();
 
         // Parse test CharStream
-        ParseTree tree = syntaxPhase( CharStreams.fromString("a[2]=2;"), problemCollection);
+        ParseTree tree = syntaxPhase( CharStreams.fromString("repeat (true) {stop;} \n stop;"), problemCollection);
 
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here
@@ -36,7 +36,7 @@ public class Main {
             concreteNode.accept(new SymbolTableVisitor(problemCollection));
 
             for (Problem problem : problemCollection.getProblems()) {
-                System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage());
+                System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
             }
         }
         else {

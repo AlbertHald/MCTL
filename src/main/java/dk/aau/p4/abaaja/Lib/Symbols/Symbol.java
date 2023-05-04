@@ -9,7 +9,7 @@ import java.util.List;
 public class Symbol {
     private String _name;
     private MctlTypeDescriptor _type;
-    private boolean _isInstantiated;
+    private boolean _isInstantiated = false;
     private List<List<MctlTypeDescriptor>> _types = new ArrayList<>();
 
     public Symbol() {}
@@ -31,7 +31,10 @@ public class Symbol {
     /**
      * Getter / Setters for the types ArrayList
      */
-    public List<List<MctlTypeDescriptor>> get_types() { return _types; }
+    public List<List<MctlTypeDescriptor>> get_types() {
+        if (_types == null) return new ArrayList<>();
+        return _types;
+    }
     public void set_types(List<List<MctlTypeDescriptor>> types) { this._types = types; }
 
     public void set_name(String _name) {
@@ -41,7 +44,7 @@ public class Symbol {
         this._type = _type;
     }
 
-    public boolean get_is_isInstantiated() {
+    public boolean get_isInstantiated() {
         return _isInstantiated;
     }
     public void set_isInstantiated(boolean _isInstantiated) {

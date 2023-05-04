@@ -20,7 +20,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
 
     private void addProblem(ParserRuleContext ctx, String message) {
         problemCollection.addProblem(ProblemType.ERROR_AST_BUILDER,
-                message != "" ? message : "The AST builder encountered an unexpected error at line: " + ctx.getStart().getLine(),
+                !message.equals("") ? message : "The AST builder encountered an unexpected error at line: " + ctx.getStart().getLine(),
                 ctx.getStart().getLine());
     }
 
@@ -131,8 +131,8 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         }
 
         BaseNode tempAccessorNode = visit(ctx.id().get(1));
-        if (tempAccessorNode instanceof ExpNode) {
-            idStructNode.set_accessor((ExpNode) tempAccessorNode);
+        if (tempAccessorNode instanceof IDExpNode) {
+            idStructNode.set_accessor((IDExpNode) tempAccessorNode);
         }
         else {
             addProblem(ctx, "");
@@ -697,7 +697,7 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         ParseTree child = ctx.expression();
         BaseNode tempNode = visit(child);
         if (tempNode instanceof ExpNode) {
-            unaryExpNode.add_child((ExpNode) tempNode);
+            unaryExpNode.set_unaryExp((ExpNode) tempNode);
         }
         else {
             addProblem(ctx, "");
@@ -744,7 +744,24 @@ public class AstVisitor extends mctlBaseVisitor<BaseNode> {
         return stringExpNode;
     }
 
-    @Override public BaseNode visitInvExpr(mctlParser.InvExprContext ctx) { return visit(ctx.invoke()); }
+    @Override public BaseNode visitInvExpr(mctlParser.InvExprContext ctx) {
+        InvokeExpNode invokeExpNode = new InvokeExpNode();
+
+        invokeExpNode.set_lineNumber(ctx.getStart().getLine());
+        invokeExpNode.set_lineEndNumber(ctx.getStop().getLine());
+
+        BaseNode node = visit(ctx.invoke());
+
+        if (node instanceof InvokeNode) {
+            invokeExpNode.setInvokeNode((InvokeNode) node);
+        }
+        else {
+            addProblem(ctx, "Expected an invoke node.");
+        }
+
+        return invokeExpNode;
+    }
+
     @Override public BaseNode visitReturnTypeVariable(mctlParser.ReturnTypeVariableContext ctx) { return visit(ctx.variableType()); }
 
     @Override public BaseNode visitReturnTypeNothing(mctlParser.ReturnTypeNothingContext ctx) {

@@ -35,6 +35,7 @@ public interface INodeVisitor {
     void visit(IDTypeNode node);
 
     void visit(ExpNode node);
+    void visit(InvokeExpNode node);
     void visit(UnaryExpNode node);
     void visit(TypecastExpNode node);
     void visit(BinaryExpNode node);

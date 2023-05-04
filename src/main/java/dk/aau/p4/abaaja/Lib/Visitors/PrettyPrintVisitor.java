@@ -285,7 +285,7 @@ public class PrettyPrintVisitor implements INodeVisitor{
     }
 
     public void visit(UnaryExpNode node){
-        ExpNode child = (ExpNode) node.get_children().get(0);
+        ExpNode child = (ExpNode) node.get_unaryExp();
 
         print(node.get_operatorLiteral());
         if(child.get_arity() > 1) print("(");
@@ -356,6 +356,7 @@ public class PrettyPrintVisitor implements INodeVisitor{
     public void visit(StringExpNode node){
         print(node.get_result());
     }
+    public void visit(InvokeExpNode node) { node.getInvokeNode().accept(this); }
 
     /**
      * After a thorough evaluation of our current operations and needs, we have come to the difficult conclusion that the following classes are not necessary.
