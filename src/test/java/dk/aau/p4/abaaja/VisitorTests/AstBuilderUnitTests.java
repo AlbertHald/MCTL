@@ -10,12 +10,12 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.mctlParser;
-import dk.aau.p4.abaaja.Lib.Visitors.AstVisitor;
+import dk.aau.p4.abaaja.Lib.Visitors.AstBuilder;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 
 @Test()
 public class AstBuilderUnitTests {
-    private final AstVisitor astVisitor = new AstVisitor(new ProblemCollection());
+    private final AstBuilder astBuilder = new AstBuilder(new ProblemCollection());
     private SoftAssert softAssert;
 
     @BeforeMethod
@@ -81,7 +81,7 @@ public class AstBuilderUnitTests {
 
         // Act
         /* Creates the following tree -> MctlNode - AssStateNode - IDExpNode , BoolExpNode */
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         BoolExpNode boolExpNode = (BoolExpNode) assStateNode.get_assignExp();
 
@@ -114,7 +114,7 @@ public class AstBuilderUnitTests {
 
         // Act
         /* Creates the following tree -> MctlNode - AssStateNode - IDExpNode , StringExpNode */
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         StringExpNode stringExpNode = (StringExpNode) assStateNode.get_assignExp();
 
@@ -142,7 +142,7 @@ public class AstBuilderUnitTests {
         ParseTree parseTree = createParseTree(code);
 
         // Act
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         ActualIDExpNode actualIdExpNode = (ActualIDExpNode) assStateNode.get_assignExp();
 
@@ -175,7 +175,7 @@ public class AstBuilderUnitTests {
 
         // Act
         /* Creates the following tree -> MctlNode - AssStateNode - IDExpNode , NumberExpNode */
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         NumExpNode numExpNode = (NumExpNode) assStateNode.get_assignExp();
 
@@ -203,7 +203,7 @@ public class AstBuilderUnitTests {
 
         // Act
         /* Creates the following tree -> MctlNode - AssStateNode - IDExpNode , NumberExpNode */
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         NumExpNode numExpNode = (NumExpNode) assStateNode.get_assignExp();
 
@@ -233,7 +233,7 @@ public class AstBuilderUnitTests {
 
         // Act
         /* Creates the following tree -> MctlNode - VarDecNode - TypeNode */
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         VarDecNode varDecNode = (VarDecNode) mctlNode.get_children().get(0);
         TypeNode typeNode = (TypeNode) varDecNode.get_varDecType();
 
@@ -263,7 +263,7 @@ public class AstBuilderUnitTests {
 
         // Act
         /* Creates the following tree -> MctlNode - VarDecNode - TypeNode */
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         VarDecNode varDecNode = (VarDecNode) mctlNode.get_children().get(0);
 
         // Assert
@@ -291,7 +291,7 @@ public class AstBuilderUnitTests {
         ParseTree parseTree = createParseTree(code);
 
         // Act
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         FuncDecNode funcDecNode = (FuncDecNode) mctlNode.get_children().get(0);
 
         // Assert
@@ -321,7 +321,7 @@ public class AstBuilderUnitTests {
 
         // Act
         /* Creates the following tree -> MctlNode - StructDecNode - VarDecNode */
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         StructDecNode structDecNode = (StructDecNode) mctlNode.get_children().get(0);
         VarDecNode varDecNode = structDecNode.get_declarations().get(0);
 
@@ -352,7 +352,7 @@ public class AstBuilderUnitTests {
         ParseTree parseTree = createParseTree(code);
 
         // Act
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         IfStateNode ifStateNode = (IfStateNode) mctlNode.get_children().get(0);
 
         // Assert
@@ -380,7 +380,7 @@ public class AstBuilderUnitTests {
         ParseTree parseTree = createParseTree(code);
 
         // Act
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         RepeatStateNode repeatStateNode = (RepeatStateNode) mctlNode.get_children().get(0);
 
 
@@ -411,7 +411,7 @@ public class AstBuilderUnitTests {
         ParseTree parseTree = createParseTree(code);
 
         // Act
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
 
         // Assert
@@ -438,7 +438,7 @@ public class AstBuilderUnitTests {
         ParseTree parseTree = createParseTree(code);
 
         // Act
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
 
         // Assert
@@ -459,7 +459,7 @@ public class AstBuilderUnitTests {
         ParseTree parseTree = createParseTree("stop;");
 
         // Act
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         StopNode stopNode = (StopNode) mctlNode.get_children().get(0);
 
         // Assert
@@ -485,7 +485,7 @@ public class AstBuilderUnitTests {
         ParseTree parseTree = createParseTree(code);
 
         // Act
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         ReturnNode returnNode = (ReturnNode) mctlNode.get_children().get(0);
 
         // Assert
@@ -511,7 +511,7 @@ public class AstBuilderUnitTests {
         ParseTree parseTree = createParseTree(code);
 
         // Act
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         FuncDecNode funcDecNode = (FuncDecNode) mctlNode.get_children().get(0);
 
         // Assert
@@ -536,7 +536,7 @@ public class AstBuilderUnitTests {
     public void visitIdVar_ValidInput_CreatesActualIDExpNodeWithCorrectID(String code, String id) {
         ParseTree parseTree = createParseTree(code);
 
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         ActualIDExpNode actualIDExpNode = (ActualIDExpNode) assStateNode.get_assignId();
 
@@ -559,7 +559,7 @@ public class AstBuilderUnitTests {
     public void visitIdStruct_ValidInput_CreatesIDStructNode(String code) {
         ParseTree parseTree = createParseTree(code);
 
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         IDStructNode idStructNode = (IDStructNode) assStateNode.get_assignId();
 
@@ -583,7 +583,7 @@ public class AstBuilderUnitTests {
     public void visitReturnTypeNothing_ValidInput_CreatesNothingTypeNode(String code, String type) {
         ParseTree parseTree = createParseTree(code);
 
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         FuncDecNode funcDecNode = (FuncDecNode) mctlNode.get_children().get(0);
 
         softAssert.assertTrue(funcDecNode.get_returnType().get_type().equals(type), "Return Type");
@@ -606,7 +606,7 @@ public class AstBuilderUnitTests {
     public void visitMulExpr_ValidInput_CreatesCorrectMultiplicationExpressionNode(String code, String operator) {
         ParseTree parseTree = createParseTree(code);
 
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         MulExpNode mulExpNode = (MulExpNode) assStateNode.get_assignExp();
 
@@ -631,7 +631,7 @@ public class AstBuilderUnitTests {
     public void visitUnaryExpr_ValidInput_CreatesCorrectUnaryExpressionNode(String code, String operator) {
         ParseTree parseTree = createParseTree(code);
 
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         UnaryExpNode unaryExpNode = (UnaryExpNode) assStateNode.get_assignExp();
 
@@ -655,7 +655,7 @@ public class AstBuilderUnitTests {
     public void visitEqualExpr_ValidInput_CreatesCorrectEqualExpressionNode(String code, String operator) {
         ParseTree parseTree = createParseTree(code);
 
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         EqualExpNode equalExpNode = (EqualExpNode) assStateNode.get_assignExp();
 
@@ -681,7 +681,7 @@ public class AstBuilderUnitTests {
     public void visitBlock_ValidInput_CreatesCorrectBlockNode(String code, int lines) {
         ParseTree parseTree = createParseTree(code);
 
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         IfStateNode ifStateNode = (IfStateNode) mctlNode.get_children().get(0);
 
         softAssert.assertTrue(ifStateNode.get_blockChildrenNode().get(0).get_children().size() == lines, "Number of lines in block does not match the expected.");
@@ -704,7 +704,7 @@ public class AstBuilderUnitTests {
     public void visitTypecast_ValidInput_CreatesCorrectTypecastExpressionNode(String code, String type) {
         ParseTree parseTree = createParseTree(code);
 
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         TypecastExpNode typecastExpNode = (TypecastExpNode) assStateNode.get_assignExp();
 
@@ -727,7 +727,7 @@ public class AstBuilderUnitTests {
     public void visitOrExpr_ValidInput_CreatesCorrectOrExprNode(String code, String operator) {
         ParseTree parseTree = createParseTree(code);
 
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         OrExpNode orExpNode = (OrExpNode) assStateNode.get_assignExp();
 
@@ -751,7 +751,7 @@ public class AstBuilderUnitTests {
     public void visitAndExpr_ValidInput_CreatesCorrectAndExprNode(String code, String operator) {
         ParseTree parseTree = createParseTree(code);
 
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         AndExpNode andExpNode = (AndExpNode) assStateNode.get_assignExp();
 
@@ -777,7 +777,7 @@ public class AstBuilderUnitTests {
     public void visitAddExpr_ValidInput_CreatesCorrectAddExprNode(String code, String operator) {
         ParseTree parseTree = createParseTree(code);
 
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         AddExpNode addExpNode = (AddExpNode) assStateNode.get_assignExp();
 
@@ -803,7 +803,7 @@ public class AstBuilderUnitTests {
     public void visitCompExpr_ValidInput_CreatesCorrectCompExprNode(String code, String operator) {
         ParseTree parseTree = createParseTree(code);
 
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         CompExpNode compExpNode = (CompExpNode) assStateNode.get_assignExp();
 
@@ -828,7 +828,7 @@ public class AstBuilderUnitTests {
     public void visitStringMethodInvoke_ValidInput_CreatesCorrectStringMethodInvokeNode(String code, String stringValue, String methodName, int paramSize) {
         ParseTree parseTree = createParseTree(code);
 
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         StringMethodInvokeNode stringMethodInvokeNode = (StringMethodInvokeNode) mctlNode.get_children().get(0);
 
         StringExpNode stringExpNode = stringMethodInvokeNode.get_string();
@@ -856,7 +856,7 @@ public class AstBuilderUnitTests {
     public void visitVarMethodInvoke_ValidInput_CreatesCorrectVarMethodInvokeNode(String code, String varName, String methodName, int paramSize) {
         ParseTree parseTree = createParseTree(code);
 
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         VarMethodInvokeNode varMethodInvokeNode = (VarMethodInvokeNode) mctlNode.get_children().get(0);
 
         ActualIDExpNode FakeIDExpNode = (ActualIDExpNode) varMethodInvokeNode.get_varId();
@@ -884,7 +884,7 @@ public class AstBuilderUnitTests {
     public void visitFunctionInvoke_ValidInput_CreatesCorrectFuncInvokeNode(String code, String functionName, int paramSize) {
         ParseTree parseTree = createParseTree(code);
 
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         FuncInvokeNode funcInvokeNode = (FuncInvokeNode) mctlNode.get_children().get(0);
 
         ActualIDExpNode actualIDExpNode = funcInvokeNode.get_id();
@@ -910,7 +910,7 @@ public class AstBuilderUnitTests {
     public void visitIdArray_ValidInput_CreatesCorrectIdArrayExpNode(String code) {
         ParseTree parseTree = createParseTree(code);
 
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(0);
         IDArrayExpNode idArrayExpNode = (IDArrayExpNode) assStateNode.get_assignId();
 
@@ -938,7 +938,7 @@ public class AstBuilderUnitTests {
     public void visitMctl_ValidInput_CreatesCorrectIdArrayExpNode(String code, int nodeSize) {
         ParseTree parseTree = createParseTree(code);
 
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         softAssert.assertTrue(mctlNode.get_children().size() == nodeSize, "Node Size");
         softAssert.assertAll();

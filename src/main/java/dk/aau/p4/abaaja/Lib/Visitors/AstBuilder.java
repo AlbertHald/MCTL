@@ -11,10 +11,10 @@ import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.mctlParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class AstVisitor extends mctlBaseVisitor<BaseNode> {
+public class AstBuilder extends mctlBaseVisitor<BaseNode> {
     private ProblemCollection problemCollection;
 
-    public AstVisitor(ProblemCollection problemCollection) {
+    public AstBuilder(ProblemCollection problemCollection) {
         this.problemCollection = problemCollection;
     }
 
