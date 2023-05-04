@@ -463,7 +463,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         }
     }
 
-    // Is implemented in visitFuncDecNode to check the type correctness of the expression
+    // Fully Implemented
     public void visit(ReturnNode node) {
         Scope scope = symbolTable.searchScopeName("function");
 
