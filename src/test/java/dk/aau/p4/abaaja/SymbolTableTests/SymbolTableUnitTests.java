@@ -70,6 +70,23 @@ public class SymbolTableUnitTests {
     }
 
     @Test()
+    public void SearchScope_WhenSearching_ThenReturnSearchedScope() {
+        //Arrange
+        String expectedScopeName = "testScope2";
+        try{
+            testSymbolTable.CreateScope("testScope1");
+            testSymbolTable.CreateScope("testScope2");
+        } catch (Exception e) {
+            assert(false);
+        }
+        //Act
+        boolean result = testSymbolTable.SearchScope("testScope2").get_Name().equals(expectedScopeName);
+
+        //Assert
+        assert(result);
+    }
+
+    @Test()
     public void SearchSymbol_WhenSearching_ThenReturnSearchedSymbol() {
         //Arrange
         String expectedSymbolName = "expectedName";
