@@ -134,7 +134,7 @@ public class TypeCheckingVisitor {
         if (!type1.equals(type2)) {
             _problemCollection.addProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
-                    "Expected both expressions to be of the same type, but got type: " + type1 + " and type: " + type2,
+                    "Expected both expressions to be of the same type, but got type: \"" + type1 + "\" and type: \"" + type2 + "\"",
                     node.get_lineNumber()
             );
 
@@ -176,16 +176,15 @@ public class TypeCheckingVisitor {
             int accessorDegree = arrayTypeDescriptor.getDegree() - arrayDegree;
 
             // The contained type is a struct type
-            if (arrayTypeDescriptor.getType() instanceof MctlStructDescriptor structTypeDescriptor) {
+            if (arrayTypeDescriptor.getType() instanceof MctlStructDescriptor) {
                 // Struct Type
-                MctlTypeDescriptor descriptor = getStructDerivedType(structTypeDescriptor, (IDStructNode) tempIdNode);
+                MctlTypeDescriptor descriptor = getStructDerivedType(arrayTypeDescriptor, (IDStructNode) tempIdNode);
 
                 if (descriptor instanceof MctlArrayTypeDescriptor arrayDescriptor) {
                     accessorDegree = arrayDescriptor.getDegree() - arrayDegree;
 
                     // The type referred to is a primitive type
                     accessorArrayTypeDescriptor = getArrayType(arrayDescriptor, accessorDegree, node.get_lineNumber());
-
                 }
             }
             else {
@@ -210,7 +209,7 @@ public class TypeCheckingVisitor {
         else {
             _problemCollection.addProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
-                    "The variable " + symbol.get_name() + " is not of the correct type",
+                    "The variable \"" + symbol.get_name() + "\" is not of the correct type",
                     node.get_lineNumber()
             );
         }
@@ -227,7 +226,7 @@ public class TypeCheckingVisitor {
         } else if (degree < 0) {
             _problemCollection.addProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
-                    "It is not possible to access the degree " + degree + " on the type " + descriptor.get_type_literal(),
+                    "It is not possible to access the degree \"" + degree + "\" on the type \"" + descriptor.get_type_literal() + "\"",
                     lineNumber
             );
         } else {
@@ -258,7 +257,7 @@ public class TypeCheckingVisitor {
                     // Happens if user is trying to access a struct on a type that is not a struct and so on
                     _problemCollection.addProblem(
                             ProblemType.ERROR_TYPE_MISMATCH,
-                            "The type " + accessorType.get_type_literal() + " cannot be accessed as a struct",
+                            "The type \"" + accessorType.get_type_literal() + "\" cannot be accessed as a struct",
                             idExp.get_lineNumber()
                     );
                 }
@@ -267,14 +266,15 @@ public class TypeCheckingVisitor {
                     int accessorDegree = accessorDescriptor.getDegree() - 1;
 
                     accessorType = getArrayType(accessorDescriptor, accessorDegree, idExp.get_lineNumber());
-                }
-                else {
+                } else {
                     // Happens if user is trying to access an array type on a type that is not an array
                     _problemCollection.addProblem(
                             ProblemType.ERROR_TYPE_MISMATCH,
-                            "The type " + accessorType.get_type_literal() + " cannot be accessed using []",
+                            "The type \"" + accessorType.get_type_literal() + "\" cannot be accessed using []",
                             idExp.get_lineNumber()
                     );
+
+                    return _symbolTable.searchType("NOTHING");
                 }
             }
         }
@@ -309,9 +309,9 @@ public class TypeCheckingVisitor {
 
         // Check if the root type is a Struct or an Array
         if (symbol.get_type() instanceof MctlArrayTypeDescriptor arrayTypeDescriptor &&
-                arrayTypeDescriptor.getType() instanceof MctlStructDescriptor structTypeDescriptor) {
+                arrayTypeDescriptor.getType() instanceof MctlStructDescriptor) {
             // The contained type is a struct type
-            type = getStructDerivedType(structTypeDescriptor, node);
+            type = getStructDerivedType(arrayTypeDescriptor, node);
         }
         else if (type instanceof MctlStructDescriptor structTypeDescriptor) {
             type = getStructDerivedType(structTypeDescriptor, node);
@@ -319,7 +319,7 @@ public class TypeCheckingVisitor {
         else {
             _problemCollection.addProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
-                    "The variable " + symbol.get_name() + " is not of the correct type",
+                    "The variable \"" + symbol.get_name() + "\" is not of the correct type",
                     node.get_lineNumber()
             );
         }
@@ -342,14 +342,61 @@ public class TypeCheckingVisitor {
         return typeDescriptor;
     }
 
+    private MctlTypeDescriptor getTypecastResult(MctlTypeDescriptor newType, MctlTypeDescriptor previousType, String correctType, int lineNumber) {
+        MctlTypeDescriptor returnType = _symbolTable.searchType("NOTHING");
+
+        if (newType.get_type_literal().equals(correctType)) {
+            returnType = newType;
+        } else if (previousType.get_type_literal().equals(previousType.get_type_literal())) {
+            _problemCollection.addProblem(
+                    ProblemType.WARNING_REDUNDANT_TYPECAST,
+                    "Typecasting the type \"" + previousType.get_type_literal() + "\" to the type \"" + newType.get_type_literal() + "\" is redundant",
+                    lineNumber
+            );
+            returnType = newType;
+        } else {
+            _problemCollection.addProblem(
+                    ProblemType.ERROR_TYPE_CANNOT_BE_CAST,
+                    "The type \"" + previousType.get_type_literal() + "\" cannot be cast to" + newType.get_type_literal(),
+                    lineNumber
+            );
+        }
+
+        return returnType;
+    }
+
+    public MctlTypeDescriptor visit(TypecastExpNode node) {
+        MctlTypeDescriptor newType = visit(node.get_typeNode());
+        MctlTypeDescriptor previousType = visit(node.get_expression_node());
+        MctlTypeDescriptor returnType = _symbolTable.searchType("NOTHING");
+
+        // Switch over the previous type and check whether the typecast is legal
+        switch (previousType.get_type_literal()) {
+            case "STRING" ->
+                    returnType = getTypecastResult(newType, previousType, "NUMBER", node.get_lineNumber());
+            case "NUMBER", "BOOLEAN" ->
+                    returnType = getTypecastResult(newType, previousType, "STRING", node.get_lineNumber());
+            default ->
+                    _problemCollection.addProblem(
+                    ProblemType.ERROR_TYPE_CANNOT_BE_CAST,
+                    "The struct type \"" + previousType.get_type_literal() + "\" cannot be cast",
+                    node.get_lineNumber()
+            );
+        }
+
+        return returnType;
+    }
+
+    public MctlTypeDescriptor visit(CompExpNode node) {
+        MctlTypeDescriptor typeDescriptor = expectsType(node, "NUMBER");
+        return (typeDescriptor.get_type_literal().equals("NUMBER") ? _symbolTable.searchType("BOOLEAN") : null);
+    }
+
     public MctlTypeDescriptor visit(MulExpNode node) { return expectsType(node, "NUMBER"); }
     public MctlTypeDescriptor visit(AddExpNode node) { return expectsType(node, "NUMBER"); }
     public MctlTypeDescriptor visit(AndExpNode node) { return expectsType(node, "BOOLEAN"); }
     public MctlTypeDescriptor visit(OrExpNode node) { return expectsType(node, "BOOLEAN"); }
-    public MctlTypeDescriptor visit(CompExpNode node) {
-        MctlTypeDescriptor typeDescriptor = expectsType(node, "NUMBER");
-        return (typeDescriptor.get_type_literal() == "NUMBER" ? _symbolTable.searchType("BOOLEAN") : null);
-    }
+
 
     public MctlTypeDescriptor visit(BoolTypeNode node) { return _symbolTable.searchType("BOOLEAN"); }
     public MctlTypeDescriptor visit(NumTypeNode node) { return _symbolTable.searchType("NUMBER"); }
@@ -359,7 +406,6 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(NumExpNode node) { return _symbolTable.searchType("NUMBER"); }
     public MctlTypeDescriptor visit(StringExpNode node) { return _symbolTable.searchType("STRING"); }
     public MctlTypeDescriptor visit(UnaryExpNode node) { return visit(node.get_unaryExp()); }
-    public MctlTypeDescriptor visit(TypecastExpNode node) { return visit(node.get_expression_node()); }
     public MctlTypeDescriptor visit(ReturnNode node) { return visit(node.get_returnExp()); }
 
     public MctlTypeDescriptor visit(MctlNode node) { return null; }
@@ -384,7 +430,7 @@ public class TypeCheckingVisitor {
         if (!typeChildOne.equals(typeLiteral)) {
             _problemCollection.addProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
-                    "Expected type " + typeLiteral + " but got " + typeChildOne,
+                    "Expected type \"" + typeLiteral + "\" but got \"" + typeChildOne + "\"",
                     node.get_lineNumber()
             );
         }
@@ -392,7 +438,7 @@ public class TypeCheckingVisitor {
         if (!typeChildTwo.equals(typeLiteral)) {
             _problemCollection.addProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
-                    "Expected type " + typeLiteral + " but got " + typeChildTwo,
+                    "Expected type \"" + typeLiteral + "\" but got \"" + typeChildTwo + "\"",
                     node.get_lineNumber()
             );
         }

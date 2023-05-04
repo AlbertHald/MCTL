@@ -196,6 +196,17 @@ public class SymbolTableVisitor implements INodeVisitor {
                     node.get_lineNumber()
             );
         }
+
+        // Visit the repeat block
+        symbolTable.createScope("repeat");
+
+        // Visit all function and struct declarations and add them to the symbol table
+        initialScopeVisit(node.get_expBlock().get_children());
+
+        // Visit all remaining line
+        for (BaseNode child : node.get_expBlock().get_children()) { child.accept(this); }
+
+        symbolTable.closeScope();
     }
 
     public void visit(AssStateNode node) {
@@ -248,12 +259,12 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     // Fully Implemented
     public void visit(InvokeNode node) {
-        if (node instanceof FuncInvokeNode) { visit((FuncInvokeNode) node); }
-        else if (node instanceof VarMethodInvokeNode) { visit((VarMethodInvokeNode) node); }
-        else if (node instanceof StringMethodInvokeNode) { visit((StringMethodInvokeNode) node); }
+        if (node instanceof FuncInvokeNode funcInvokeNode) { visit(funcInvokeNode); }
+        else if (node instanceof VarMethodInvokeNode varMethodInvokeNode) { visit(varMethodInvokeNode); }
+        else if (node instanceof StringMethodInvokeNode stringMethodInvokeNode) { visit(stringMethodInvokeNode); }
     }
 
-    // FUnction for checking the type of parameters
+    // Function for checking the type of parameters
     private void checkFunctionParams (List<ExpNode> expresionNodes, FuncSymbol funcSymbol, int lineNumber) {
         int counter = 0;
 
@@ -467,7 +478,14 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(FormalParamNode node) {}
 
     public void visit(InvokeExpNode node) { visit(node.getInvokeNode()); }
-    public void visit(StopNode node) {}
+    public void visit(StopNode node) {
+        // If the current scope is not a repeat statement an error should be created
+        if (!symbolTable.get_currentScope().get_Name().equals("repeat")) {
+            problemCollection.addProblem(ProblemType.ERROR_UNEXPECTED_STOP,
+                    "Encountered an unexpected \"stop\" statement. Only repeat statements can contain \"stop\" nodes",
+                    node.get_lineNumber());
+        }
+    }
     public void visit(TypeNode node) {}
     public void visit(BoolTypeNode node) {}
     public void visit(NumTypeNode node) {}

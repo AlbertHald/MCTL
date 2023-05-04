@@ -835,7 +835,7 @@ public class TypeCheckingVisitorUnitTests {
                 {"variable a: BOOLEAN[][]; a[0][0] = true;", "BOOLEAN", 1},
                 {"variable a: BOOLEAN[][][]; a[0][0][0] = false;", "BOOLEAN", 1},
                 {"struct test { variable b: NUMBER[] }; variable a: test; a.b[0] = 1;", "NUMBER", 2},
-                {"struct test { variable b: NUMBER[] }; variable a: test[]; a[0].b[0] = 1;", "NUMBER", 2},
+                {"struct test { variable b: NUMBER[] }; variable a: test[][]; a[0][0].b[0] = 1;", "NUMBER", 2},
                 {"struct test { variable b: NUMBER[][] }; variable a: test[]; a[0].b[0][0] = 1;", "NUMBER", 2},
                 {"struct test { variable b: NUMBER[][] }; variable a: test[][]; a[0][0].b[0][0] = 1;", "NUMBER", 2},
                 {"struct test { variable b: NUMBER[][][] }; variable a: test[][][]; a[0][0][0].b[0][0][0] = 1;", "NUMBER", 2},
@@ -861,10 +861,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit IDArrayExp: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -899,10 +895,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals("BOOLEAN"), "Visit EqualExp: Expected type BOOLEAN for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -928,10 +920,6 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit RepeatState: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 
     @DataProvider
@@ -957,9 +945,5 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals("BOOLEAN"), "Visit IfState: Expected type BOOLEAN for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
-
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
-        }
     }
 }
