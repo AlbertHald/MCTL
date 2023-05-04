@@ -141,7 +141,7 @@ public class TypeCheckingVisitor {
             return null;
         }
 
-        return _symbolTable.searchType(type1);
+        return _symbolTable.searchType("BOOLEAN");
     }
 
     public MctlTypeDescriptor visit(IDExpNode node) {
@@ -184,31 +184,16 @@ public class TypeCheckingVisitor {
                     accessorDegree = arrayDescriptor.getDegree() - arrayDegree;
 
                     // The type referred to is a primitive type
-                    if (accessorDegree == 0) {
-                        accessorArrayTypeDescriptor = arrayDescriptor.getType();
-                    } else if (accessorDegree < 0) {
-                        // TODO: User trying to access degree larger than the defined
-                    } else {
-                        accessorArrayTypeDescriptor = new MctlArrayTypeDescriptor(arrayDescriptor.getType(), accessorDegree);
-                    }
-                }
-                else {
-                    // TODO: Will we ever end here?
+                    accessorArrayTypeDescriptor = getArrayType(arrayDescriptor, accessorDegree, node.get_lineNumber());
+
                 }
             }
             else {
                 // The type referred to is a primitive type
-                if (accessorDegree == 0) {
-                    accessorArrayTypeDescriptor = arrayTypeDescriptor.getType();
-                } else if (accessorDegree < 0) {
-                    // TODO: User trying to access degree larger than the defined
-                } else {
-                    accessorArrayTypeDescriptor = new MctlArrayTypeDescriptor(arrayTypeDescriptor.getType(), accessorDegree);
-                }
+                accessorArrayTypeDescriptor = getArrayType(arrayTypeDescriptor, accessorDegree, node.get_lineNumber());
             }
         }
         else if (symbol.get_type() instanceof MctlStructDescriptor structTypeDescriptor) {
-            // Remember to add degree
             MctlTypeDescriptor derivedType = getStructDerivedType(structTypeDescriptor, (IDStructNode) node.get_idNode());
 
             if (derivedType instanceof MctlArrayTypeDescriptor derivedArrayType) {
@@ -216,13 +201,7 @@ public class TypeCheckingVisitor {
                 int accessorDegree = derivedArrayType.getDegree() - arrayDegree;
 
                 // The type referred to is not an array
-                if (accessorDegree == 0) {
-                    accessorArrayTypeDescriptor = derivedArrayType.getType();
-                } else if (accessorDegree < 0) {
-                    // TODO: User trying to access degree larger than the defined
-                } else {
-                    accessorArrayTypeDescriptor = new MctlArrayTypeDescriptor(derivedArrayType.getType(), accessorDegree);
-                }
+                accessorArrayTypeDescriptor = getArrayType(derivedArrayType, accessorDegree, node.get_lineNumber());
             }
             else {
                 accessorArrayTypeDescriptor = derivedType;
@@ -239,16 +218,20 @@ public class TypeCheckingVisitor {
         return accessorArrayTypeDescriptor;
     }
 
-    private MctlTypeDescriptor getArrayType(MctlTypeDescriptor descriptor, int degree) {
+    private MctlTypeDescriptor getArrayType(MctlArrayTypeDescriptor descriptor, int degree, int lineNumber) {
         MctlTypeDescriptor accessorType = _symbolTable.searchType("NOTHING");
 
         // The type referred to is not an array
         if (degree == 0) {
-            accessorType = descriptor;
+            accessorType = descriptor.getType();
         } else if (degree < 0) {
-            // TODO: User trying to access degree larger than the defined
+            _problemCollection.addProblem(
+                    ProblemType.ERROR_TYPE_MISMATCH,
+                    "It is not possible to access the degree " + degree + " on the type " + descriptor.get_type_literal(),
+                    lineNumber
+            );
         } else {
-            accessorType = new MctlArrayTypeDescriptor(descriptor, degree);
+            accessorType = new MctlArrayTypeDescriptor(descriptor.getType(), degree);
         }
 
         return accessorType;
@@ -283,7 +266,7 @@ public class TypeCheckingVisitor {
                 if (accessorType instanceof MctlArrayTypeDescriptor accessorDescriptor) {
                     int accessorDegree = accessorDescriptor.getDegree() - 1;
 
-                    accessorType = getArrayType(accessorDescriptor.getType(), accessorDegree);
+                    accessorType = getArrayType(accessorDescriptor, accessorDegree, idExp.get_lineNumber());
                 }
                 else {
                     // Happens if user is trying to access an array type on a type that is not an array
@@ -324,16 +307,11 @@ public class TypeCheckingVisitor {
 
         type = symbol.get_type();
 
-        if (symbol.get_type() instanceof MctlArrayTypeDescriptor arrayTypeDescriptor) {
-
+        // Check if the root type is a Struct or an Array
+        if (symbol.get_type() instanceof MctlArrayTypeDescriptor arrayTypeDescriptor &&
+                arrayTypeDescriptor.getType() instanceof MctlStructDescriptor structTypeDescriptor) {
             // The contained type is a struct type
-            if (arrayTypeDescriptor.getType() instanceof MctlStructDescriptor structTypeDescriptor) {
-                // Struct Type
-                type = getStructDerivedType(structTypeDescriptor, node);
-            }
-            else {
-                // Unforeseen error!
-            }
+            type = getStructDerivedType(structTypeDescriptor, node);
         }
         else if (type instanceof MctlStructDescriptor structTypeDescriptor) {
             type = getStructDerivedType(structTypeDescriptor, node);
