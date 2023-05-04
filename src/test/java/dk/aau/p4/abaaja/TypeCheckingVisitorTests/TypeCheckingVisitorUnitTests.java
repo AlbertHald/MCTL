@@ -112,6 +112,20 @@ public class TypeCheckingVisitorUnitTests {
         };
     }
 
+    @Test(dataProvider = "visitStructDecTestData")
+    public void visitStructDec_ValidInput_ReturnsNull(String code) {
+        ParseTree parseTree = createParseTree(code);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
+        symbolTableVisitor.visit(mctlNode);
+
+        StructDecNode structDecNode = (StructDecNode) mctlNode.get_children().get(0);
+
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(structDecNode);
+
+        softAssert.assertTrue(typeDescriptor == null, "Visit StructDec: " + code);
+        softAssert.assertAll();
+    }
+
     @DataProvider
     public Object[][] visitAssStateTestData() {
         return new Object[][] {
@@ -134,20 +148,6 @@ public class TypeCheckingVisitorUnitTests {
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(assStateNode);
 
         softAssert.assertTrue(typeDescriptor == null, "Visit AssState: " + code);
-        softAssert.assertAll();
-    }
-
-    @Test(dataProvider = "visitStructDecTestData")
-    public void visitStructDec_ValidInput_ReturnsNull(String code) {
-        ParseTree parseTree = createParseTree(code);
-        MctlNode mctlNode = (MctlNode) parseTree.accept(astVisitor);
-        symbolTableVisitor.visit(mctlNode);
-
-        StructDecNode structDecNode = (StructDecNode) mctlNode.get_children().get(0);
-
-        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(structDecNode);
-
-        softAssert.assertTrue(typeDescriptor == null, "Visit StructDec: " + code);
         softAssert.assertAll();
     }
 
