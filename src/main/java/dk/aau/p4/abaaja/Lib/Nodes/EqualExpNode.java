@@ -1,7 +1,6 @@
 package dk.aau.p4.abaaja.Lib.Nodes;
 
 import dk.aau.p4.abaaja.Lib.Visitors.INodeVisitor;
-import dk.aau.p4.abaaja.mctlParser;
 
 public class EqualExpNode extends BinaryExpNode {
     private boolean _result;
