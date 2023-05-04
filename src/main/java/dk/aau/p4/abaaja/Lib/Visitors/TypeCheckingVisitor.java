@@ -346,7 +346,10 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(AddExpNode node) { return expectsType(node, "NUMBER"); }
     public MctlTypeDescriptor visit(AndExpNode node) { return expectsType(node, "BOOLEAN"); }
     public MctlTypeDescriptor visit(OrExpNode node) { return expectsType(node, "BOOLEAN"); }
-    public MctlTypeDescriptor visit(CompExpNode node) { return expectsType(node, "NUMBER"); }
+    public MctlTypeDescriptor visit(CompExpNode node) {
+        MctlTypeDescriptor typeDescriptor = expectsType(node, "NUMBER");
+        return (typeDescriptor.get_type_literal() == "NUMBER" ? _symbolTable.searchType("BOOLEAN") : null);
+    }
 
     public MctlTypeDescriptor visit(BoolTypeNode node) { return _symbolTable.searchType("BOOLEAN"); }
     public MctlTypeDescriptor visit(NumTypeNode node) { return _symbolTable.searchType("NUMBER"); }
