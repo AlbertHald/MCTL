@@ -39,7 +39,7 @@ statement
     ;
 
 return
-    : Return expression
+    : Return (expression)?
     ;
 
 

@@ -5,6 +5,7 @@ import dk.aau.p4.abaaja.Lib.ProblemHandling.Problem;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Symbols.FuncSymbol;
+import dk.aau.p4.abaaja.Lib.Symbols.Scope;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlArrayTypeDescriptor;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlStructDescriptor;
 import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
@@ -91,6 +92,19 @@ public class SymbolTableVisitor implements INodeVisitor {
         symbolTable.closeScope();
     }
 
+    // Method for opening and visiting a new scope with a name
+    private void visitNewScope(BlockNode node, String name) {
+        symbolTable.createScope(name);
+
+        // Visit all function and struct declarations and add them to the symbol table
+        initialScopeVisit(node.get_children());
+
+        // Visit all remaining line
+        for (BaseNode child : node.get_children()) { child.accept(this); }
+
+        symbolTable.closeScope();
+    }
+
     // Fully Implemented
     public void visit(DecNode node) {
         for (BaseNode child : node.get_children()) { child.accept(this); }
@@ -121,10 +135,11 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(FuncDecNode node) {
         boolean returnNodesPresent = false;
         List<Problem> problems = new ArrayList<Problem>();
-        FuncSymbol funcSymbol = (FuncSymbol) symbolTable.searchSymbol(node.get_id());
+        FuncSymbol funcSymbol = (FuncSymbol) symbolTable.searchSymbol(node.get_id()); // TODO: Check wether it is allowed to declare functions multiple times
 
         // Create scope for function block and create parameter symbols
-        symbolTable.createScope();
+        symbolTable.createScope("function");
+        symbolTable.get_currentScope().set_returnType(funcSymbol.get_type());
         for (FormalParamNode formalParam : node.get_paramList()) {
             Symbol paramSymbol = new Symbol(formalParam.get_id());
             MctlTypeDescriptor tempType = visitorTools.getTypeDescriptor(formalParam.get_type());
@@ -142,25 +157,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
         // Check lines of the function block
         for (BaseNode child : node.get_funcBlock().get_children()) {
-            if (child instanceof ReturnNode returnNode) {
-                // Add problems for each return node it the function should return a value
-                if (!funcSymbol.get_type().get_type_literal().equals("NOTHING")) {
-                    // Get expression return type and function symbol
-                    MctlTypeDescriptor returnNodeType = typeCheckingVisitor.visit(returnNode.get_returnExp());
-
-                    // Check if return node expression is of the correct type
-                    if (!returnNodeType.get_type_literal().equals(funcSymbol.get_type().get_type_literal())) {
-                        problemCollection.addProblem(ProblemType.ERROR_TYPE_MISMATCH,
-                                "The return expression resolves to type \"" + funcSymbol.get_type().get_type_literal() + "\" but resolves to the type \"" + returnNodeType.get_type_literal() + "\"",
-                                returnNode.get_lineNumber());
-                    }
-                } else {
-                    // Encountered unexpected return nodes
-                    problemCollection.addProblem(ProblemType.ERROR_UNEXPECTED_RETURN, "Encountered an unexpected return. The function is defined to return NOTHING", returnNode.get_lineNumber());
-                }
-            } else {
-                child.accept(this);
-            }
+            child.accept(this);
         }
 
         symbolTable.closeScope();
@@ -198,15 +195,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         }
 
         // Visit the repeat block
-        symbolTable.createScope("repeat");
-
-        // Visit all function and struct declarations and add them to the symbol table
-        initialScopeVisit(node.get_expBlock().get_children());
-
-        // Visit all remaining line
-        for (BaseNode child : node.get_expBlock().get_children()) { child.accept(this); }
-
-        symbolTable.closeScope();
+        visitNewScope(node.get_expBlock(), "repeat");
     }
 
     public void visit(AssStateNode node) {
@@ -472,7 +461,50 @@ public class SymbolTableVisitor implements INodeVisitor {
     }
 
     // Is implemented in visitFuncDecNode to check the type correctness of the expression
-    public void visit(ReturnNode node) {}
+    public void visit(ReturnNode node) {
+        Scope scope = symbolTable.searchScopeName("function");
+
+        // Check if the return node is within a function scope
+        if (scope == null) {
+            problemCollection.addProblem(ProblemType.ERROR_UNEXPECTED_RETURN,
+                    "Encountered an unexpected \"return\" statement. \"return\" statements can only be defined within a function",
+                    node.get_lineNumber()
+            );
+        }
+        // Add problems for each return node if the function should return a value
+        else if (!scope.get_returnType().get_type_literal().equals("NOTHING") && node.get_returnExp() != null) {
+            // Get expression return type and function symbol
+            MctlTypeDescriptor returnNodeType = typeCheckingVisitor.visit(node.get_returnExp());
+
+            // Check if return node expression is of the correct type
+            if (!returnNodeType.get_type_literal().equals(scope.get_returnType().get_type_literal())) {
+                problemCollection.addProblem(
+                        ProblemType.ERROR_TYPE_MISMATCH,
+                        "The return type should be of type \"" + scope.get_returnType().get_type_literal() + "\" but the expression resolves to the type \"" + returnNodeType.get_type_literal() + "\"",
+                        node.get_lineNumber()
+                );
+            }
+        } else if (!scope.get_returnType().get_type_literal().equals("NOTHING") && node.get_returnExp() == null) {
+            MctlTypeDescriptor returnNodeType = typeCheckingVisitor.visit(node.get_returnExp());
+
+            // The return node should return a type but does not.
+            problemCollection.addProblem(
+                    ProblemType.ERROR_TYPE_MISMATCH,
+                    "The return type should be of type \"" + scope.get_returnType().get_type_literal() + "\" but is \"NOTHING\"",
+                    node.get_lineNumber()
+            );
+
+        } else if (scope.get_returnType().get_type_literal().equals("NOTHING") && node.get_returnExp() != null) {
+            MctlTypeDescriptor returnNodeType = typeCheckingVisitor.visit(node.get_returnExp());
+
+            // The return node should return a type but does not.
+            problemCollection.addProblem(
+                    ProblemType.ERROR_TYPE_MISMATCH,
+                    "The return type should be of type \"" + scope.get_returnType().get_type_literal() + "\" but is \"" + returnNodeType.get_type_literal() + "\"",
+                    node.get_lineNumber()
+            );
+        }
+    }
 
     // Fully implemented in InitialFuncVisitor
     public void visit(FormalParamNode node) {}
@@ -480,10 +512,11 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(InvokeExpNode node) { visit(node.getInvokeNode()); }
     public void visit(StopNode node) {
         // If the current scope is not a repeat statement an error should be created
-        if (!symbolTable.get_currentScope().get_Name().equals("repeat")) {
+        if (symbolTable.searchScopeName("repeat") == null) {
             problemCollection.addProblem(ProblemType.ERROR_UNEXPECTED_STOP,
                     "Encountered an unexpected \"stop\" statement. Only repeat statements can contain \"stop\" nodes",
-                    node.get_lineNumber());
+                    node.get_lineNumber()
+            );
         }
     }
     public void visit(TypeNode node) {}

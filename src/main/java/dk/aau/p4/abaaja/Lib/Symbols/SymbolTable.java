@@ -110,6 +110,18 @@ public class SymbolTable {
         return null;
     }
 
+    // Search Scope name method
+    public Scope searchScopeName(String type) {
+        Scope scope = _currentScope;
+
+        do {
+            if(scope.get_Name() != null && scope.get_Name().equals(type))
+                return scope;
+        } while((scope = scope.get_Parent()) != null);
+
+        return null;
+    }
+
     public void insertSymbol(Symbol symbol) {
         _currentScope.add_symbol(symbol);
     }
