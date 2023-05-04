@@ -181,17 +181,20 @@ public class AstBuilder extends mctlBaseVisitor<BaseNode> {
 
     @Override public BaseNode visitReturn(mctlParser.ReturnContext ctx) {
         ReturnNode returnNode = new ReturnNode();
+        BaseNode expNode = null;
 
         returnNode.set_lineNumber(ctx.getStart().getLine());
         returnNode.set_lineEndNumber(ctx.getStop().getLine());
 
-        BaseNode expNode = visit(ctx.expression());
+        if (ctx.expression() != null) {
+            expNode = visit(ctx.expression());
 
-        //Set the return expression
-        if (expNode instanceof ExpNode) {
-            returnNode.set_returnExp((ExpNode) expNode);
-        } else{
-            addProblem(ctx, "");
+            //Set the return expression
+            if (expNode instanceof ExpNode) {
+                returnNode.set_returnExp((ExpNode) expNode);
+            } else{
+                addProblem(ctx, "");
+            }
         }
 
         return returnNode;

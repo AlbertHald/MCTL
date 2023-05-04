@@ -23,7 +23,8 @@ public class Main {
         ProblemCollection problemCollection = new ProblemCollection();
 
         // Parse test CharStream
-        ParseTree tree = syntaxPhase( CharStreams.fromString("repeat (true) {stop;} \n stop;"), problemCollection);
+        ParseTree tree = syntaxPhase( CharStreams.fromString("variable test:NUMBER; to bing(test:NUMBER) : NUMBER { \n" +
+                "return 0; repeat (10) { return 22; to test():BOOLEAN { return 3 < 3; }} } to bong() : NOTHING { return; }"), problemCollection);
 
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here

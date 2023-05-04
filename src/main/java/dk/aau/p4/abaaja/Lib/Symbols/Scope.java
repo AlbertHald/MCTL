@@ -9,11 +9,12 @@ import java.util.List;
 public class Scope {
 
     //A hashmap of symbols in the scope.
+    private String _name;
+    private Scope _parent;
     private final HashMap<String, Symbol> _symbols = new HashMap<>();
     private final HashMap<String, MctlTypeDescriptor> _types = new HashMap<>();
     private final List<String> _structTypes = new ArrayList<>();
-    private String _name;
-    private Scope _parent;
+    private MctlTypeDescriptor _returnType;
 
     //Constructor
     public Scope() {}
@@ -56,4 +57,9 @@ public class Scope {
     public void add_structType(String entry) {
         _structTypes.add(entry);
     }
+
+    public MctlTypeDescriptor get_returnType() {
+        return _returnType;
+    }
+    public void set_returnType(MctlTypeDescriptor entry) { _returnType = entry; }
 }
