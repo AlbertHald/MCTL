@@ -41,8 +41,12 @@ public class ParserProblemListener extends BaseErrorListener {
         tempLine += "  >>" + problematicLine.substring(charPositionInLine, tokenEnd) + "<<  ";
         tempLine += problematicLine.substring(tokenEnd, problematicLine.length());
 
+        String title = problemCollection.createProblemTitle(ProblemType.ERROR_PARSER.toString(), problemCollection.totalCharacters);
+        String codeDelim = "---- code ----";
+        String errorDelim = "---- error ----";
+
         // Format message string
-        String errorMessage = String.format("Parse error at Line %d, Character %d: %s", line, charPositionInLine, tempLine);
+        String errorMessage = String.format("%s\nParse error at Line %d, Character %d:\n%s\n%s\n%s\n%s", title, line, charPositionInLine, codeDelim, tempLine, errorDelim, msg);
 
         problemCollection.addProblem(ProblemType.ERROR_PARSER, errorMessage, line, charPositionInLine, tokenEnd);
     }

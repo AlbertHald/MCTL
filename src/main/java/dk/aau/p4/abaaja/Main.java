@@ -23,8 +23,7 @@ public class Main {
         ProblemCollection problemCollection = new ProblemCollection();
 
         // Parse test CharStream
-        ParseTree tree = syntaxPhase( CharStreams.fromString("variable test:NUMBER; to bing(test:NUMBER) : NUMBER { \n" +
-                "return 0; repeat (10) { return 22; to test():BOOLEAN { return 3 < 3; }} } to bong() : NOTHING { return; }"), problemCollection);
+        ParseTree tree = syntaxPhase( CharStreams.fromString("variable test:NUMBER; \nvariable bing: BOOLEAN; \ntest = 2 + bing;"), problemCollection);
 
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here
@@ -37,7 +36,7 @@ public class Main {
             concreteNode.accept(new SymbolTableVisitor(problemCollection));
 
             for (Problem problem : problemCollection.getProblems()) {
-                System.out.println("Problem type: " + problem.getProblemType() + ". Message: " + problem.getMessage() + " Line: " + problem.getLine());
+                System.out.println(problem.getMessage());
             }
         }
         else {
