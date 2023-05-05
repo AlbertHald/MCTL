@@ -1,7 +1,11 @@
 package dk.aau.p4.abaaja;
 
 // Antlr imports
+import com.sun.source.tree.NewArrayTree;
+import dk.aau.p4.abaaja.Lib.Interpreter.Interpreter;
+import dk.aau.p4.abaaja.Lib.Interpreter.TextGameBridge;
 import dk.aau.p4.abaaja.Lib.Nodes.MctlNode;
+import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
 import dk.aau.p4.abaaja.Lib.TextSinks.*;
 import dk.aau.p4.abaaja.Lib.Visitors.AstBuilder;
 import dk.aau.p4.abaaja.Lib.Visitors.PrettyPrintVisitor;
@@ -33,6 +37,8 @@ public class MCTL {
             concreteNode.accept(prettyPrintVisitor);
 
             concreteNode.accept(new SymbolTableVisitor(problemCollection));
+
+            concreteNode.accept(new Interpreter(problemCollection, new SymbolTable(), new TextGameBridge()));
 
             for (Problem problem : problemCollection.getProblems()) {
                 System.out.println(problem.getMessage());
