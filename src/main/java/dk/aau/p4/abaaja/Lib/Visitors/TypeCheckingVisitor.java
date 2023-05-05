@@ -347,7 +347,7 @@ public class TypeCheckingVisitor {
 
         if (newType.get_type_literal().equals(correctType)) {
             returnType = newType;
-        } else if (previousType.get_type_literal().equals(previousType.get_type_literal())) {
+        } else if (previousType.get_type_literal().equals(newType.get_type_literal())) {
             _problemCollection.addFormattedProblem(
                     ProblemType.WARNING_REDUNDANT_TYPECAST,
                     "Typecasting the type \"" + previousType.get_type_literal() + "\" to the type \"" + newType.get_type_literal() + "\" is redundant",
