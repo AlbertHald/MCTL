@@ -1285,6 +1285,10 @@ public class TypeCheckingVisitorUnitTests {
                 {"variable var: BOOLEAN; variable test: STRING; variable test2: STRING; test = \"hi\"; test2 = \"hello\"; var = test != test2;", 5},
                 {"variable var: BOOLEAN; variable test: BOOLEAN; variable test2: BOOLEAN; test = true; test2 = true; var = test == test2;", 5},
                 {"variable var: BOOLEAN; variable test: BOOLEAN; variable test2: BOOLEAN; test = true; test2 = false; var = test != test2;", 5},
+                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: NUMBER; test = var1 == var2;", 3},
+                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: STRING; test = var1 == var2;", 3},
+                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: NUMBER; test = var1 != var2;", 3},
+                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: STRING; test = var1 != var2;", 3}
         };
     }
 
@@ -1320,11 +1324,7 @@ public class TypeCheckingVisitorUnitTests {
                 {"variable test: BOOLEAN; test = \"hi\" != true;", 1},
                 {"variable test: BOOLEAN; test = \"hi\" != 1;", 1},
                 {"variable test: BOOLEAN; test = var1 == var2;", 1},
-                {"variable test: BOOLEAN; test = var1 != var2;", 1},
-                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: NUMBER; test = var1 == var2;", 3},
-                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: STRING; test = var1 == var2;", 3},
-                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: NUMBER; test = var1 != var2;", 3},
-                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: STRING; test = var1 != var2;", 3}
+                {"variable test: BOOLEAN; test = var1 != var2;", 1}
         };
     }
 
