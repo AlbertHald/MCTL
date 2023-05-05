@@ -22,9 +22,9 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(DecNode node) {
         MctlTypeDescriptor typeDescriptor = null;
 
-        if (node instanceof VarDecNode) { typeDescriptor = visit((VarDecNode) node); }
-        else if (node instanceof FuncDecNode) { typeDescriptor = visit((FuncDecNode) node); }
-        else if (node instanceof StructDecNode) { typeDescriptor = visit((StructDecNode) node); }
+        if (node instanceof VarDecNode varDecNode) { typeDescriptor = visit(varDecNode); }
+        else if (node instanceof FuncDecNode funcDecNode) { typeDescriptor = visit(funcDecNode); }
+        else if (node instanceof StructDecNode structDecNode) { typeDescriptor = visit(structDecNode); }
 
         return typeDescriptor;
     }
@@ -32,13 +32,13 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(StateNode node) {
         MctlTypeDescriptor typeDescriptor = null;
 
-        if (node instanceof IfStateNode) { typeDescriptor = visit((IfStateNode) node); }
-        else if (node instanceof AssStateNode) { typeDescriptor = visit((AssStateNode) node); }
-        else if (node instanceof FuncInvokeNode) { typeDescriptor = visit((FuncInvokeNode) node); }
-        else if (node instanceof InvokeNode) { typeDescriptor = visit((InvokeNode) node); }
-        else if (node instanceof RepeatStateNode) { typeDescriptor = visit((RepeatStateNode) node); }
-        else if (node instanceof ReturnNode) { typeDescriptor = visit((ReturnNode) node); }
-        else if (node instanceof StopNode) { typeDescriptor = visit((StopNode) node); }
+        if (node instanceof IfStateNode ifStateNode) { typeDescriptor = visit(ifStateNode); }
+        else if (node instanceof AssStateNode assStateNode) { typeDescriptor = visit(assStateNode); }
+        else if (node instanceof FuncInvokeNode funcInvokeNode) { typeDescriptor = visit(funcInvokeNode); }
+        else if (node instanceof InvokeNode invokeNode) { typeDescriptor = visit(invokeNode); }
+        else if (node instanceof RepeatStateNode repeatStateNode) { typeDescriptor = visit(repeatStateNode); }
+        else if (node instanceof ReturnNode returnNode) { typeDescriptor = visit(returnNode); }
+        else if (node instanceof StopNode stopNode) { typeDescriptor = visit(stopNode); }
 
         return typeDescriptor;
     }
@@ -49,7 +49,7 @@ public class TypeCheckingVisitor {
         for (ExpNode expNode : node.get_expChildren()) {
             MctlTypeDescriptor tempTypeDescriptor = visit(expNode);
             if (!tempTypeDescriptor.get_type_literal().equals("BOOLEAN")) {
-                _problemCollection.addProblem(
+                _problemCollection.addFormattedProblem(
                         ProblemType.ERROR_TYPE_MISMATCH,
                         "Expected type BOOLEAN but got: " + tempTypeDescriptor.get_type_literal(),
                         expNode.get_lineNumber()
@@ -66,7 +66,7 @@ public class TypeCheckingVisitor {
         String typeLiteral = visit(node.get_repeatExp()).get_type_literal();
 
         if (!(typeLiteral.equals("BOOLEAN") || typeLiteral.equals("NUMBER"))) {
-            _problemCollection.addProblem(
+            _problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
                     "Expected type BOOLEAN or NUMBER but got: " + typeLiteral,
                     node.get_lineNumber()
@@ -81,9 +81,9 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(InvokeNode node) {
         MctlTypeDescriptor typeDescriptor = null;
 
-        if (node instanceof StringMethodInvokeNode) { typeDescriptor = visit((StringMethodInvokeNode) node); }
-        else if (node instanceof VarMethodInvokeNode) { typeDescriptor = visit((VarMethodInvokeNode) node); }
-        else if (node instanceof FuncInvokeNode) { typeDescriptor = visit((FuncInvokeNode) node); }
+        if (node instanceof StringMethodInvokeNode stringMethodInvokeNode) { typeDescriptor = visit(stringMethodInvokeNode); }
+        else if (node instanceof VarMethodInvokeNode varMethodInvokeNode) { typeDescriptor = visit(varMethodInvokeNode); }
+        else if (node instanceof FuncInvokeNode funcInvokeNode) { typeDescriptor = visit(funcInvokeNode); }
 
 
         return typeDescriptor;
@@ -92,11 +92,11 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(TypeNode node) {
         MctlTypeDescriptor typeDescriptor = null;
 
-        if (node instanceof BoolTypeNode) { typeDescriptor = visit((BoolTypeNode) node); }
-        else if (node instanceof NumTypeNode) { typeDescriptor = visit((NumTypeNode) node); }
-        else if (node instanceof StringTypeNode) { typeDescriptor = visit((StringTypeNode) node); }
-        else if (node instanceof NothingTypeNode) { typeDescriptor = visit((NothingTypeNode) node); }
-        else if (node instanceof IDTypeNode) { typeDescriptor = visit((IDTypeNode) node); }
+        if (node instanceof BoolTypeNode boolTypeNode) { typeDescriptor = visit(boolTypeNode); }
+        else if (node instanceof NumTypeNode numTypeNode) { typeDescriptor = visit(numTypeNode); }
+        else if (node instanceof StringTypeNode stringTypeNode) { typeDescriptor = visit(stringTypeNode); }
+        else if (node instanceof NothingTypeNode nothingTypeNode) { typeDescriptor = visit(nothingTypeNode); }
+        else if (node instanceof IDTypeNode idTypeNode) { typeDescriptor = visit(idTypeNode); }
         return typeDescriptor;
     }
 
@@ -104,7 +104,7 @@ public class TypeCheckingVisitor {
         MctlTypeDescriptor typeDescriptor = _symbolTable.searchType(node.get_type());
 
         if (typeDescriptor == null) {
-            _problemCollection.addProblem(
+            _problemCollection.addFormattedProblem(
                     ProblemType.ERROR_UNKNOWN_TYPE,
                     "The type: " + node.get_type() + " has not been declared",
                     node.get_lineNumber()
@@ -132,7 +132,7 @@ public class TypeCheckingVisitor {
         String type2 = visit((ExpNode) node.get_children().get(1)).get_type_literal();
 
         if (!type1.equals(type2)) {
-            _problemCollection.addProblem(
+            _problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
                     "Expected both expressions to be of the same type, but got type: \"" + type1 + "\" and type: \"" + type2 + "\"",
                     node.get_lineNumber()
@@ -147,9 +147,9 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(IDExpNode node) {
         MctlTypeDescriptor typeDescriptor = null;
 
-        if (node instanceof IDArrayExpNode) { typeDescriptor = visit((IDArrayExpNode) node); }
-        else if (node instanceof IDStructNode) { typeDescriptor = visit((IDStructNode) node); }
-        else if (node instanceof ActualIDExpNode) { typeDescriptor = visit((ActualIDExpNode) node); }
+        if (node instanceof IDArrayExpNode idArrayExpNode) { typeDescriptor = visit(idArrayExpNode); }
+        else if (node instanceof IDStructNode idStructNode) { typeDescriptor = visit(idStructNode); }
+        else if (node instanceof ActualIDExpNode actualIDExpNode) { typeDescriptor = visit(actualIDExpNode); }
 
         return typeDescriptor;
     }
@@ -207,7 +207,7 @@ public class TypeCheckingVisitor {
             }
         }
         else {
-            _problemCollection.addProblem(
+            _problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
                     "The variable \"" + symbol.get_name() + "\" is not of the correct type",
                     node.get_lineNumber()
@@ -224,7 +224,7 @@ public class TypeCheckingVisitor {
         if (degree == 0) {
             accessorType = descriptor.getType();
         } else if (degree < 0) {
-            _problemCollection.addProblem(
+            _problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
                     "It is not possible to access the degree \"" + degree + "\" on the type \"" + descriptor.get_type_literal() + "\"",
                     lineNumber
@@ -255,7 +255,7 @@ public class TypeCheckingVisitor {
                     accessorType = accessorDescriptor.get_structsymbol(tempIDStructNode.get_accessor().get_contained_id());
                 } else {
                     // Happens if user is trying to access a struct on a type that is not a struct and so on
-                    _problemCollection.addProblem(
+                    _problemCollection.addFormattedProblem(
                             ProblemType.ERROR_TYPE_MISMATCH,
                             "The type \"" + accessorType.get_type_literal() + "\" cannot be accessed as a struct",
                             idExp.get_lineNumber()
@@ -268,7 +268,7 @@ public class TypeCheckingVisitor {
                     accessorType = getArrayType(accessorDescriptor, accessorDegree, idExp.get_lineNumber());
                 } else {
                     // Happens if user is trying to access an array type on a type that is not an array
-                    _problemCollection.addProblem(
+                    _problemCollection.addFormattedProblem(
                             ProblemType.ERROR_TYPE_MISMATCH,
                             "The type \"" + accessorType.get_type_literal() + "\" cannot be accessed using []",
                             idExp.get_lineNumber()
@@ -317,7 +317,7 @@ public class TypeCheckingVisitor {
             type = getStructDerivedType(structTypeDescriptor, node);
         }
         else {
-            _problemCollection.addProblem(
+            _problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
                     "The variable \"" + symbol.get_name() + "\" is not of the correct type",
                     node.get_lineNumber()
@@ -330,7 +330,7 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(ExpNode node) {
         MctlTypeDescriptor typeDescriptor = null;
 
-        if (node instanceof IDExpNode idExpNod) { typeDescriptor = visit(idExpNod); }
+        if (node instanceof IDExpNode idExpNode) { typeDescriptor = visit(idExpNode); }
         else if (node instanceof BinaryExpNode binaryExpNode) { typeDescriptor = visit(binaryExpNode); }
         else if (node instanceof BoolExpNode boolExpNode) { typeDescriptor = visit(boolExpNode); }
         else if (node instanceof InvokeExpNode invokeExpNode) { typeDescriptor = visit(invokeExpNode); }
@@ -348,14 +348,14 @@ public class TypeCheckingVisitor {
         if (newType.get_type_literal().equals(correctType)) {
             returnType = newType;
         } else if (previousType.get_type_literal().equals(newType.get_type_literal())) {
-            _problemCollection.addProblem(
+            _problemCollection.addFormattedProblem(
                     ProblemType.WARNING_REDUNDANT_TYPECAST,
                     "Typecasting the type \"" + previousType.get_type_literal() + "\" to the type \"" + newType.get_type_literal() + "\" is redundant",
                     lineNumber
             );
             returnType = newType;
         } else {
-            _problemCollection.addProblem(
+            _problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_CANNOT_BE_CAST,
                     "The type \"" + previousType.get_type_literal() + "\" cannot be cast to" + newType.get_type_literal(),
                     lineNumber
@@ -377,7 +377,7 @@ public class TypeCheckingVisitor {
             case "NUMBER", "BOOLEAN" ->
                     returnType = getTypecastResult(newType, previousType, "STRING", node.get_lineNumber());
             default ->
-                    _problemCollection.addProblem(
+                    _problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_CANNOT_BE_CAST,
                     "The struct type \"" + previousType.get_type_literal() + "\" cannot be cast",
                     node.get_lineNumber()
@@ -398,14 +398,14 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(OrExpNode node) { return expectsType(node, "BOOLEAN"); }
 
 
-    public MctlTypeDescriptor visit(BoolTypeNode node) { return _symbolTable.searchType("BOOLEAN"); }
-    public MctlTypeDescriptor visit(NumTypeNode node) { return _symbolTable.searchType("NUMBER"); }
-    public MctlTypeDescriptor visit(StringTypeNode node) { return _symbolTable.searchType("STRING"); }
-    public MctlTypeDescriptor visit(NothingTypeNode node) { return _symbolTable.searchType("NOTHING"); }
+    public MctlTypeDescriptor visit(BoolTypeNode node) { return _symbolTable.searchType("BOOLEAN"); } // TODO: Return array descriptors if necessary
+    public MctlTypeDescriptor visit(NumTypeNode node) { return _symbolTable.searchType("NUMBER"); } // TODO: Return array descriptors if necessary
+    public MctlTypeDescriptor visit(StringTypeNode node) { return _symbolTable.searchType("STRING"); } // TODO: Return array descriptors if necessary
+    public MctlTypeDescriptor visit(NothingTypeNode node) { return _symbolTable.searchType("NOTHING"); } // TODO: Return array descriptors if necessary
     public MctlTypeDescriptor visit(BoolExpNode node) { return _symbolTable.searchType("BOOLEAN"); }
     public MctlTypeDescriptor visit(NumExpNode node) { return _symbolTable.searchType("NUMBER"); }
     public MctlTypeDescriptor visit(StringExpNode node) { return _symbolTable.searchType("STRING"); }
-    public MctlTypeDescriptor visit(UnaryExpNode node) { return visit(node.get_unaryExp()); }
+    public MctlTypeDescriptor visit(UnaryExpNode node) { return visit(node.get_unaryExp()); } // TODO: Implement type checking here
     public MctlTypeDescriptor visit(ReturnNode node) { return visit(node.get_returnExp()); }
 
     public MctlTypeDescriptor visit(MctlNode node) { return null; }
@@ -428,7 +428,7 @@ public class TypeCheckingVisitor {
         String typeChildTwo = visit((ExpNode) node.get_children().get(1)).get_type_literal();
 
         if (!typeChildOne.equals(typeLiteral)) {
-            _problemCollection.addProblem(
+            _problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
                     "Expected type \"" + typeLiteral + "\" but got \"" + typeChildOne + "\"",
                     node.get_lineNumber()
@@ -436,7 +436,7 @@ public class TypeCheckingVisitor {
         }
 
         if (!typeChildTwo.equals(typeLiteral)) {
-            _problemCollection.addProblem(
+            _problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
                     "Expected type \"" + typeLiteral + "\" but got \"" + typeChildTwo + "\"",
                     node.get_lineNumber()

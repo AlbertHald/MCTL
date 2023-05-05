@@ -40,4 +40,33 @@ public class ProblemCollection {
 
         if (type.getProblemString().startsWith("E") && !hasErrors) hasErrors = true;
     }
+
+    /*
+     * Method for creatingProblemMessages
+     */
+    public final int totalCharacters = 60;
+    final String startDelimChar = "=";
+    final String lineDelim = "---- line ----";
+
+    public void addFormattedProblem(ProblemType type, String message, int line) {
+        // Format message string
+        String problemMessage = String.format("%s\n%s\n%s\nLine: %o", createProblemTitle(type.toString(), totalCharacters), message, lineDelim, line);
+
+        problems.add(new Problem(type, problemMessage, line, 0, 0));
+
+        if (type.getProblemString().startsWith("E") && !hasErrors) hasErrors = true;
+    }
+
+    public String createProblemTitle(String title, int totalCharacters) {
+        // Format the padding strings
+        int padding = totalCharacters - title.length();
+        int leftPaddingNumber = Math.ceilDiv(padding, 2);
+        int rightPaddingNumber = Math.floorDiv(padding, 2);
+
+        String leftPadding = startDelimChar.repeat(leftPaddingNumber);
+        String rightPadding = startDelimChar.repeat(rightPaddingNumber);
+
+        // Format message string
+        return String.format("%s %s %s", leftPadding, title, rightPadding);
+    }
 }

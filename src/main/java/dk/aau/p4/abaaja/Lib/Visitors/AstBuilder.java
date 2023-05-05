@@ -19,7 +19,7 @@ public class AstBuilder extends mctlBaseVisitor<BaseNode> {
     }
 
     private void addProblem(ParserRuleContext ctx, String message) {
-        problemCollection.addProblem(ProblemType.ERROR_AST_BUILDER,
+        problemCollection.addFormattedProblem(ProblemType.ERROR_AST_BUILDER,
                 !message.equals("") ? message : "The AST builder encountered an unexpected error at line: " + ctx.getStart().getLine(),
                 ctx.getStart().getLine());
     }

@@ -60,7 +60,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
                 // Check if the type exists
                 if (typeDescriptor == null) {
-                    problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_varDecType().get_type() + "\" is unknown", node.get_lineNumber());
+                    problemCollection.addFormattedProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_varDecType().get_type() + "\" is unknown", node.get_lineNumber());
                 } else {
                     mctlStructDescriptor.add_structVariables(node.get_id(), typeDescriptor);
                 }
@@ -119,14 +119,14 @@ public class SymbolTableVisitor implements INodeVisitor {
         MctlTypeDescriptor typeDescriptor;
 
         if (visitorTools.isDeclared(node.get_id())) {
-            problemCollection.addProblem(ProblemType.ERROR_IDENTIFIER_CANNOT_BE_REUSED, "The identifier \"" + node.get_id() + "\" cannot be redeclared", node.get_lineNumber());
+            problemCollection.addFormattedProblem(ProblemType.ERROR_IDENTIFIER_CANNOT_BE_REUSED, "The identifier \"" + node.get_id() + "\" cannot be redeclared", node.get_lineNumber());
         } else {
             typeDescriptor = visitorTools.getTypeDescriptor(node.get_varDecType());
             if (typeDescriptor != null) {
                 Symbol symbol = new Symbol(node.get_id(), typeDescriptor);
                 this.symbolTable.insertSymbol(symbol);
             } else {
-                problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_varDecType().get_type() + "\" does not exist", node.get_lineNumber());
+                problemCollection.addFormattedProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_varDecType().get_type() + "\" does not exist", node.get_lineNumber());
             }
 
         }
@@ -146,7 +146,7 @@ public class SymbolTableVisitor implements INodeVisitor {
                 Symbol paramSymbol = new Symbol(formalParam.get_id());
                 MctlTypeDescriptor tempType = visitorTools.getTypeDescriptor(formalParam.get_type());
                 if (tempType == null) {
-                    problemCollection.addProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + formalParam.get_type().get_type() + "\" is unknown", node.get_lineNumber());
+                    problemCollection.addFormattedProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + formalParam.get_type().get_type() + "\" is unknown", node.get_lineNumber());
                 } else {
                     paramSymbol.set_type(tempType);
                 }
@@ -176,7 +176,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
             // Check expression type
             if (!typeDescriptor.get_type_literal().equals("BOOLEAN")) {
-                problemCollection.addProblem(
+                problemCollection.addFormattedProblem(
                         ProblemType.ERROR_TYPE_MISMATCH,
                         "Expected type \"BOOLEAN\" but got \"" + typeDescriptor.get_type_literal() + "\"",
                         expressionNode.get_lineNumber()
@@ -190,7 +190,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
         // Check expression type
         if (!(typeDescriptor.get_type_literal().equals("BOOLEAN") || typeDescriptor.get_type_literal().equals("NUMBER"))) {
-            problemCollection.addProblem(
+            problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
                     "Expected type \"NUMBER\" or \"BOOLEAN\" but got \"" + typeDescriptor.get_type_literal() + "\"",
                     node.get_lineNumber()
@@ -214,13 +214,13 @@ public class SymbolTableVisitor implements INodeVisitor {
         }
 
         if (idTypeDescriptor == null) {
-            problemCollection.addProblem(
+            problemCollection.addFormattedProblem(
                     ProblemType.ERROR_UNDEFINED_IDENTIFIER,
                     "The variable \"" + actualIDNode.get_id() + "\" has not yet been declared",
                     node.get_lineNumber()
             );
         } else if (expTypeDescriptor == null) {
-            problemCollection.addProblem(
+            problemCollection.addFormattedProblem(
                     ProblemType.ERROR_UNDEFINED_IDENTIFIER,
                     "The variable \"" + actualIDNode.get_id() + "\" cannot be assigned to an expression containing undeclared variables",
                     node.get_lineNumber()
@@ -229,7 +229,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             variable = symbolTable.searchSymbol(actualIDNode.get_id());
 
             if (variable == null) {
-                problemCollection.addProblem(
+                problemCollection.addFormattedProblem(
                         ProblemType.ERROR_UNDEFINED_IDENTIFIER,
                         "The variable \"" + actualIDNode.get_id() + "\" has not yet been declared",
                         node.get_lineNumber()
@@ -238,7 +238,7 @@ public class SymbolTableVisitor implements INodeVisitor {
                 variable.set_isInstantiated(true);
                 idTypeDescriptor = typeCheckingVisitor.visit(node.get_assignId());
                 if (!(idTypeDescriptor.get_type_literal().equals(expTypeDescriptor.get_type_literal()))) {
-                    problemCollection.addProblem(
+                    problemCollection.addFormattedProblem(
                             ProblemType.ERROR_TYPE_MISMATCH,
                             "Expected " + idTypeDescriptor.get_type_literal() + " but got " + expTypeDescriptor.get_type_literal(),
                             node.get_lineNumber()
@@ -290,7 +290,7 @@ public class SymbolTableVisitor implements INodeVisitor {
                     typeLiterals.append("\"").append(typeDescriptor.get_type_literal()).append("\", ");
                 }
 
-                problemCollection.addProblem(
+                problemCollection.addFormattedProblem(
                         ProblemType.ERROR_TYPE_MISMATCH,
                         "Expected one of the following types " + typeLiterals + " for parameter " + counter + " but got \"" + expressionType.get_type_literal() + "\"",
                         lineNumber
@@ -306,14 +306,14 @@ public class SymbolTableVisitor implements INodeVisitor {
 
         if (symbol == null) {
             // Function has not been declared
-            problemCollection.addProblem(
+            problemCollection.addFormattedProblem(
                     ProblemType.ERROR_UNDEFINED_IDENTIFIER,
                     "The function \"" + node.get_id().get_id() + "\" has not yet been declared",
                     node.get_lineNumber()
             );
         } else if (!(symbol instanceof FuncSymbol)) {
             // ID refers to variable
-            problemCollection.addProblem(
+            problemCollection.addFormattedProblem(
                     ProblemType.ERROR_ID_NOT_FUNCTION,
                     "The ID \"" + node.get_id().get_id() + "\" refers to a variable and can therefore not be invoked",
                     node.get_lineNumber()
@@ -323,14 +323,14 @@ public class SymbolTableVisitor implements INodeVisitor {
             FuncSymbol funcSymbol = (FuncSymbol) symbol;
             if (funcSymbol.getIsStringFunction() || funcSymbol.getIsVarFunction()) {
                 // Function should be called on string or var
-                problemCollection.addProblem(
+                problemCollection.addFormattedProblem(
                         ProblemType.ERROR_UTILITY_FUNCTION_INVOKED_IN_WRONG_CONTEXT,
                         "The function \"" + node.get_id().get_id() + "\" is called in the wrong context",
                         node.get_lineNumber()
                 );
             } else if ((funcSymbol.get_types().size() == 0 && node.get_paramExps().size() != 0) || funcSymbol.get_types().size() != node.get_paramExps().size()) {
                 // Number of parameters does not match
-                problemCollection.addProblem(
+                problemCollection.addFormattedProblem(
                         ProblemType.ERROR_PARAMETERS_DOES_NOT_MATCH,
                         "The provided number of parameters: " + node.get_paramExps().size() + " does not match the expected: " + funcSymbol.get_types().size() + " parameters",
                         node.get_lineNumber()
@@ -348,14 +348,14 @@ public class SymbolTableVisitor implements INodeVisitor {
 
         if (symbol == null) {
             // Function does not exist
-            problemCollection.addProblem(
+            problemCollection.addFormattedProblem(
                     ProblemType.ERROR_UNDEFINED_IDENTIFIER,
                     "The function \"" + node.get_id().get_id() + "\" doesnt exist",
                     node.get_lineNumber()
             );
         } else if (!(symbol instanceof FuncSymbol)) {
             // ID refers to variable
-            problemCollection.addProblem(
+            problemCollection.addFormattedProblem(
                     ProblemType.ERROR_ID_NOT_FUNCTION,
                     "The ID \"" + node.get_id().get_id() + "\" refers to a variable and can therefore not be invoked",
                     node.get_lineNumber()
@@ -386,28 +386,28 @@ public class SymbolTableVisitor implements INodeVisitor {
 
             if (!funcSymbol.getIsVarFunction() ) {
                 // Function should be called on var
-                problemCollection.addProblem(
+                problemCollection.addFormattedProblem(
                         ProblemType.ERROR_UTILITY_FUNCTION_INVOKED_IN_WRONG_CONTEXT,
                         "The function \"" + node.get_id().get_id() + "\" cannot be called on variables",
                         node.get_lineNumber()
                 );
             } else if (notDeclared) {
                 // Variable has not been declared
-                problemCollection.addProblem(
+                problemCollection.addFormattedProblem(
                         ProblemType.ERROR_UNDEFINED_IDENTIFIER,
                         "The function \"" + node.get_id().get_id() + "\" cannot be called on undeclared variables",
                         node.get_lineNumber()
                 );
             } else if (!typesMatch) {
                 // Type is not the expected
-                problemCollection.addProblem(
+                problemCollection.addFormattedProblem(
                         ProblemType.ERROR_TYPE_MISMATCH,
                         "Unsupported variable type \"" + varType.get_type_literal() + "\" for function " + node.get_id().get_id(),
                         node.get_lineNumber()
                 );
             } else if ((funcSymbol.get_types().size() == 0 && node.get_paramExps().size() != 0) || funcSymbol.get_types().size() != node.get_paramExps().size()) {
                 // Number of parameters does not match
-                problemCollection.addProblem(
+                problemCollection.addFormattedProblem(
                         ProblemType.ERROR_PARAMETERS_DOES_NOT_MATCH,
                         "The provided number of parameters: " + node.get_paramExps().size() + " does not match the expected: " + funcSymbol.get_types().size() + " parameters",
                         node.get_lineNumber()
@@ -425,14 +425,14 @@ public class SymbolTableVisitor implements INodeVisitor {
 
         if (symbol == null) {
             // Function does not exist
-            problemCollection.addProblem(
+            problemCollection.addFormattedProblem(
                     ProblemType.ERROR_UNDEFINED_IDENTIFIER,
                     "The function \"" + node.get_id().get_id() + "\" doesnt exist",
                     node.get_lineNumber()
             );
         } else if (!(symbol instanceof FuncSymbol)) {
             // ID refers to variable
-            problemCollection.addProblem(
+            problemCollection.addFormattedProblem(
                     ProblemType.ERROR_ID_NOT_FUNCTION,
                     "The ID \"" + node.get_id().get_id() + "\" refers to a variable and can therefore not be invoked",
                     node.get_lineNumber()
@@ -442,7 +442,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             FuncSymbol funcSymbol = (FuncSymbol) symbol;
             if (!funcSymbol.getIsStringFunction()) {
                 // Function should be called on string
-                problemCollection.addProblem(
+                problemCollection.addFormattedProblem(
                         ProblemType.ERROR_UTILITY_FUNCTION_INVOKED_IN_WRONG_CONTEXT,
                         "The function \"" + node.get_id().get_id() + "\" cannot be called on type STRING",
                         node.get_lineNumber()
@@ -450,7 +450,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             }
             else if ((funcSymbol.get_types().size() == 0 && node.get_paramExps().size() != 0) || funcSymbol.get_types().size() != node.get_paramExps().size()) {
                 // Number of parameters does not match
-                problemCollection.addProblem(
+                problemCollection.addFormattedProblem(
                         ProblemType.ERROR_PARAMETERS_DOES_NOT_MATCH,
                         "The provided number of parameters: " + node.get_paramExps().size() + " does not match the expected: " + funcSymbol.get_types().size() + " parameters",
                         node.get_lineNumber()
@@ -469,7 +469,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
         // Check if the return node is within a function scope
         if (scope == null) {
-            problemCollection.addProblem(ProblemType.ERROR_UNEXPECTED_RETURN,
+            problemCollection.addFormattedProblem(ProblemType.ERROR_UNEXPECTED_RETURN,
                     "Encountered an unexpected \"return\" statement. \"return\" statements can only be defined within a function",
                     node.get_lineNumber()
             );
@@ -481,7 +481,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
             // Check if return node expression is of the correct type
             if (!returnNodeType.get_type_literal().equals(scope.get_returnType().get_type_literal())) {
-                problemCollection.addProblem(
+                problemCollection.addFormattedProblem(
                         ProblemType.ERROR_TYPE_MISMATCH,
                         "The return type should be of type \"" + scope.get_returnType().get_type_literal() + "\" but the expression resolves to the type \"" + returnNodeType.get_type_literal() + "\"",
                         node.get_lineNumber()
@@ -491,7 +491,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             MctlTypeDescriptor returnNodeType = typeCheckingVisitor.visit(node.get_returnExp());
 
             // The return node should return a type but does not.
-            problemCollection.addProblem(
+            problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
                     "The return type should be of type \"" + scope.get_returnType().get_type_literal() + "\" but is \"NOTHING\"",
                     node.get_lineNumber()
@@ -501,7 +501,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             MctlTypeDescriptor returnNodeType = typeCheckingVisitor.visit(node.get_returnExp());
 
             // The return node should return a type but does not.
-            problemCollection.addProblem(
+            problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
                     "The return type should be of type \"" + scope.get_returnType().get_type_literal() + "\" but is \"" + returnNodeType.get_type_literal() + "\"",
                     node.get_lineNumber()
@@ -516,7 +516,7 @@ public class SymbolTableVisitor implements INodeVisitor {
     public void visit(StopNode node) {
         // If the current scope is not a repeat statement an error should be created
         if (symbolTable.searchScopeName("repeat") == null) {
-            problemCollection.addProblem(ProblemType.ERROR_UNEXPECTED_STOP,
+            problemCollection.addFormattedProblem(ProblemType.ERROR_UNEXPECTED_STOP,
                     "Encountered an unexpected \"stop\" statement. Only repeat statements can contain \"stop\" nodes",
                     node.get_lineNumber()
             );
