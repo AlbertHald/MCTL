@@ -330,14 +330,14 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(ExpNode node) {
         MctlTypeDescriptor typeDescriptor = null;
 
-        if (node instanceof IDExpNode) { typeDescriptor = visit((IDExpNode) node); }
-        else if (node instanceof BinaryExpNode) { typeDescriptor = visit((BinaryExpNode) node); }
-        else if (node instanceof BoolExpNode) { typeDescriptor = visit((BoolExpNode) node); }
-        else if (node instanceof InvokeExpNode) { typeDescriptor = visit((InvokeExpNode) node); }
-        else if (node instanceof NumExpNode) { typeDescriptor = visit((NumExpNode) node); }
-        else if (node instanceof StringExpNode) { typeDescriptor = visit((StringExpNode) node); }
-        else if (node instanceof TypecastExpNode) { typeDescriptor = visit((TypecastExpNode) node); }
-        else if (node instanceof UnaryExpNode) { typeDescriptor = visit((UnaryExpNode) node); }
+        if (node instanceof IDExpNode idExpNod) { typeDescriptor = visit(idExpNod); }
+        else if (node instanceof BinaryExpNode binaryExpNode) { typeDescriptor = visit(binaryExpNode); }
+        else if (node instanceof BoolExpNode boolExpNode) { typeDescriptor = visit(boolExpNode); }
+        else if (node instanceof InvokeExpNode invokeExpNode) { typeDescriptor = visit(invokeExpNode); }
+        else if (node instanceof NumExpNode numExpNode) { typeDescriptor = visit(numExpNode); }
+        else if (node instanceof StringExpNode stringExpNode) { typeDescriptor = visit(stringExpNode); }
+        else if (node instanceof TypecastExpNode typecastExpNode) { typeDescriptor = visit(typecastExpNode); }
+        else if (node instanceof UnaryExpNode unaryExpNode) { typeDescriptor = visit(unaryExpNode); }
 
         return typeDescriptor;
     }
@@ -347,7 +347,7 @@ public class TypeCheckingVisitor {
 
         if (newType.get_type_literal().equals(correctType)) {
             returnType = newType;
-        } else if (previousType.get_type_literal().equals(previousType.get_type_literal())) {
+        } else if (previousType.get_type_literal().equals(newType.get_type_literal())) {
             _problemCollection.addProblem(
                     ProblemType.WARNING_REDUNDANT_TYPECAST,
                     "Typecasting the type \"" + previousType.get_type_literal() + "\" to the type \"" + newType.get_type_literal() + "\" is redundant",
