@@ -177,9 +177,9 @@ public class TypeCheckingVisitor {
             int accessorDegree = arrayTypeDescriptor.getDegree() - arrayDegree;
 
             // The contained type is a struct type
-            if (arrayTypeDescriptor.getType() instanceof MctlStructDescriptor) {
+            if (arrayTypeDescriptor.getType() instanceof MctlStructDescriptor && tempIdNode instanceof  IDStructNode idStructNode) {
                 // Struct Type
-                MctlTypeDescriptor descriptor = getStructDerivedType(arrayTypeDescriptor, (IDStructNode) tempIdNode);
+                MctlTypeDescriptor descriptor = getStructDerivedType(arrayTypeDescriptor, idStructNode);
 
                 if (descriptor instanceof MctlArrayTypeDescriptor arrayDescriptor) {
                     accessorDegree = arrayDescriptor.getDegree() - arrayDegree;
@@ -188,15 +188,28 @@ public class TypeCheckingVisitor {
                     accessorArrayTypeDescriptor = getArrayType(arrayDescriptor, accessorDegree, node.get_lineNumber());
                 }
             }
+            else if (arrayTypeDescriptor.getType() instanceof MctlStructDescriptor && tempIdNode instanceof  ActualIDExpNode actualIDExpNode) {
+                accessorDegree = arrayTypeDescriptor.getDegree() - arrayDegree;
+
+                // The type referred to is a primitive type
+                accessorArrayTypeDescriptor = getArrayType(arrayTypeDescriptor, accessorDegree, node.get_lineNumber());
+            }
             else {
                 // The type referred to is a primitive type
                 accessorArrayTypeDescriptor = getArrayType(arrayTypeDescriptor, accessorDegree, node.get_lineNumber());
             }
         }
         else if (symbol.get_type() instanceof MctlStructDescriptor structTypeDescriptor) {
-            MctlTypeDescriptor derivedType = getStructDerivedType(structTypeDescriptor, (IDStructNode) node.get_idNode());
+            MctlTypeDescriptor derivedType = getStructDerivedType(structTypeDescriptor, (IDStructNode) tempIdNode);
 
-            if (derivedType instanceof MctlArrayTypeDescriptor derivedArrayType) {
+            if (arrayDegree > 0 && !(derivedType instanceof MctlArrayTypeDescriptor)) {
+                _problemCollection.addFormattedProblem(
+                        ProblemType.ERROR_TYPE_MISMATCH,
+                        "The type \"" + derivedType.get_type_literal() + "\" cannot be accessed in array degree: " + arrayDegree,
+                        node.get_lineNumber()
+                );
+                return _symbolTable.searchType("NOTHING");
+            } else if (arrayDegree > 0 && derivedType instanceof MctlArrayTypeDescriptor derivedArrayType) {
                 // Calculating the accessory array degree
                 int accessorDegree = derivedArrayType.getDegree() - arrayDegree;
 
