@@ -55,7 +55,7 @@ public class TypeCheckingVisitor {
                         expNode.get_lineNumber()
                 );
 
-                typeDescriptor = null;
+                typeDescriptor = _symbolTable.searchType("NOTHING");
             }
         }
 
@@ -138,7 +138,7 @@ public class TypeCheckingVisitor {
                     node.get_lineNumber()
             );
 
-            return null;
+            return _symbolTable.searchType("NOTHING");
         }
 
         return _symbolTable.searchType("BOOLEAN");
@@ -389,7 +389,7 @@ public class TypeCheckingVisitor {
 
     public MctlTypeDescriptor visit(CompExpNode node) {
         MctlTypeDescriptor typeDescriptor = expectsType(node, "NUMBER");
-        return (typeDescriptor.get_type_literal().equals("NUMBER") ? _symbolTable.searchType("BOOLEAN") : null);
+        return (typeDescriptor.get_type_literal().equals("NUMBER") ? _symbolTable.searchType("BOOLEAN") : typeDescriptor);
     }
 
     public MctlTypeDescriptor visit(MulExpNode node) { return expectsType(node, "NUMBER"); }
@@ -397,11 +397,11 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(AndExpNode node) { return expectsType(node, "BOOLEAN"); }
     public MctlTypeDescriptor visit(OrExpNode node) { return expectsType(node, "BOOLEAN"); }
 
-
     public MctlTypeDescriptor visit(BoolTypeNode node) { return _symbolTable.searchType("BOOLEAN"); } // TODO: Return array descriptors if necessary
     public MctlTypeDescriptor visit(NumTypeNode node) { return _symbolTable.searchType("NUMBER"); } // TODO: Return array descriptors if necessary
     public MctlTypeDescriptor visit(StringTypeNode node) { return _symbolTable.searchType("STRING"); } // TODO: Return array descriptors if necessary
     public MctlTypeDescriptor visit(NothingTypeNode node) { return _symbolTable.searchType("NOTHING"); } // TODO: Return array descriptors if necessary
+
     public MctlTypeDescriptor visit(BoolExpNode node) { return _symbolTable.searchType("BOOLEAN"); }
     public MctlTypeDescriptor visit(NumExpNode node) { return _symbolTable.searchType("NUMBER"); }
     public MctlTypeDescriptor visit(StringExpNode node) { return _symbolTable.searchType("STRING"); }
@@ -444,7 +444,7 @@ public class TypeCheckingVisitor {
         }
 
         if (!(typeChildOne.equals(typeLiteral) && typeChildTwo.equals(typeLiteral))) {
-            return null;
+            return _symbolTable.searchType("NOTHING");
         }
 
         return _symbolTable.searchType(typeLiteral);
