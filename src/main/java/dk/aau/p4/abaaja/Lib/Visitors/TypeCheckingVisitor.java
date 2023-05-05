@@ -6,6 +6,7 @@ import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.*;
+import dk.aau.p4.abaaja.mctlParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,6 +110,8 @@ public class TypeCheckingVisitor {
                     "The type: " + node.get_type() + " has not been declared",
                     node.get_lineNumber()
             );
+        } else if (node.get_arrayDegree() != 0) {
+            typeDescriptor = new MctlArrayTypeDescriptor(typeDescriptor, node.get_arrayDegree());
         }
 
         return typeDescriptor;
@@ -398,14 +401,59 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(OrExpNode node) { return expectsType(node, "BOOLEAN"); }
 
 
-    public MctlTypeDescriptor visit(BoolTypeNode node) { return _symbolTable.searchType("BOOLEAN"); } // TODO: Return array descriptors if necessary
-    public MctlTypeDescriptor visit(NumTypeNode node) { return _symbolTable.searchType("NUMBER"); } // TODO: Return array descriptors if necessary
-    public MctlTypeDescriptor visit(StringTypeNode node) { return _symbolTable.searchType("STRING"); } // TODO: Return array descriptors if necessary
-    public MctlTypeDescriptor visit(NothingTypeNode node) { return _symbolTable.searchType("NOTHING"); } // TODO: Return array descriptors if necessary
+    private MctlTypeDescriptor getPrimitiveType(TypeNode node, MctlTypeDescriptor type) {
+        MctlTypeDescriptor typeDescriptor;
+
+        // Check if the type is an array
+        if (node.get_arrayDegree() > 0) {
+            typeDescriptor = new MctlArrayTypeDescriptor(type, node.get_arrayDegree());
+        } else {
+            typeDescriptor = type;
+        }
+
+        return typeDescriptor;
+    }
+
+    public MctlTypeDescriptor visit(BoolTypeNode node) {
+        MctlTypeDescriptor typeDescriptor = _symbolTable.searchType("BOOLEAN");
+        return getPrimitiveType(node, typeDescriptor);
+    }
+    public MctlTypeDescriptor visit(NumTypeNode node) {
+        MctlTypeDescriptor typeDescriptor = _symbolTable.searchType("NUMBER");
+        return getPrimitiveType(node, typeDescriptor);
+    }
+    public MctlTypeDescriptor visit(StringTypeNode node) {
+        MctlTypeDescriptor typeDescriptor = _symbolTable.searchType("STRING");
+        return getPrimitiveType(node, typeDescriptor);
+    }
+    public MctlTypeDescriptor visit(NothingTypeNode node) { return _symbolTable.searchType("NOTHING"); }
+
+
     public MctlTypeDescriptor visit(BoolExpNode node) { return _symbolTable.searchType("BOOLEAN"); }
     public MctlTypeDescriptor visit(NumExpNode node) { return _symbolTable.searchType("NUMBER"); }
     public MctlTypeDescriptor visit(StringExpNode node) { return _symbolTable.searchType("STRING"); }
-    public MctlTypeDescriptor visit(UnaryExpNode node) { return visit(node.get_unaryExp()); } // TODO: Implement type checking here
+    public MctlTypeDescriptor visit(UnaryExpNode node) {
+        MctlTypeDescriptor descriptor = visit(node.get_unaryExp());
+
+        if (node.get_operator() == mctlParser.NOT && !(descriptor instanceof MctlBooleanDescriptor)) {
+            _problemCollection.addFormattedProblem(
+                    ProblemType.ERROR_TYPE_MISMATCH,
+                    "The unary operator \"!\" can only be used on expressions of type \"BOOLEAN\" but got \"" + descriptor.get_type_literal() + "\"",
+                    node.get_lineNumber()
+            );
+            descriptor = _symbolTable.searchType("NOTHING");
+        } else if ((node.get_operator() == mctlParser.PLUS || node.get_operator() == mctlParser.MINUS) &&
+                !(descriptor instanceof  MctlNumberDescriptor)) {
+            _problemCollection.addFormattedProblem(
+                    ProblemType.ERROR_TYPE_MISMATCH,
+                    "The unary operator \"" + (node.get_operator() == mctlParser.PLUS ? "+" : "-") + "\" can only be used on expressions of type \"NUMBER\" but got \"" + descriptor.get_type_literal() + "\"",
+                    node.get_lineNumber()
+            );
+            descriptor = _symbolTable.searchType("NOTHING");
+        }
+
+        return descriptor;
+    }
     public MctlTypeDescriptor visit(ReturnNode node) { return visit(node.get_returnExp()); }
 
     public MctlTypeDescriptor visit(MctlNode node) { return null; }

@@ -17,11 +17,13 @@ public class InitialFuncVisitor implements INodeVisitor {
     private ProblemCollection _problemCollection;
     private SymbolTable _symbolTable;
     private VisitorTools _visitorTools;
+    private TypeCheckingVisitor _typeCheckingVisitor;
 
     public InitialFuncVisitor(ProblemCollection problemCollection, SymbolTable symbolTable) {
         this._problemCollection = problemCollection;
         this._symbolTable = symbolTable;
         this._visitorTools = new VisitorTools(symbolTable);
+        this._typeCheckingVisitor = new TypeCheckingVisitor(_problemCollection, _symbolTable);
     }
 
     private void visitChildren(List<BaseNode> nodes) {
@@ -61,7 +63,7 @@ public class InitialFuncVisitor implements INodeVisitor {
 
             // Create parameter symbols
             for (FormalParamNode formalParam : node.get_paramList()) {
-                MctlTypeDescriptor typeDescriptor = _visitorTools.getTypeDescriptor(formalParam.get_type());
+                MctlTypeDescriptor typeDescriptor = _typeCheckingVisitor.visit(formalParam.get_type());
 
                 if (typeDescriptor != null) {
                     // Adding parameter to functionSymbol

@@ -591,17 +591,17 @@ public class TypeCheckingVisitorUnitTests {
     public Object[][] visitTypeTestData() {
         return new Object[][] {
                 {"variable x: STRING; variable test: STRING;", "STRING"},
-                {"variable x: STRING; variable test: STRING[];", "STRING"},
-                {"variable x: STRING; variable test: STRING[][];", "STRING"},
+                {"variable x: STRING; variable test: STRING[];", "STRING[]"},
+                {"variable x: STRING; variable test: STRING[][];", "STRING[][]"},
                 {"variable x: STRING; variable test: NUMBER;", "NUMBER"},
-                {"variable x: STRING; variable test: NUMBER[];", "NUMBER"},
-                {"variable x: STRING; variable test: NUMBER[][];", "NUMBER"},
+                {"variable x: STRING; variable test: NUMBER[];", "NUMBER[]"},
+                {"variable x: STRING; variable test: NUMBER[][];", "NUMBER[][]"},
                 {"variable x: STRING; variable test: BOOLEAN;", "BOOLEAN"},
-                {"variable x: STRING; variable test: BOOLEAN[];", "BOOLEAN"},
-                {"variable x: STRING; variable test: BOOLEAN[][];", "BOOLEAN"},
+                {"variable x: STRING; variable test: BOOLEAN[];", "BOOLEAN[]"},
+                {"variable x: STRING; variable test: BOOLEAN[][];", "BOOLEAN[][]"},
                 {"struct STRUCTURE { variable x: NUMBER }; variable test: STRUCTURE;", "STRUCTURE"},
-                {"struct testStructId { variable x: NUMBER }; variable test: testStructId[];", "testStructId"},
-                {"struct struct_test_id { variable x: NUMBER }; variable test: struct_test_id[][];", "struct_test_id"}
+                {"struct testStructId { variable x: NUMBER }; variable test: testStructId[];", "testStructId[]"},
+                {"struct struct_test_id { variable x: NUMBER }; variable test: struct_test_id[][];", "struct_test_id[][]"}
         };
     }
 
