@@ -148,7 +148,7 @@ public class TypeCheckingVisitor {
     }
 
     public MctlTypeDescriptor visit(IDExpNode node) {
-        MctlTypeDescriptor typeDescriptor = null;
+        MctlTypeDescriptor typeDescriptor = _symbolTable.searchType("NOTHING");
 
         if (node instanceof IDArrayExpNode idArrayExpNode) { typeDescriptor = visit(idArrayExpNode); }
         else if (node instanceof IDStructNode idStructNode) { typeDescriptor = visit(idStructNode); }
@@ -161,10 +161,8 @@ public class TypeCheckingVisitor {
         Symbol symbol = _symbolTable.searchSymbol(node.get_contained_id());
         MctlTypeDescriptor accessorArrayTypeDescriptor = _symbolTable.searchType("NOTHING");
 
-        if (symbol != null && !symbol.get_isInstantiated()) {
-            return _symbolTable.searchType("NOTHING");
-        } else if (symbol == null) {
-            return null;
+        if ((symbol != null && !symbol.get_isInstantiated()) || symbol == null) {
+            return accessorArrayTypeDescriptor;
         }
 
         // Counting array nodes
@@ -256,6 +254,16 @@ public class TypeCheckingVisitor {
             if (idExp instanceof IDStructNode tempIDStructNode) {
                 if (accessorType instanceof MctlStructDescriptor accessorDescriptor) {
                     accessorType = accessorDescriptor.get_structsymbol(tempIDStructNode.get_accessor().get_contained_id());
+
+                    // Trying to access a field that is not declared on the specific struct type
+                    if (accessorType == null) {
+                        _problemCollection.addFormattedProblem(
+                                ProblemType.ERROR_UNDEFINED_IDENTIFIER,
+                                "The type \"" + accessorDescriptor.get_type_literal() + "\" does not contain a field \"" + tempIDStructNode.get_accessor().get_contained_id() + "\"",
+                                tempIDStructNode.get_lineNumber()
+                        );
+                        return _symbolTable.searchType("NOTHING");
+                    }
                 } else {
                     // Happens if user is trying to access a struct on a type that is not a struct and so on
                     _problemCollection.addFormattedProblem(
@@ -263,6 +271,8 @@ public class TypeCheckingVisitor {
                             "The type \"" + accessorType.get_type_literal() + "\" cannot be accessed as a struct",
                             idExp.get_lineNumber()
                     );
+
+                    return _symbolTable.searchType("NOTHING");
                 }
             } else if (idExp instanceof IDArrayExpNode) {
                 if (accessorType instanceof MctlArrayTypeDescriptor accessorDescriptor) {
@@ -288,10 +298,8 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(ActualIDExpNode node) {
         Symbol symbol = _symbolTable.searchSymbol(node.get_id());
 
-        if (symbol != null && !symbol.get_isInstantiated()) {
+        if ((symbol != null && !symbol.get_isInstantiated()) || symbol == null) {
             return _symbolTable.searchType("NOTHING");
-        } else if (symbol == null) {
-            return null;
         }
 
         return symbol.get_type();
@@ -302,10 +310,8 @@ public class TypeCheckingVisitor {
         MctlTypeDescriptor type;
 
         // Return if the variable has not yet been instantiated
-        if (symbol != null && !symbol.get_isInstantiated()) {
+        if ((symbol != null && !symbol.get_isInstantiated()) || symbol == null) {
             return _symbolTable.searchType("NOTHING");
-        } else if (symbol == null) {
-            return null;
         }
 
         type = symbol.get_type();
