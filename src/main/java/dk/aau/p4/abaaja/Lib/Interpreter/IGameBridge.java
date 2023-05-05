@@ -27,7 +27,4 @@ public interface IGameBridge {
     String blockAbove();
     String blockUnder();
 
-
-
-
 }

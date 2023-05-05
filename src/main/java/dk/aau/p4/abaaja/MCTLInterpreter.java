@@ -1,7 +1,7 @@
 package dk.aau.p4.abaaja;
 
 // Antlr imports
-import com.sun.source.tree.NewArrayTree;
+import dk.aau.p4.abaaja.Lib.Interpreter.IGameBridge;
 import dk.aau.p4.abaaja.Lib.Interpreter.Interpreter;
 import dk.aau.p4.abaaja.Lib.Interpreter.TextGameBridge;
 import dk.aau.p4.abaaja.Lib.Nodes.MctlNode;
@@ -20,8 +20,15 @@ import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.Listeners.LexerProblemListener;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.Listeners.ParserProblemListener;
 
-public class MCTL {
-    MCTL (CharStream inputStream){
+public class MCTLInterpreter {
+
+    IGameBridge gameBridge;
+    public MCTLInterpreter(IGameBridge _gameBridge){
+        gameBridge = _gameBridge;
+    }
+
+
+    public void run(CharStream inputStream){
         // Initialize the problem collection
         ProblemCollection problemCollection = new ProblemCollection();
 
@@ -38,7 +45,7 @@ public class MCTL {
 
             concreteNode.accept(new SymbolTableVisitor(problemCollection));
 
-            concreteNode.accept(new Interpreter(problemCollection, new SymbolTable(), new TextGameBridge()));
+            concreteNode.accept(new Interpreter(problemCollection, new SymbolTable(), gameBridge));
 
             for (Problem problem : problemCollection.getProblems()) {
                 System.out.println(problem.getMessage());
