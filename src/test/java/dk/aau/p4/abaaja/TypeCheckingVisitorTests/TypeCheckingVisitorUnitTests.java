@@ -1362,8 +1362,7 @@ public class TypeCheckingVisitorUnitTests {
         symbolTableVisitor.visit(mctlNode);
 
         RepeatStateNode repeatStateNode = (RepeatStateNode) mctlNode.get_children().get(index);
-
-        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(repeatStateNode);
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(repeatStateNode.get_repeatExp());
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals(type), "Visit RepeatState: Expected type " + type + " for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
@@ -1390,8 +1389,7 @@ public class TypeCheckingVisitorUnitTests {
         symbolTableVisitor.visit(mctlNode);
 
         RepeatStateNode repeatStateNode = (RepeatStateNode) mctlNode.get_children().get(index);
-
-        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(repeatStateNode);
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(repeatStateNode.get_repeatExp());
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals("NOTHING"), "Visit RepeatState: Expected type NOTHING for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
@@ -1415,8 +1413,7 @@ public class TypeCheckingVisitorUnitTests {
         symbolTableVisitor.visit(mctlNode);
 
         IfStateNode ifStateNode = (IfStateNode) mctlNode.get_children().get(0);
-
-        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(ifStateNode);
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(ifStateNode.get_expChildren().get(0));
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals("BOOLEAN"), "Visit IfState: Expected type BOOLEAN for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
@@ -1443,8 +1440,7 @@ public class TypeCheckingVisitorUnitTests {
         symbolTableVisitor.visit(mctlNode);
 
         IfStateNode ifStateNode = (IfStateNode) mctlNode.get_children().get(index);
-
-        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(ifStateNode);
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(ifStateNode.get_expChildren().get(0));
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals("NOTHING"), "Visit IfState: Expected type NOTHING for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
