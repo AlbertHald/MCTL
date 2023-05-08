@@ -6,6 +6,7 @@ import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.*;
+import dk.aau.p4.abaaja.mctlParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,6 +110,8 @@ public class TypeCheckingVisitor {
                     "The type: " + node.get_type() + " has not been declared",
                     node.get_lineNumber()
             );
+        } else if (node.get_arrayDegree() != 0) {
+            typeDescriptor = new MctlArrayTypeDescriptor(typeDescriptor, node.get_arrayDegree());
         }
 
         return typeDescriptor;
@@ -117,21 +120,30 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(BinaryExpNode node) {
         MctlTypeDescriptor typeDescriptor = null;
 
-        if (node instanceof AddExpNode) { typeDescriptor = visit((AddExpNode) node); }
-        else if (node instanceof AndExpNode) { typeDescriptor = visit((AndExpNode) node); }
-        else if (node instanceof CompExpNode) { typeDescriptor = visit((CompExpNode) node); }
-        else if (node instanceof EqualExpNode) { typeDescriptor = visit((EqualExpNode) node); }
-        else if (node instanceof MulExpNode) { typeDescriptor = visit((MulExpNode) node); }
-        else if (node instanceof OrExpNode) { typeDescriptor = visit((OrExpNode) node); }
+        if (node instanceof AddExpNode addExpNode) { typeDescriptor = visit(addExpNode); }
+        else if (node instanceof AndExpNode andExpNode) { typeDescriptor = visit(andExpNode); }
+        else if (node instanceof CompExpNode compExpNode) { typeDescriptor = visit(compExpNode); }
+        else if (node instanceof EqualExpNode equalExpNode) { typeDescriptor = visit(equalExpNode); }
+        else if (node instanceof MulExpNode mulExpNode) { typeDescriptor = visit(mulExpNode); }
+        else if (node instanceof OrExpNode orExpNode) { typeDescriptor = visit(orExpNode); }
 
         return typeDescriptor;
     }
 
     public MctlTypeDescriptor visit(EqualExpNode node) {
-        String type1 = visit((ExpNode) node.get_children().get(0)).get_type_literal();
-        String type2 = visit((ExpNode) node.get_children().get(1)).get_type_literal();
+        MctlTypeDescriptor type1 = visit((ExpNode) node.get_children().get(0));
+        MctlTypeDescriptor type2 = visit((ExpNode) node.get_children().get(1));
 
-        if (!type1.equals(type2)) {
+        if (type1.get_type_literal().equals("NOTHING") || type2.get_type_literal().equals("NOTHING")) {
+            _problemCollection.addFormattedProblem(
+                    ProblemType.ERROR_VARIABLE_NOT_INSTANTIATED,
+                    "Expression contains a variable that has not been instantiated.",
+                    node.get_lineNumber()
+            );
+
+            return _symbolTable.searchType("NOTHING");
+        }
+        else if (!type1.get_type_literal().equals(type2.get_type_literal())) {
             _problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
                     "Expected both expressions to be of the same type, but got type: \"" + type1 + "\" and type: \"" + type2 + "\"",
@@ -145,7 +157,7 @@ public class TypeCheckingVisitor {
     }
 
     public MctlTypeDescriptor visit(IDExpNode node) {
-        MctlTypeDescriptor typeDescriptor = null;
+        MctlTypeDescriptor typeDescriptor = _symbolTable.searchType("NOTHING");
 
         if (node instanceof IDArrayExpNode idArrayExpNode) { typeDescriptor = visit(idArrayExpNode); }
         else if (node instanceof IDStructNode idStructNode) { typeDescriptor = visit(idStructNode); }
@@ -158,10 +170,8 @@ public class TypeCheckingVisitor {
         Symbol symbol = _symbolTable.searchSymbol(node.get_contained_id());
         MctlTypeDescriptor accessorArrayTypeDescriptor = _symbolTable.searchType("NOTHING");
 
-        if (symbol != null && !symbol.get_isInstantiated()) {
-            return _symbolTable.searchType("NOTHING");
-        } else if (symbol == null) {
-            return null;
+        if ((symbol != null && !symbol.get_isInstantiated()) || symbol == null) {
+            return accessorArrayTypeDescriptor;
         }
 
         // Counting array nodes
@@ -176,9 +186,9 @@ public class TypeCheckingVisitor {
             int accessorDegree = arrayTypeDescriptor.getDegree() - arrayDegree;
 
             // The contained type is a struct type
-            if (arrayTypeDescriptor.getType() instanceof MctlStructDescriptor) {
+            if (arrayTypeDescriptor.getType() instanceof MctlStructDescriptor && tempIdNode instanceof  IDStructNode idStructNode) {
                 // Struct Type
-                MctlTypeDescriptor descriptor = getStructDerivedType(arrayTypeDescriptor, (IDStructNode) tempIdNode);
+                MctlTypeDescriptor descriptor = getStructDerivedType(arrayTypeDescriptor, idStructNode);
 
                 if (descriptor instanceof MctlArrayTypeDescriptor arrayDescriptor) {
                     accessorDegree = arrayDescriptor.getDegree() - arrayDegree;
@@ -187,15 +197,28 @@ public class TypeCheckingVisitor {
                     accessorArrayTypeDescriptor = getArrayType(arrayDescriptor, accessorDegree, node.get_lineNumber());
                 }
             }
+            else if (arrayTypeDescriptor.getType() instanceof MctlStructDescriptor && tempIdNode instanceof  ActualIDExpNode actualIDExpNode) {
+                accessorDegree = arrayTypeDescriptor.getDegree() - arrayDegree;
+
+                // The type referred to is a primitive type
+                accessorArrayTypeDescriptor = getArrayType(arrayTypeDescriptor, accessorDegree, node.get_lineNumber());
+            }
             else {
                 // The type referred to is a primitive type
                 accessorArrayTypeDescriptor = getArrayType(arrayTypeDescriptor, accessorDegree, node.get_lineNumber());
             }
         }
         else if (symbol.get_type() instanceof MctlStructDescriptor structTypeDescriptor) {
-            MctlTypeDescriptor derivedType = getStructDerivedType(structTypeDescriptor, (IDStructNode) node.get_idNode());
+            MctlTypeDescriptor derivedType = getStructDerivedType(structTypeDescriptor, (IDStructNode) tempIdNode);
 
-            if (derivedType instanceof MctlArrayTypeDescriptor derivedArrayType) {
+            if (arrayDegree > 0 && !(derivedType instanceof MctlArrayTypeDescriptor)) {
+                _problemCollection.addFormattedProblem(
+                        ProblemType.ERROR_TYPE_MISMATCH,
+                        "The type \"" + derivedType.get_type_literal() + "\" cannot be accessed in array degree: " + arrayDegree,
+                        node.get_lineNumber()
+                );
+                return _symbolTable.searchType("NOTHING");
+            } else if (arrayDegree > 0 && derivedType instanceof MctlArrayTypeDescriptor derivedArrayType) {
                 // Calculating the accessory array degree
                 int accessorDegree = derivedArrayType.getDegree() - arrayDegree;
 
@@ -253,6 +276,16 @@ public class TypeCheckingVisitor {
             if (idExp instanceof IDStructNode tempIDStructNode) {
                 if (accessorType instanceof MctlStructDescriptor accessorDescriptor) {
                     accessorType = accessorDescriptor.get_structsymbol(tempIDStructNode.get_accessor().get_contained_id());
+
+                    // Trying to access a field that is not declared on the specific struct type
+                    if (accessorType == null) {
+                        _problemCollection.addFormattedProblem(
+                                ProblemType.ERROR_UNDEFINED_IDENTIFIER,
+                                "The type \"" + accessorDescriptor.get_type_literal() + "\" does not contain a field \"" + tempIDStructNode.get_accessor().get_contained_id() + "\"",
+                                tempIDStructNode.get_lineNumber()
+                        );
+                        return _symbolTable.searchType("NOTHING");
+                    }
                 } else {
                     // Happens if user is trying to access a struct on a type that is not a struct and so on
                     _problemCollection.addFormattedProblem(
@@ -260,6 +293,8 @@ public class TypeCheckingVisitor {
                             "The type \"" + accessorType.get_type_literal() + "\" cannot be accessed as a struct",
                             idExp.get_lineNumber()
                     );
+
+                    return _symbolTable.searchType("NOTHING");
                 }
             } else if (idExp instanceof IDArrayExpNode) {
                 if (accessorType instanceof MctlArrayTypeDescriptor accessorDescriptor) {
@@ -285,10 +320,8 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(ActualIDExpNode node) {
         Symbol symbol = _symbolTable.searchSymbol(node.get_id());
 
-        if (symbol != null && !symbol.get_isInstantiated()) {
+        if ((symbol != null && !symbol.get_isInstantiated()) || symbol == null) {
             return _symbolTable.searchType("NOTHING");
-        } else if (symbol == null) {
-            return null;
         }
 
         return symbol.get_type();
@@ -299,10 +332,8 @@ public class TypeCheckingVisitor {
         MctlTypeDescriptor type;
 
         // Return if the variable has not yet been instantiated
-        if (symbol != null && !symbol.get_isInstantiated()) {
+        if ((symbol != null && !symbol.get_isInstantiated()) || symbol == null) {
             return _symbolTable.searchType("NOTHING");
-        } else if (symbol == null) {
-            return null;
         }
 
         type = symbol.get_type();
@@ -397,15 +428,60 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(AndExpNode node) { return expectsType(node, "BOOLEAN"); }
     public MctlTypeDescriptor visit(OrExpNode node) { return expectsType(node, "BOOLEAN"); }
 
-    public MctlTypeDescriptor visit(BoolTypeNode node) { return _symbolTable.searchType("BOOLEAN"); } // TODO: Return array descriptors if necessary
-    public MctlTypeDescriptor visit(NumTypeNode node) { return _symbolTable.searchType("NUMBER"); } // TODO: Return array descriptors if necessary
-    public MctlTypeDescriptor visit(StringTypeNode node) { return _symbolTable.searchType("STRING"); } // TODO: Return array descriptors if necessary
-    public MctlTypeDescriptor visit(NothingTypeNode node) { return _symbolTable.searchType("NOTHING"); } // TODO: Return array descriptors if necessary
+
+    private MctlTypeDescriptor getPrimitiveType(TypeNode node, MctlTypeDescriptor type) {
+        MctlTypeDescriptor typeDescriptor;
+
+        // Check if the type is an array
+        if (node.get_arrayDegree() > 0) {
+            typeDescriptor = new MctlArrayTypeDescriptor(type, node.get_arrayDegree());
+        } else {
+            typeDescriptor = type;
+        }
+
+        return typeDescriptor;
+    }
+
+    public MctlTypeDescriptor visit(BoolTypeNode node) {
+        MctlTypeDescriptor typeDescriptor = _symbolTable.searchType("BOOLEAN");
+        return getPrimitiveType(node, typeDescriptor);
+    }
+    public MctlTypeDescriptor visit(NumTypeNode node) {
+        MctlTypeDescriptor typeDescriptor = _symbolTable.searchType("NUMBER");
+        return getPrimitiveType(node, typeDescriptor);
+    }
+    public MctlTypeDescriptor visit(StringTypeNode node) {
+        MctlTypeDescriptor typeDescriptor = _symbolTable.searchType("STRING");
+        return getPrimitiveType(node, typeDescriptor);
+    }
+    public MctlTypeDescriptor visit(NothingTypeNode node) { return _symbolTable.searchType("NOTHING"); }
+
 
     public MctlTypeDescriptor visit(BoolExpNode node) { return _symbolTable.searchType("BOOLEAN"); }
     public MctlTypeDescriptor visit(NumExpNode node) { return _symbolTable.searchType("NUMBER"); }
     public MctlTypeDescriptor visit(StringExpNode node) { return _symbolTable.searchType("STRING"); }
-    public MctlTypeDescriptor visit(UnaryExpNode node) { return visit(node.get_unaryExp()); } // TODO: Implement type checking here
+    public MctlTypeDescriptor visit(UnaryExpNode node) {
+        MctlTypeDescriptor descriptor = visit(node.get_unaryExp());
+
+        if (node.get_operator() == mctlParser.NOT && !(descriptor instanceof MctlBooleanDescriptor)) {
+            _problemCollection.addFormattedProblem(
+                    ProblemType.ERROR_TYPE_MISMATCH,
+                    "The unary operator \"!\" can only be used on expressions of type \"BOOLEAN\" but got \"" + descriptor.get_type_literal() + "\"",
+                    node.get_lineNumber()
+            );
+            descriptor = _symbolTable.searchType("NOTHING");
+        } else if ((node.get_operator() == mctlParser.PLUS || node.get_operator() == mctlParser.MINUS) &&
+                !(descriptor instanceof  MctlNumberDescriptor)) {
+            _problemCollection.addFormattedProblem(
+                    ProblemType.ERROR_TYPE_MISMATCH,
+                    "The unary operator \"" + (node.get_operator() == mctlParser.PLUS ? "+" : "-") + "\" can only be used on expressions of type \"NUMBER\" but got \"" + descriptor.get_type_literal() + "\"",
+                    node.get_lineNumber()
+            );
+            descriptor = _symbolTable.searchType("NOTHING");
+        }
+
+        return descriptor;
+    }
     public MctlTypeDescriptor visit(ReturnNode node) { return visit(node.get_returnExp()); }
 
     public MctlTypeDescriptor visit(MctlNode node) { return null; }

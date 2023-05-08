@@ -749,18 +749,18 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitTypeTestData() {
         return new Object[][] {
-                {"variable test: STRING;", "STRING", 0},
-                {"variable test: STRING[];", "STRING", 0},
-                {"variable test: STRING[][];", "STRING", 0},
-                {"variable test: NUMBER;", "NUMBER", 0},
-                {"variable test: NUMBER[];", "NUMBER", 0},
-                {"variable test: NUMBER[][];", "NUMBER", 0},
-                {"variable test: BOOLEAN;", "BOOLEAN", 0},
-                {"variable test: BOOLEAN[];", "BOOLEAN", 0},
-                {"variable test: BOOLEAN[][];", "BOOLEAN", 0},
-                {"struct STRUCTURE { variable x: NUMBER }; variable test: STRUCTURE;", "STRUCTURE", 1},
-                {"struct testStructId { variable x: NUMBER }; variable test: testStructId[];", "testStructId", 1},
-                {"struct struct_test_id { variable x: NUMBER }; variable test: struct_test_id[][];", "struct_test_id", 1}
+                {"variable x: STRING; variable test: STRING;", "STRING"},
+                {"variable x: STRING; variable test: STRING[];", "STRING[]"},
+                {"variable x: STRING; variable test: STRING[][];", "STRING[][]"},
+                {"variable x: STRING; variable test: NUMBER;", "NUMBER"},
+                {"variable x: STRING; variable test: NUMBER[];", "NUMBER[]"},
+                {"variable x: STRING; variable test: NUMBER[][];", "NUMBER[][]"},
+                {"variable x: STRING; variable test: BOOLEAN;", "BOOLEAN"},
+                {"variable x: STRING; variable test: BOOLEAN[];", "BOOLEAN[]"},
+                {"variable x: STRING; variable test: BOOLEAN[][];", "BOOLEAN[][]"},
+                {"struct STRUCTURE { variable x: NUMBER }; variable test: STRUCTURE;", "STRUCTURE"},
+                {"struct testStructId { variable x: NUMBER }; variable test: testStructId[];", "testStructId[]"},
+                {"struct struct_test_id { variable x: NUMBER }; variable test: struct_test_id[][];", "struct_test_id[][]"}
         };
     }
 

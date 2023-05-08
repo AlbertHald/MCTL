@@ -56,7 +56,7 @@ public class SymbolTableVisitor implements INodeVisitor {
 
             // Add each variable declaration for the struct to its descriptor
             for (VarDecNode node : mctlStructDescriptor.get_nodeReference().get_declarations()) {
-                MctlTypeDescriptor typeDescriptor = visitorTools.getTypeDescriptor(node.get_varDecType());
+                MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(node.get_varDecType());
 
                 // Check if the type exists
                 if (typeDescriptor == null) {
@@ -121,7 +121,7 @@ public class SymbolTableVisitor implements INodeVisitor {
         if (visitorTools.isDeclared(node.get_id())) {
             problemCollection.addFormattedProblem(ProblemType.ERROR_IDENTIFIER_CANNOT_BE_REUSED, "The identifier \"" + node.get_id() + "\" cannot be redeclared", node.get_lineNumber());
         } else {
-            typeDescriptor = visitorTools.getTypeDescriptor(node.get_varDecType());
+            typeDescriptor = typeCheckingVisitor.visit(node.get_varDecType());
             if (typeDescriptor != null) {
                 Symbol symbol = new Symbol(node.get_id(), typeDescriptor);
                 this.symbolTable.insertSymbol(symbol);
@@ -144,7 +144,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             symbolTable.get_currentScope().set_returnType(funcSymbol.get_type());
             for (FormalParamNode formalParam : node.get_paramList()) {
                 Symbol paramSymbol = new Symbol(formalParam.get_id());
-                MctlTypeDescriptor tempType = visitorTools.getTypeDescriptor(formalParam.get_type());
+                MctlTypeDescriptor tempType = typeCheckingVisitor.visit(formalParam.get_type());
                 if (tempType == null) {
                     problemCollection.addFormattedProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + formalParam.get_type().get_type() + "\" is unknown", node.get_lineNumber());
                 } else {
@@ -270,8 +270,8 @@ public class SymbolTableVisitor implements INodeVisitor {
             if (expressionNode instanceof InvokeExpNode) { visit(expressionNode); }
 
             // Check if type of parameter is ANY or one of the expected types
-            if (!funcSymbol.get_types().get(counter).get(0).get_type_literal().equals("ANY")){
-                for (MctlTypeDescriptor typeDescriptor : funcSymbol.get_types().get(counter)) {
+            if (!((List<MctlTypeDescriptor>) funcSymbol.get_types().get(counter)).get(0).get_type_literal().equals("ANY")){
+                for (MctlTypeDescriptor typeDescriptor : (List<MctlTypeDescriptor>) funcSymbol.get_types().get(counter)) {
                     if(typeDescriptor.get_type_literal().equals(expressionType.get_type_literal())) {
                         // Parameter type matched
                         typeMatched = true;
@@ -286,7 +286,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             // Add problem
             if (!typeMatched) {
                 StringBuilder typeLiterals = new StringBuilder();
-                for (MctlTypeDescriptor typeDescriptor : funcSymbol.get_types().get(counter)) {
+                for (MctlTypeDescriptor typeDescriptor : (List<MctlTypeDescriptor>) funcSymbol.get_types().get(counter)) {
                     typeLiterals.append("\"").append(typeDescriptor.get_type_literal()).append("\", ");
                 }
 
