@@ -23,7 +23,7 @@ public class Main {
         ProblemCollection problemCollection = new ProblemCollection();
 
         // Parse test CharStream
-        ParseTree tree = syntaxPhase( CharStreams.fromString("variable test: BOOLEAN; test = var1 == var2;"), problemCollection);
+        ParseTree tree = syntaxPhase( CharStreams.fromString("variable test:NUMBER; \nvariable bing: BOOLEAN; \ntest = 2 + bing;"), problemCollection);
 
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here
