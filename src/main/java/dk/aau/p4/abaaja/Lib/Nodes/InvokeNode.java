@@ -14,9 +14,12 @@ public abstract class InvokeNode extends StateNode {
         this._id = id;
     }
 
-    private final List<ExpNode> _actualParameters = new ArrayList<>();
+    private List<ExpNode> _actualParameters = new ArrayList<>();
     public List<ExpNode> get_paramExps(){
         return _actualParameters;
+    }
+    public void set_paramExps(List<ExpNode> actualParameters){
+        this._actualParameters = actualParameters;
     }
     public void add_paramExp(ExpNode expression) { this._actualParameters.add(expression); }
 

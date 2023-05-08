@@ -332,6 +332,7 @@ public class Interpreter implements INodeVisitor {
             stringNode.set_lineNumber(node.get_lineNumber());
             stringNode.set_lineEndNumber(node.get_lineEndNumber());
             stringNode.set_id(node.get_id());
+            stringNode.set_paramExps(node.get_paramExps());
             StringExpNode expNode = new StringExpNode();
             expNode.set_lineNumber(node.get_lineNumber());
             expNode.set_lineEndNumber(node.get_lineEndNumber());
