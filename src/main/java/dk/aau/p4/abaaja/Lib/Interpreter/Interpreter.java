@@ -366,8 +366,8 @@ public class Interpreter implements INodeVisitor {
             }
             case "substring" -> {
                 result.set_type(new MctlStringDescriptor());
-                int start = (int) resolve(node.get_paramExps().get(0)).get_value();
-                int end = (int) resolve(node.get_paramExps().get(1)).get_value();
+                int start = ((Number) resolve(node.get_paramExps().get(0)).get_value()).intValue();
+                int end = ((Number) resolve(node.get_paramExps().get(1)).get_value()).intValue();
                 if(start <= 0 || subject.length() < start){
                     problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access STRING at index " + start + " when only index 1-" +subject.length() + " is valid.", node.get_lineNumber());
                     result.set_value("");
