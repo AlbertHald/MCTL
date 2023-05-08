@@ -818,9 +818,9 @@ public class AstBuilderUnitTests {
     @DataProvider
     public Object[][] visitStringMethodInvokeTestData() {
         return new Object[][] {
-                {"\"var\".rav(bing, bong);", "\"var\"", "rav", 2},
-                {"\"vroom vroom\".go();", "\"vroom vroom\"", "go", 0},
-                {"\"1\".toString(2);", "\"1\"", "toString", 1},
+                {"\"var\".rav(bing, bong);", "var", "rav", 2},
+                {"\"vroom vroom\".go();", "vroom vroom", "go", 0},
+                {"\"1\".toString(2);", "1", "toString", 1},
         };
     }
 
