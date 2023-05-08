@@ -331,14 +331,14 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitStringMethodInvokeTestData() {
         return new Object[][] {
-                {"\"var\".add(\"test\");"},
-                {"\"vroom vroom\".length();"},
-                {"\"1\".indexesOf(\"1\");"}
+                {"\"var\".add(\"test\");", "STRING"},
+                {"\"vroom vroom\".length();", "NUMBER"},
+                {"\"1\".indexesOf(\"1\");", "NUMBER[]"}
         };
     }
 
     @Test(dataProvider = "visitStringMethodInvokeTestData")
-    public void visitStringMethodInvoke_ValidInput_ReturnsNull(String code) {
+    public void visitStringMethodInvoke_ValidInput_ReturnsNull(String code, String expectedType) {
         ParseTree parseTree = createParseTree(code);
         MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         symbolTableVisitor.visit(mctlNode);
@@ -347,21 +347,21 @@ public class TypeCheckingVisitorUnitTests {
 
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(stringMethodInvokeNode);
 
-        softAssert.assertTrue(typeDescriptor == null, "Visit StringMethodInvoke: " + code);
+        softAssert.assertTrue(typeDescriptor.get_type_literal().equals(expectedType), "Visit StringMethodInvoke: " + code);
         softAssert.assertAll();
     }
 
     @DataProvider
     public Object[][] visitVarMethodInvokeTestData() {
         return new Object[][] {
-                {"variable var: NUMBER[]; var.add(1);", 1}, // TODO: fix the scenario where the list is not instantiated
-                {"variable var: NUMBER[]; var.add(1); vroom.length();", 2},
-                {"variable var: NUMBER[]; var.add(1); _1.indexesOf(\"1\");", 2}
+                {"variable var: NUMBER[]; var.add(1);", "NUMBER[]", 1},
+                {"variable var: NUMBER[]; var.add(1); var.length();", "NUMBER", 2},
+                {"variable var: NUMBER[]; var.add(1); var.indexesOf(\"1\");", "NUMBER[]", 2}
         };
     }
 
     @Test(dataProvider = "visitVarMethodInvokeTestData")
-    public void visitVarMethodInvoke_ValidInput_ReturnsNull(String code, int index) {
+    public void visitVarMethodInvoke_ValidInput_ReturnsType(String code, String expectedType, int index) {
         ParseTree parseTree = createParseTree(code);
         MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
         symbolTableVisitor.visit(mctlNode);
@@ -370,7 +370,7 @@ public class TypeCheckingVisitorUnitTests {
 
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(varMethodInvokeNode);
 
-        softAssert.assertTrue(typeDescriptor == null, "Visit VarMethodInvoke: " + code);
+        softAssert.assertTrue(typeDescriptor.get_type_literal().equals(expectedType), "Visit VarMethodInvoke: " + code);
         softAssert.assertAll();
     }
 
@@ -394,7 +394,7 @@ public class TypeCheckingVisitorUnitTests {
 
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(funcInvokeNode);
 
-        softAssert.assertTrue(typeDescriptor == null, "Visit FuncInvoke: " + code);
+        softAssert.assertTrue(typeDescriptor.get_type_literal().equals("NOTHING"), "Visit FuncInvoke: " + code);
         softAssert.assertAll();
     }
 
