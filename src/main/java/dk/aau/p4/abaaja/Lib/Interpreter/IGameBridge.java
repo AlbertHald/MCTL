@@ -3,6 +3,7 @@ package dk.aau.p4.abaaja.Lib.Interpreter;
 public interface IGameBridge {
 
     void print(String text);
+    String read();
 
     // move ----
     boolean moveForward();

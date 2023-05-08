@@ -19,6 +19,12 @@ public class TextGameBridge implements IGameBridge {
     }
 
     @Override
+    public String read() {
+        printFunc("Read", "\"Dummy read string\"");
+        return "Dummy read string";
+    }
+
+    @Override
     public boolean moveForward(){
         printFunc("Move 1 forward", "true");
         return true;
