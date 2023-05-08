@@ -23,7 +23,7 @@ public class Main {
         ProblemCollection problemCollection = new ProblemCollection();
 
         // Parse test CharStream
-        ParseTree tree = syntaxPhase( CharStreams.fromString("struct STRUCTURE { variable num: NUMBER }; variable var: STRUCTURE; var.bool.inner = true;"), problemCollection);
+        ParseTree tree = syntaxPhase( CharStreams.fromString("variable test: BOOLEAN; test = var1 == var2;"), problemCollection);
 
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here

@@ -120,28 +120,37 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(BinaryExpNode node) {
         MctlTypeDescriptor typeDescriptor = null;
 
-        if (node instanceof AddExpNode) { typeDescriptor = visit((AddExpNode) node); }
-        else if (node instanceof AndExpNode) { typeDescriptor = visit((AndExpNode) node); }
-        else if (node instanceof CompExpNode) { typeDescriptor = visit((CompExpNode) node); }
-        else if (node instanceof EqualExpNode) { typeDescriptor = visit((EqualExpNode) node); }
-        else if (node instanceof MulExpNode) { typeDescriptor = visit((MulExpNode) node); }
-        else if (node instanceof OrExpNode) { typeDescriptor = visit((OrExpNode) node); }
+        if (node instanceof AddExpNode addExpNode) { typeDescriptor = visit(addExpNode); }
+        else if (node instanceof AndExpNode andExpNode) { typeDescriptor = visit(andExpNode); }
+        else if (node instanceof CompExpNode compExpNode) { typeDescriptor = visit(compExpNode); }
+        else if (node instanceof EqualExpNode equalExpNode) { typeDescriptor = visit(equalExpNode); }
+        else if (node instanceof MulExpNode mulExpNode) { typeDescriptor = visit(mulExpNode); }
+        else if (node instanceof OrExpNode orExpNode) { typeDescriptor = visit(orExpNode); }
 
         return typeDescriptor;
     }
 
-    public MctlTypeDescriptor visit(EqualExpNode node) {
-        String type1 = visit((ExpNode) node.get_children().get(0)).get_type_literal();
-        String type2 = visit((ExpNode) node.get_children().get(1)).get_type_literal();
+    public MctlTypeDescriptor visit(EqualExpNode node) { // TODO: THIS
+        MctlTypeDescriptor type1 = visit((ExpNode) node.get_children().get(0));
+        MctlTypeDescriptor type2 = visit((ExpNode) node.get_children().get(1));
 
-        if (!type1.equals(type2)) {
+        if (type1.get_type_literal().equals("NOTHING") || type2.get_type_literal().equals("NOTHING")) {
+            _problemCollection.addFormattedProblem(
+                    ProblemType.ERROR_VARIABLE_NOT_INSTANTIATED,
+                    "Expression contains a variable that has not been instantiated.",
+                    node.get_lineNumber()
+            );
+
+            return _symbolTable.searchType("NOTHING");
+        }
+        else if (!type1.get_type_literal().equals(type2.get_type_literal())) {
             _problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
                     "Expected both expressions to be of the same type, but got type: \"" + type1 + "\" and type: \"" + type2 + "\"",
                     node.get_lineNumber()
             );
 
-            return null;
+            return _symbolTable.searchType("NOTHING");
         }
 
         return _symbolTable.searchType("BOOLEAN");
