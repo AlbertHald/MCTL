@@ -130,7 +130,7 @@ public class TypeCheckingVisitor {
         return typeDescriptor;
     }
 
-    public MctlTypeDescriptor visit(EqualExpNode node) { // TODO: THIS
+    public MctlTypeDescriptor visit(EqualExpNode node) {
         MctlTypeDescriptor type1 = visit((ExpNode) node.get_children().get(0));
         MctlTypeDescriptor type2 = visit((ExpNode) node.get_children().get(1));
 
