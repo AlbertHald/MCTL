@@ -520,7 +520,7 @@ public class TypeCheckingVisitor {
         }
 
         if (!(typeChildOne.equals(typeLiteral) && typeChildTwo.equals(typeLiteral))) {
-            return null;
+            return _symbolTable.searchType("NOTHING");
         }
 
         return _symbolTable.searchType(typeLiteral);
