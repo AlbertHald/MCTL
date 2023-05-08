@@ -93,22 +93,8 @@ public class Interpreter implements INodeVisitor {
     }
 
     public void visit(VarDecNode node) {
-        Symbol symbol;
-        switch(node.get_varDecType().get_type()){
-            case "STRING" -> {
-                symbol = new Symbol<String>(node.get_id(), new MctlStringDescriptor());
-            }
-            case "NUMBER" -> {
-                symbol = new Symbol<Number>(node.get_id(), new MctlNumberDescriptor());
-            }
-            case "BOOLEAN" -> {
-                symbol = new Symbol<Boolean>(node.get_id(), new MctlBooleanDescriptor());
-            }
-            default -> {
-                problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown variable declaration type", node.get_lineNumber());
-                symbol = new Symbol();
-            }
-        }
+        Symbol symbol = resolve(node.get_varDecType());
+        symbol.set_name(node.get_id());
         symbolTable.insertSymbol(symbol);
     }
 
@@ -220,6 +206,17 @@ public class Interpreter implements INodeVisitor {
             problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown invocation structure", node.get_lineNumber());
         }
     }
+    public Symbol resolve(InvokeNode node) {
+        if(node instanceof FuncInvokeNode){
+            return resolve((FuncInvokeNode) node);
+        }else if(node instanceof VarMethodInvokeNode){
+            return resolve((VarMethodInvokeNode) node);
+        }else if(node instanceof StringMethodInvokeNode){
+            return resolve((StringMethodInvokeNode) node);
+        }
+        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown invocation structure", node.get_lineNumber());
+        return new Symbol(new MctlNothingDescriptor(), null);
+    }
 
     public void visit(FuncInvokeNode node) {
         resolve(node);
@@ -228,8 +225,9 @@ public class Interpreter implements INodeVisitor {
         Symbol result = new Symbol(new MctlNothingDescriptor(), null);
         switch(resolve(node.get_id()).get_name()){
             case "print" -> {
-                Symbol<String> text = resolve(node.get_paramExps().get(0));
-                gameBridge.print(text.get_value());
+                String text = (String) resolve(node.get_paramExps().get(0)).get_value();
+                if(text == null) text = "";
+                gameBridge.print(text);
             }
             case "moveForward" -> {
                 boolean bridgeResult = gameBridge.moveForward();
@@ -322,11 +320,69 @@ public class Interpreter implements INodeVisitor {
     }
 
     public void visit(VarMethodInvokeNode node) {
+        resolve(node);
+    }
+    public Symbol resolve(VarMethodInvokeNode node) {
+        Symbol subject = resolve(node.get_varId());
+        MctlTypeDescriptor subjectType = subject.get_type();
 
+        // If string, convert to a string invoke and call that instead.
+        if (subjectType instanceof MctlStringDescriptor) {
+            StringMethodInvokeNode stringNode = new StringMethodInvokeNode();
+            stringNode.set_lineNumber(node.get_lineNumber());
+            stringNode.set_lineEndNumber(node.get_lineEndNumber());
+            stringNode.set_id(node.get_id());
+            StringExpNode expNode = new StringExpNode();
+            expNode.set_lineNumber(node.get_lineNumber());
+            expNode.set_lineEndNumber(node.get_lineEndNumber());
+            expNode.set_result((String) subject.get_value());
+            stringNode.set_string(expNode);
+            return resolve(stringNode);
+        }
+
+        String methodName = resolve(node.get_id()).get_name();
+        Symbol result = new Symbol<>(new MctlNothingDescriptor(), null);
+        switch (methodName) {
+            //TODO: Implement arrays
+            default -> {
+                problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unsupported method invocation on " + subjectType.get_type_literal() + ": " + methodName, node.get_lineNumber());
+            }
+        }
+        return result;
     }
 
     public void visit(StringMethodInvokeNode node) {
-
+        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected method invocation on STRING", node.get_lineNumber());
+    }
+    public Symbol resolve(StringMethodInvokeNode node) {
+        String methodName = resolve(node.get_id()).get_name();
+        String subject = resolve(node.get_string()).get_value();
+        Symbol result = new Symbol<>(new MctlNothingDescriptor(), null);
+        switch(methodName){
+            case "length" -> {
+                result.set_value(subject.length());
+                result.set_type(new MctlNumberDescriptor());
+            }
+            case "substring" -> {
+                result.set_type(new MctlStringDescriptor());
+                int start = (int) resolve(node.get_paramExps().get(0)).get_value();
+                int end = (int) resolve(node.get_paramExps().get(1)).get_value();
+                if(start <= 0 || subject.length() < start){
+                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access STRING at index " + start + " when only index 1-" +subject.length() + " is valid.", node.get_lineNumber());
+                    result.set_value("");
+                }else if(end <= start || subject.length()+1 < end){
+                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access end of STRING at index " + end + " when only index " + (start+1) + "-" + (subject.length()+1) + " is valid.", node.get_lineNumber());
+                    result.set_value("");
+                }else{
+                    result.set_value(subject.substring(start-1, end-1));
+                }
+            }
+            //TODO: Implement indexesOf when arrays are do be have implemented
+            default -> {
+                problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unsupported method invocation on STRING: " + methodName, node.get_lineNumber());
+            }
+        }
+        return result;
     }
 
     public void visit(ReturnNode node) {
@@ -478,7 +534,7 @@ public class Interpreter implements INodeVisitor {
             }else {
                 cast.set_value(value ? "true" : "false");
             }
-            cast.set_type(new MctlBooleanDescriptor());
+            cast.set_type(new MctlStringDescriptor());
         }else if(originalType instanceof MctlNumberDescriptor && castType instanceof MctlStringDescriptor){
             Number value = (Number) original.get_value();
             if(value == null){
@@ -487,7 +543,7 @@ public class Interpreter implements INodeVisitor {
                 // The `replaceAll` removes unnecessary trailing zeroes from output
                 cast.set_value(value.toString().replaceAll("\\.0*(?=$)", ""));
             }
-            cast.set_type(new MctlNumberDescriptor());
+            cast.set_type(new MctlStringDescriptor());
         }else if(originalType instanceof MctlStringDescriptor && castType instanceof MctlNumberDescriptor){
             String value = (String) original.get_value();
             if(value == null){
@@ -495,7 +551,6 @@ public class Interpreter implements INodeVisitor {
                 cast.set_type(new MctlNumberDescriptor());
             }else{
                 try {
-                    System.out.println(Double.parseDouble((String) original.get_value()));
                     cast.set_value(Double.parseDouble((String) original.get_value()));
                     cast.set_type(new MctlNumberDescriptor());
                 } catch (Exception exception) {
