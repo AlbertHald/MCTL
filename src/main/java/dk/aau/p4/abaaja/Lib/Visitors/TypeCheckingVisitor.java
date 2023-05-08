@@ -57,7 +57,7 @@ public class TypeCheckingVisitor {
                         expNode.get_lineNumber()
                 );
 
-                typeDescriptor = _symbolTable.searchType("NOTHING");
+                typeDescriptor = null;
             }
         }
 
@@ -421,7 +421,7 @@ public class TypeCheckingVisitor {
 
     public MctlTypeDescriptor visit(CompExpNode node) {
         MctlTypeDescriptor typeDescriptor = expectsType(node, "NUMBER");
-        return (typeDescriptor.get_type_literal().equals("NUMBER") ? _symbolTable.searchType("BOOLEAN") : typeDescriptor);
+        return (typeDescriptor.get_type_literal().equals("NUMBER") ? _symbolTable.searchType("BOOLEAN") : null);
     }
 
     public MctlTypeDescriptor visit(MulExpNode node) { return expectsType(node, "NUMBER"); }
