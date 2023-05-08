@@ -354,7 +354,9 @@ public class PrettyPrintVisitor implements INodeVisitor{
         print(node.get_result().toString().replaceAll("\\.0*(?=$)", ""));
     }
     public void visit(StringExpNode node){
+        print("\"");
         print(node.get_result());
+        print("\"");
     }
     public void visit(InvokeExpNode node) { node.getInvokeNode().accept(this); }
 

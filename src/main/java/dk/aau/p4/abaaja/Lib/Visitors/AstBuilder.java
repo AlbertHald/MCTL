@@ -742,7 +742,7 @@ public class AstBuilder extends mctlBaseVisitor<BaseNode> {
         stringExpNode.set_lineNumber(ctx.getStart().getLine());
         stringExpNode.set_lineEndNumber(ctx.getStop().getLine());
 
-        stringExpNode.set_result(ctx.getText());
+        stringExpNode.set_result(ctx.getText().substring(1, ctx.getText().length() - 1));
 
         return stringExpNode;
     }
