@@ -470,7 +470,8 @@ public class AstBuilder extends mctlBaseVisitor<BaseNode> {
         stringExpNode.set_lineNumber(ctx.start.getLine());
         stringExpNode.set_lineEndNumber(ctx.getStop().getLine());
 
-        stringExpNode.set_result(ctx.STRING().getText().substring(1, ctx.getText().length() - 1));
+        System.out.println(ctx.STRING().getText());
+        stringExpNode.set_result(ctx.STRING().getText().substring(1, ctx.STRING().getText().length() - 1));
         stringMethodInvokeNode.set_string(stringExpNode);
 
         ActualIDExpNode methodIDExpNode = new ActualIDExpNode();
