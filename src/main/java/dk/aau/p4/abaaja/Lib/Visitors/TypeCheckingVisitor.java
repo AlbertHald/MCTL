@@ -210,7 +210,7 @@ public class TypeCheckingVisitor {
             }
         }
         else if (symbol.get_type() instanceof MctlStructDescriptor structTypeDescriptor) {
-            MctlTypeDescriptor derivedType = getStructDerivedType(structTypeDescriptor, (IDStructNode) tempIdNode);
+            MctlTypeDescriptor derivedType = getStructDerivedType(structTypeDescriptor, tempIdNode);
 
             if (arrayDegree > 0 && !(derivedType instanceof MctlArrayTypeDescriptor)) {
                 _problemCollection.addFormattedProblem(
@@ -260,8 +260,8 @@ public class TypeCheckingVisitor {
         return accessorType;
     }
 
-    private MctlTypeDescriptor getStructDerivedType(MctlTypeDescriptor parsedStructDescriptor, IDStructNode idStructNode) {
-        IDExpNode idExpNode = idStructNode;
+    private MctlTypeDescriptor getStructDerivedType(MctlTypeDescriptor parsedStructDescriptor, IDExpNode idNode) {
+        IDExpNode idExpNode = idNode;
         MctlTypeDescriptor accessorType = parsedStructDescriptor;
 
         List<IDExpNode> nodeList = new ArrayList<>();
