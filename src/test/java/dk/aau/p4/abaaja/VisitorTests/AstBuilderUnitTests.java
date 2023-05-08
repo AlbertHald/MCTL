@@ -97,13 +97,13 @@ public class AstBuilderUnitTests {
     @DataProvider
     public Object[][] visitStringExprTestData() {
         return new Object[][] {
-            {"test = \"This is a String\";", "\"This is a String\""},
-            {"test = \"1234 string 8078.,/()&\";", "\"1234 string 8078.,/()&\""},
-            {"test = \"'Double Quoted String'\";", "\"'Double Quoted String'\""},
-            {"test = 'Single Quoted String';", "'Single Quoted String'"},
-            {"test = \"Newline: \n Carriage return: \r Tab: \t Backslash: \\ \";", "\"Newline: \n Carriage return: \r Tab: \t Backslash: \\ \""},
-            {"test = \"Unicode: Ωαφω\";", "\"Unicode: Ωαφω\""},
-            {"test = \"Unicode: \u03A9\u03B1\u03C6\u03C9\";", "\"Unicode: \u03A9\u03B1\u03C6\u03C9\""},
+            {"test = \"This is a String\";", "This is a String"},
+            {"test = \"1234 string 8078.,/()&\";", "1234 string 8078.,/()&"},
+            {"test = \"'Double Quoted String'\";", "'Double Quoted String'"},
+            {"test = 'Single Quoted String';", "Single Quoted String"},
+            {"test = \"Newline: \n Carriage return: \r Tab: \t Backslash: \\ \";", "Newline: \n Carriage return: \r Tab: \t Backslash: \\ "},
+            {"test = \"Unicode: Ωαφω\";", "Unicode: Ωαφω"},
+            {"test = \"Unicode: \u03A9\u03B1\u03C6\u03C9\";", "Unicode: \u03A9\u03B1\u03C6\u03C9"},
         };
     }
 
