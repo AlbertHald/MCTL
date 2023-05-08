@@ -641,7 +641,10 @@ public class TypeCheckingVisitorUnitTests {
                 {"variable test: NUMBER; test = -true;", 1},
                 {"variable test: NUMBER; test = -\"hi\";", 1},
                 {"variable test: BOOLEAN; test = !1;", 1},
-                {"variable test: BOOLEAN; test = !\"hi\";", 1}
+                {"variable test: BOOLEAN; test = !\"hi\";", 1},
+                {"variable test: BOOLEAN; struct STRUCTURE { variable x: NUMBER }; variable var: STRUCTURE; test = +var;", 3},
+                {"variable test: BOOLEAN; struct STRUCTURE { variable x: NUMBER }; variable var: STRUCTURE; test = -var;", 3},
+                {"variable test: BOOLEAN; struct STRUCTURE { variable x: NUMBER }; variable var: STRUCTURE; test = !var;", 3}
         };
     }
 
@@ -783,15 +786,15 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitCompExpTestData() {
         return new Object[][]{
-                {"variable test: NUMBER; test = -1 > -2;", 1},
-                {"variable test: NUMBER; test = 1 > 2;", 1},
-                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; var1 = 1; var2 = 2; test = var1 > var2;", 5},
-                {"variable test: NUMBER; test = 1 < 2;", 1},
-                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; var1 = 1; var2 = 2; test = var1 < var2;", 5},
-                {"variable test: NUMBER; test = 1 >= 2;", 1},
-                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; var1 = 1; var2 = 2; test = var1 >= var2;", 5},
-                {"variable test: NUMBER; test = 1 <= 2;", 1},
-                {"variable var1: NUMBER; variable var2: NUMBER; variable test: NUMBER; var1 = 1; var2 = 2; test = var1 <= var2;", 5}
+                {"variable test: BOOLEAN; test = -1 > -2;", 1},
+                {"variable test: BOOLEAN; test = 1 > 2;", 1},
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: BOOLEAN; var1 = 1; var2 = 2; test = var1 > var2;", 5},
+                {"variable test: BOOLEAN; test = 1 < 2;", 1},
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: BOOLEAN; var1 = 1; var2 = 2; test = var1 < var2;", 5},
+                {"variable test: BOOLEAN; test = 1 >= 2;", 1},
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: BOOLEAN; var1 = 1; var2 = 2; test = var1 >= var2;", 5},
+                {"variable test: BOOLEAN; test = 1 <= 2;", 1},
+                {"variable var1: NUMBER; variable var2: NUMBER; variable test: BOOLEAN; var1 = 1; var2 = 2; test = var1 <= var2;", 5}
         };
     }
 
@@ -814,38 +817,42 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitCompExpInvalidTestData() {
         return new Object[][]{
-                {"variable test: NUMBER; test = true > true;", 1},
-                {"variable test: NUMBER; test = true > \"hi\";", 1},
-                {"variable test: NUMBER; test = true < true;", 1},
-                {"variable test: NUMBER; test = true < \"hi\";", 1},
-                {"variable test: NUMBER; test = true >= true;", 1},
-                {"variable test: NUMBER; test = true >= \"hi\";", 1},
-                {"variable test: NUMBER; test = true <= true;", 1},
-                {"variable test: NUMBER; test = true <= \"hi\";", 1},
-                {"variable test: NUMBER; test = true > 1;", 1},
-                {"variable test: NUMBER; test = true < 1;", 1},
-                {"variable test: NUMBER; test = true >= 1;", 1},
-                {"variable test: NUMBER; test = true <= 1;", 1},
-                {"variable test: NUMBER; test = \"hi\" > \"hi\";", 1},
-                {"variable test: NUMBER; test = \"hi\" > true;", 1},
-                {"variable test: NUMBER; test = \"hi\" < \"hi\";", 1},
-                {"variable test: NUMBER; test = \"hi\" < true;", 1},
-                {"variable test: NUMBER; test = \"hi\" >= \"hi\";", 1},
-                {"variable test: NUMBER; test = \"hi\" >= true;", 1},
-                {"variable test: NUMBER; test = \"hi\" <= \"hi\";", 1},
-                {"variable test: NUMBER; test = \"hi\" <= true;", 1},
-                {"variable test: NUMBER; test = \"hi\" > 1;", 1},
-                {"variable test: NUMBER; test = \"hi\" < 1;", 1},
-                {"variable test: NUMBER; test = \"hi\" >= 1;", 1},
-                {"variable test: NUMBER; test = \"hi\" <= 1;", 1},
-                {"variable test: NUMBER; test = 1 > true;", 1},
-                {"variable test: NUMBER; test = 1 > \"hi\";", 1},
-                {"variable test: NUMBER; test = 1 < true;", 1},
-                {"variable test: NUMBER; test = 1 < \"hi\";", 1},
-                {"variable test: NUMBER; test = 1 >= true;", 1},
-                {"variable test: NUMBER; test = 1 >= \"hi\";", 1},
-                {"variable test: NUMBER; test = 1 <= true;", 1},
-                {"variable test: NUMBER; test = 1 <= \"hi\";", 1}
+                {"variable test: BOOLEAN; test = true > true;", 1},
+                {"variable test: BOOLEAN; test = true > \"hi\";", 1},
+                {"variable test: BOOLEAN; test = true < true;", 1},
+                {"variable test: BOOLEAN; test = true < \"hi\";", 1},
+                {"variable test: BOOLEAN; test = true >= true;", 1},
+                {"variable test: BOOLEAN; test = true >= \"hi\";", 1},
+                {"variable test: BOOLEAN; test = true <= true;", 1},
+                {"variable test: BOOLEAN; test = true <= \"hi\";", 1},
+                {"variable test: BOOLEAN; test = true > 1;", 1},
+                {"variable test: BOOLEAN; test = true < 1;", 1},
+                {"variable test: BOOLEAN; test = true >= 1;", 1},
+                {"variable test: BOOLEAN; test = true <= 1;", 1},
+                {"variable test: BOOLEAN; test = \"hi\" > \"hi\";", 1},
+                {"variable test: BOOLEAN; test = \"hi\" > true;", 1},
+                {"variable test: BOOLEAN; test = \"hi\" < \"hi\";", 1},
+                {"variable test: BOOLEAN; test = \"hi\" < true;", 1},
+                {"variable test: BOOLEAN; test = \"hi\" >= \"hi\";", 1},
+                {"variable test: BOOLEAN; test = \"hi\" >= true;", 1},
+                {"variable test: BOOLEAN; test = \"hi\" <= \"hi\";", 1},
+                {"variable test: BOOLEAN; test = \"hi\" <= true;", 1},
+                {"variable test: BOOLEAN; test = \"hi\" > 1;", 1},
+                {"variable test: BOOLEAN; test = \"hi\" < 1;", 1},
+                {"variable test: BOOLEAN; test = \"hi\" >= 1;", 1},
+                {"variable test: BOOLEAN; test = \"hi\" <= 1;", 1},
+                {"variable test: BOOLEAN; test = 1 > true;", 1},
+                {"variable test: BOOLEAN; test = 1 > \"hi\";", 1},
+                {"variable test: BOOLEAN; test = 1 < true;", 1},
+                {"variable test: BOOLEAN; test = 1 < \"hi\";", 1},
+                {"variable test: BOOLEAN; test = 1 >= true;", 1},
+                {"variable test: BOOLEAN; test = 1 >= \"hi\";", 1},
+                {"variable test: BOOLEAN; test = 1 <= true;", 1},
+                {"variable test: BOOLEAN; test = 1 <= \"hi\";", 1},
+                {"variable test: BOOLEAN; struct STRUCTURE { variable x: NUMBER }; variable var1: STRUCTURE; variable var2: STRUCTURE; var1 = 1; var2 = 1; test = var1 > var2;", 6},
+                {"variable test: BOOLEAN; struct STRUCTURE { variable x: NUMBER }; variable var1: STRUCTURE; variable var2: STRUCTURE; var1 = 1; var2 = 1; test = var1 < var2;", 6},
+                {"variable test: BOOLEAN; struct STRUCTURE { variable x: NUMBER }; variable var1: STRUCTURE; variable var2: STRUCTURE; var1 = 1; var2 = 1; test = var1 >= var2;", 6},
+                {"variable test: BOOLEAN; struct STRUCTURE { variable x: NUMBER }; variable var1: STRUCTURE; variable var2: STRUCTURE; var1 = 1; var2 = 1; test = var1 <= var2;", 6}
         };
     }
 
@@ -1014,25 +1021,35 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitAddExpInvalidTestData() {
         return new Object[][] {
-                {"variable test: NUMBER; test = true + false;"},
-                {"variable test: NUMBER; test = true + \"hi\";"},
-                {"variable test: NUMBER; test = true + 1;"},
-                {"variable test: NUMBER; test = 1 + \"hi\";"},
-                {"variable test: NUMBER; test = 1 + true;"},
-                {"variable test: NUMBER; test = \"hi\" + \"hi\";"},
-                {"variable test: NUMBER; test = \"hi\" + true;"},
-                {"variable test: NUMBER; test = \"hi\" + 1;"}
+                {"variable test: NUMBER; test = true + false;", 1},
+                {"variable test: NUMBER; test = true + \"hi\";", 1},
+                {"variable test: NUMBER; test = true + 1;", 1},
+                {"variable test: NUMBER; test = 1 + \"hi\";", 1},
+                {"variable test: NUMBER; test = 1 + true;", 1},
+                {"variable test: NUMBER; test = \"hi\" + \"hi\";", 1},
+                {"variable test: NUMBER; test = \"hi\" + true;", 1},
+                {"variable test: NUMBER; test = \"hi\" + 1;", 1},
+                {"variable test: NUMBER; test = true - false;", 1},
+                {"variable test: NUMBER; test = true - \"hi\";", 1},
+                {"variable test: NUMBER; test = true - 1;", 1},
+                {"variable test: NUMBER; test = 1 - \"hi\";", 1},
+                {"variable test: NUMBER; test = 1 - true;", 1},
+                {"variable test: NUMBER; test = \"hi\" - \"hi\";", 1},
+                {"variable test: NUMBER; test = \"hi\" - true;", 1},
+                {"variable test: NUMBER; test = \"hi\" - 1;", 1},
+                {"variable test: NUMBER; struct STRUCTURE { variable x: NUMBER }; variable var1: STRUCTURE; variable var2: STRUCTURE; var1 = 1; var2 = 1; test = var1 + var2;", 6},
+                {"variable test: NUMBER; struct STRUCTURE { variable x: NUMBER }; variable var1: STRUCTURE; variable var2: STRUCTURE; var1 = 1; var2 = 1; test = var1 - var2;", 6}
         };
     }
 
     @Test(dataProvider = "visitAddExpInvalidTestData")
-    public void visitAddExp_InvalidInput_ReturnsCorrectType(String code) {
+    public void visitAddExp_InvalidInput_ReturnsCorrectType(String code, int index) {
         ParseTree parseTree = createParseTree(code);
         MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
-        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(1);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(index);
         AddExpNode addExpNode = (AddExpNode) assStateNode.get_assignExp();
 
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(addExpNode);
@@ -1069,25 +1086,44 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitMulExpInvalidTestData() {
         return new Object[][] {
-                {"variable test: NUMBER; test = true * false;"},
-                {"variable test: NUMBER; test = true * \"hi\";"},
-                {"variable test: NUMBER; test = true * 1;"},
-                {"variable test: NUMBER; test = 1 * \"hi\";"},
-                {"variable test: NUMBER; test = 1 * true;"},
-                {"variable test: NUMBER; test = \"hi\" * \"hi\";"},
-                {"variable test: NUMBER; test = \"hi\" * true;"},
-                {"variable test: NUMBER; test = \"hi\" * 1;"}
+                {"variable test: NUMBER; test = true * false;", 1},
+                {"variable test: NUMBER; test = true * \"hi\";", 1},
+                {"variable test: NUMBER; test = true * 1;", 1},
+                {"variable test: NUMBER; test = 1 * \"hi\";", 1},
+                {"variable test: NUMBER; test = 1 * true;", 1},
+                {"variable test: NUMBER; test = \"hi\" * \"hi\";", 1},
+                {"variable test: NUMBER; test = \"hi\" * true;", 1},
+                {"variable test: NUMBER; test = \"hi\" * 1;", 1},
+                {"variable test: NUMBER; test = true / false;", 1},
+                {"variable test: NUMBER; test = true / \"hi\";", 1},
+                {"variable test: NUMBER; test = true / 1;", 1},
+                {"variable test: NUMBER; test = 1 / \"hi\";", 1},
+                {"variable test: NUMBER; test = 1 / true;", 1},
+                {"variable test: NUMBER; test = \"hi\" / \"hi\";", 1},
+                {"variable test: NUMBER; test = \"hi\" / true;", 1},
+                {"variable test: NUMBER; test = \"hi\" / 1;", 1},
+                {"variable test: NUMBER; test = true % false;", 1},
+                {"variable test: NUMBER; test = true % \"hi\";", 1},
+                {"variable test: NUMBER; test = true % 1;", 1},
+                {"variable test: NUMBER; test = 1 % \"hi\";", 1},
+                {"variable test: NUMBER; test = 1 % true;", 1},
+                {"variable test: NUMBER; test = \"hi\" % \"hi\";", 1},
+                {"variable test: NUMBER; test = \"hi\" % true;", 1},
+                {"variable test: NUMBER; test = \"hi\" % 1;", 1},
+                {"variable test: NUMBER; struct STRUCTURE { variable x: NUMBER }; variable var1: STRUCTURE; variable var2: STRUCTURE; var1 = 1; var2 = 1; test = var1 * var2;", 6},
+                {"variable test: NUMBER; struct STRUCTURE { variable x: NUMBER }; variable var1: STRUCTURE; variable var2: STRUCTURE; var1 = 1; var2 = 1; test = var1 / var2;", 6},
+                {"variable test: NUMBER; struct STRUCTURE { variable x: NUMBER }; variable var1: STRUCTURE; variable var2: STRUCTURE; var1 = 1; var2 = 1; test = var1 % var2;", 6}
         };
     }
 
     @Test(dataProvider = "visitMulExpInvalidTestData")
-    public void visitMulExp_InvalidInput_ReturnsCorrectType(String code) {
+    public void visitMulExp_InvalidInput_ReturnsCorrectType(String code, int index) {
         ParseTree parseTree = createParseTree(code);
         MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
 
         symbolTableVisitor.visit(mctlNode);
 
-        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(1);
+        AssStateNode assStateNode = (AssStateNode) mctlNode.get_children().get(index);
         MulExpNode mulExpNode = (MulExpNode) assStateNode.get_assignExp();
 
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(mulExpNode);
@@ -1323,7 +1359,9 @@ public class TypeCheckingVisitorUnitTests {
                 {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: NUMBER; test = var1 == var2;", 3},
                 {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: STRING; test = var1 == var2;", 3},
                 {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: NUMBER; test = var1 != var2;", 3},
-                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: STRING; test = var1 != var2;", 3}
+                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: STRING; test = var1 != var2;", 3},
+                {"variable test: BOOLEAN; struct STRUCTURE { variable x: NUMBER }; variable var1: STRUCTURE; variable var2: STRUCTURE; var1 = 1; var2 = 1; test = var1 == var2;", 6},
+                {"variable test: BOOLEAN; struct STRUCTURE { variable x: NUMBER }; variable var1: STRUCTURE; variable var2: STRUCTURE; var1 = 1; var2 = 1; test = var1 != var2;", 6}
         };
     }
 
