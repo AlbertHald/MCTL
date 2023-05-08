@@ -229,6 +229,12 @@ public class Interpreter implements INodeVisitor {
                 if(text == null) text = "";
                 gameBridge.print(text);
             }
+            case "read" -> {
+                String bridgeResult = gameBridge.read();
+                result.set_type(new MctlStringDescriptor());
+                result.set_value(bridgeResult);
+                return result;
+            }
             case "moveForward" -> {
                 boolean bridgeResult = gameBridge.moveForward();
                 result.set_type(new MctlBooleanDescriptor());
