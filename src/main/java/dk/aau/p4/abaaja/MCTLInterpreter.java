@@ -45,10 +45,13 @@ public class MCTLInterpreter {
 
             concreteNode.accept(new SymbolTableVisitor(problemCollection));
 
-            concreteNode.accept(new Interpreter(problemCollection, new SymbolTable(), gameBridge));
-
-            for (Problem problem : problemCollection.getProblems()) {
-                System.out.println(problem.getMessage());
+            if (!problemCollection.getHasErrors()) {
+                concreteNode.accept(new Interpreter(problemCollection, new SymbolTable(), gameBridge));
+            }
+            else {
+                for (Problem problem : problemCollection.getProblems()) {
+                    System.out.println(problem.getMessage());
+                }
             }
         }
         else {
