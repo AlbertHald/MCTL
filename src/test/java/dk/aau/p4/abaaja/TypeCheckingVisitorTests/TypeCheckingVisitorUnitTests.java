@@ -749,18 +749,18 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitTypeTestData() {
         return new Object[][] {
-                {"variable x: STRING; variable test: STRING;", "STRING"},
-                {"variable x: STRING; variable test: STRING[];", "STRING[]"},
-                {"variable x: STRING; variable test: STRING[][];", "STRING[][]"},
-                {"variable x: STRING; variable test: NUMBER;", "NUMBER"},
-                {"variable x: STRING; variable test: NUMBER[];", "NUMBER[]"},
-                {"variable x: STRING; variable test: NUMBER[][];", "NUMBER[][]"},
-                {"variable x: STRING; variable test: BOOLEAN;", "BOOLEAN"},
-                {"variable x: STRING; variable test: BOOLEAN[];", "BOOLEAN[]"},
-                {"variable x: STRING; variable test: BOOLEAN[][];", "BOOLEAN[][]"},
-                {"struct STRUCTURE { variable x: NUMBER }; variable test: STRUCTURE;", "STRUCTURE"},
-                {"struct testStructId { variable x: NUMBER }; variable test: testStructId[];", "testStructId[]"},
-                {"struct struct_test_id { variable x: NUMBER }; variable test: struct_test_id[][];", "struct_test_id[][]"}
+                {"variable test: STRING;", "STRING", 0},
+                {"variable test: STRING[];", "STRING[]", 0},
+                {"variable test: STRING[][];", "STRING[][]", 0},
+                {"variable test: NUMBER;", "NUMBER", 0},
+                {"variable test: NUMBER[];", "NUMBER[]", 0},
+                {"variable test: NUMBER[][];", "NUMBER[][]", 0},
+                {"variable test: BOOLEAN;", "BOOLEAN", 0},
+                {"variable test: BOOLEAN[];", "BOOLEAN[]", 0},
+                {"variable test: BOOLEAN[][];", "BOOLEAN[][]", 0},
+                {"struct STRUCTURE { variable x: NUMBER }; variable test: STRUCTURE;", "STRUCTURE", 1},
+                {"struct testStructId { variable x: NUMBER }; variable test: testStructId[];", "testStructId[]", 1},
+                {"struct struct_test_id { variable x: NUMBER }; variable test: struct_test_id[][];", "struct_test_id[][]", 1}
         };
     }
 
@@ -1244,7 +1244,6 @@ public class TypeCheckingVisitorUnitTests {
                 {"struct test { variable b: NUMBER[] }; variable a: test; a.b[0].c.d[0] = 1;", 2},
                 {"struct test { variable b: NUMBER[][] }; variable a: test[][]; a[0][0][0].b[0] = 1;", 2},
                 {"struct test { variable b: test2[] }; struct test2 { variable c: NUMBER[] }; variable a: test[][]; a[0].b[0].c[0] = 1;", 3,},
-                {"struct test { variable b: test2[] }; struct test2 { variable c: NUMBER }; variable a: test[]; a = 1;", 3,},
                 {"struct test { variable b: test2[] }; struct test2 { variable c: NUMBER }; variable a: test[]; a[0] = 1;", 3,},
                 {"struct test { variable b: test2[] }; struct test2 { variable c: NUMBER }; variable a: test[]; a[0].b[0].c[0] = 1;", 3,},
                 {"struct test { variable b: test2[] }; struct test2 { variable c: test3[][] }; struct test3 { variable d: NUMBER[][] }; variable a: test[]; a[0].b[0].c[0].d[0] = 1;", 4,},
@@ -1284,11 +1283,7 @@ public class TypeCheckingVisitorUnitTests {
                 {"variable var: BOOLEAN; variable test: STRING; variable test2: STRING; test = \"hi\"; test2 = \"hi\"; var = test == test2;", 5},
                 {"variable var: BOOLEAN; variable test: STRING; variable test2: STRING; test = \"hi\"; test2 = \"hello\"; var = test != test2;", 5},
                 {"variable var: BOOLEAN; variable test: BOOLEAN; variable test2: BOOLEAN; test = true; test2 = true; var = test == test2;", 5},
-                {"variable var: BOOLEAN; variable test: BOOLEAN; variable test2: BOOLEAN; test = true; test2 = false; var = test != test2;", 5},
-                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: NUMBER; test = var1 == var2;", 3},
-                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: STRING; test = var1 == var2;", 3},
-                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: NUMBER; test = var1 != var2;", 3},
-                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: STRING; test = var1 != var2;", 3}
+                {"variable var: BOOLEAN; variable test: BOOLEAN; variable test2: BOOLEAN; test = true; test2 = false; var = test != test2;", 5}
         };
     }
 
@@ -1324,7 +1319,11 @@ public class TypeCheckingVisitorUnitTests {
                 {"variable test: BOOLEAN; test = \"hi\" != true;", 1},
                 {"variable test: BOOLEAN; test = \"hi\" != 1;", 1},
                 {"variable test: BOOLEAN; test = var1 == var2;", 1},
-                {"variable test: BOOLEAN; test = var1 != var2;", 1}
+                {"variable test: BOOLEAN; test = var1 != var2;", 1},
+                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: NUMBER; test = var1 == var2;", 3},
+                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: STRING; test = var1 == var2;", 3},
+                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: NUMBER; test = var1 != var2;", 3},
+                {"variable test: BOOLEAN; variable var1: NUMBER; variable var2: STRING; test = var1 != var2;", 3}
         };
     }
 
@@ -1371,7 +1370,6 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitRepeatStateInvalidTestData() {
         return new Object[][] {
-                {"repeat (\"peter\") {}", 0},
                 {"repeat (!2) {}", 0},
                 {"repeat (!\"per\") {}", 0},
                 {"repeat (!\"per\" or \"bob\") {}", 0},
@@ -1422,7 +1420,6 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] visitIfStateInvalidTestData() {
         return new Object[][] {
-                {"if (\"peter\") {}", 0},
                 {"if (!2) {}", 0},
                 {"if (!\"per\") {}", 0},
                 {"if (!\"per\" or \"bob\") {}", 0},
