@@ -236,7 +236,7 @@ public class SymbolTableVisitor implements INodeVisitor {
                 );
             } else {
                 variable.set_isInstantiated(true);
-               idTypeDescriptor = typeCheckingVisitor.visit(node.get_assignId());
+                idTypeDescriptor = typeCheckingVisitor.visit(node.get_assignId());
                 if (!(idTypeDescriptor.get_type_literal().equals(expTypeDescriptor.get_type_literal()))) {
                     problemCollection.addFormattedProblem(
                             ProblemType.ERROR_TYPE_MISMATCH,
