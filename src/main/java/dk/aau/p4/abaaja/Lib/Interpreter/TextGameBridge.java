@@ -20,10 +20,9 @@ public class TextGameBridge implements IGameBridge {
 
     @Override
     public String read() {
-        printFunc("Read: \"This is the read string\"");
-        return "This is the read string";
+        printFunc("Read", "\"Dummy read string\"");
+        return "Dummy read string";
     }
-
 
     @Override
     public boolean moveForward(){
