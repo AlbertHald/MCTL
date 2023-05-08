@@ -60,8 +60,8 @@ public class ProblemCollection {
     public String createProblemTitle(String title, int totalCharacters) {
         // Format the padding strings
         int padding = totalCharacters - title.length();
-        int leftPaddingNumber = Math.ceilDiv(padding, 2);
-        int rightPaddingNumber = Math.floorDiv(padding, 2);
+        int leftPaddingNumber = (int) Math.ceil(padding / 2.0);
+        int rightPaddingNumber = (int) Math.floor(padding / 2.0);
 
         String leftPadding = startDelimChar.repeat(leftPaddingNumber);
         String rightPadding = startDelimChar.repeat(rightPaddingNumber);

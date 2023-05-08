@@ -6,15 +6,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 //Symbol table entries
-public class Symbol {
+public class Symbol<T> {
     private String _name;
     private MctlTypeDescriptor _type;
     private boolean _isInstantiated = false;
+    private T _value;
     private List<List<MctlTypeDescriptor>> _types = new ArrayList<>();
 
     public Symbol() {}
     public Symbol(String name) {
         this._name = name;
+    }
+    public Symbol(MctlTypeDescriptor type) {
+        this._type = type;
+    }
+    public Symbol(MctlTypeDescriptor type, T value) {
+        this._type = type;
+        this._value = value;
     }
     
     public Symbol(String name, MctlTypeDescriptor type) {
@@ -42,6 +50,13 @@ public class Symbol {
     }
     public void set_type(MctlTypeDescriptor _type) {
         this._type = _type;
+    }
+
+    public void set_value(T value){
+        this._value = value;
+    }
+    public T get_value(){
+        return this._value;
     }
 
     public boolean get_isInstantiated() {

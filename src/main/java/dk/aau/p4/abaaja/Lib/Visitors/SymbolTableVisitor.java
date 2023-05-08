@@ -270,8 +270,8 @@ public class SymbolTableVisitor implements INodeVisitor {
             if (expressionNode instanceof InvokeExpNode) { visit(expressionNode); }
 
             // Check if type of parameter is ANY or one of the expected types
-            if (!funcSymbol.get_types().get(counter).get(0).get_type_literal().equals("ANY")){
-                for (MctlTypeDescriptor typeDescriptor : funcSymbol.get_types().get(counter)) {
+            if (!((List<MctlTypeDescriptor>) funcSymbol.get_types().get(counter)).get(0).get_type_literal().equals("ANY")){
+                for (MctlTypeDescriptor typeDescriptor : (List<MctlTypeDescriptor>) funcSymbol.get_types().get(counter)) {
                     if(typeDescriptor.get_type_literal().equals(expressionType.get_type_literal())) {
                         // Parameter type matched
                         typeMatched = true;
@@ -286,7 +286,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             // Add problem
             if (!typeMatched) {
                 StringBuilder typeLiterals = new StringBuilder();
-                for (MctlTypeDescriptor typeDescriptor : funcSymbol.get_types().get(counter)) {
+                for (MctlTypeDescriptor typeDescriptor : (List<MctlTypeDescriptor>) funcSymbol.get_types().get(counter)) {
                     typeLiterals.append("\"").append(typeDescriptor.get_type_literal()).append("\", ");
                 }
 
