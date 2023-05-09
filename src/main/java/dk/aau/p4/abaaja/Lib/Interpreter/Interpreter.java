@@ -215,7 +215,7 @@ public class Interpreter implements INodeVisitor {
                 if(i < symbol.get_accessors().size() - 1) {
                     // Iterate to the next nested list
 
-                    ArrayList nextIntermediate  = null;
+                    ArrayList nextIntermediate = null;
 
                     // If there is an existing member, use that, otherwise create one
                     if(intermediate.size() > accessor){
