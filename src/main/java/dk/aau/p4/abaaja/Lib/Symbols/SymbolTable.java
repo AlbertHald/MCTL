@@ -138,6 +138,11 @@ public class SymbolTable {
     }
 
     public void insertSymbol(Symbol symbol) {
+        if(!symbol.get_accessors().isEmpty()) {
+            // These values are specific to the local use of the symbol, and should not be saved for later use
+            symbol.clear_accessors();
+            symbol.set_scoped_value(null);
+        }
         _currentScope.add_symbol(symbol);
     }
     public void insertType(MctlTypeDescriptor type) {

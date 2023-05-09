@@ -9,6 +9,7 @@ import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.*;
 import dk.aau.p4.abaaja.Lib.Visitors.INodeVisitor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -121,7 +122,7 @@ public class Interpreter implements INodeVisitor {
 
         iterateBlocks: for (int i = 0; i < numBlocks; i++) {
             testExp: if(numExps > i){
-                Symbol<Boolean> expSymbol = resolve(expList.get(i));
+                Symbol expSymbol = resolve(expList.get(i));
                 if(expSymbol == null || expSymbol.get_value() == null){
                     problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Ignoring if statement with no expression", node.get_lineNumber());
                     break testExp;
@@ -190,7 +191,49 @@ public class Interpreter implements INodeVisitor {
             return;
         }
 
-        symbol.set_value(resolve(node.get_assignExp()).get_value());
+        Symbol result = resolve(node.get_assignExp());
+        if(symbol.get_accessors().isEmpty()) {
+            // Primitive values can be set directly
+            symbol.set_value(result.get_value());
+        }else{
+            // List values need recursion hell
+            ArrayList intermediate = (ArrayList) symbol.get_baseValue();
+            // Set a new base list in case it has not been initialized
+            if(intermediate == null){
+                intermediate = new ArrayList();
+                symbol.set_value(intermediate);
+            }
+            // Iterate over each accessor until reaching the final nested list to add the value to
+            for(int i = 0; i < symbol.get_accessors().size(); i++){
+                int accessor = (int) symbol.get_accessors().get(i);
+
+                // The array is automatically initialized with NOTHING types all the way up to the index being set
+                while(intermediate.size() <= accessor){
+                    intermediate.add(null);
+                }
+
+                if(i < symbol.get_accessors().size() - 1) {
+                    // Iterate to the next nested list
+
+                    ArrayList nextIntermediate  = null;
+
+                    // If there is an existing member, use that, otherwise create one
+                    if(intermediate.size() > accessor){
+                        nextIntermediate = (ArrayList) intermediate.get(accessor);
+                    }
+                    if(nextIntermediate == null){
+                        nextIntermediate = new ArrayList();
+                    }
+
+                    // Prepare for next scope access iteration
+                    intermediate.set(accessor, nextIntermediate);
+                    intermediate = nextIntermediate;
+                }else{
+                    // We have arrived at the last nested list, now set the primitive value
+                    intermediate.set(accessor, result.get_value());
+                }
+            }
+        }
 
         symbolTable.insertSymbol(symbol);
     }
@@ -275,16 +318,16 @@ public class Interpreter implements INodeVisitor {
                 gameBridge.breakUnder();
             }
             case "placeFront" -> {
-                Symbol<String> blockId = resolve(node.get_paramExps().get(0));
-                gameBridge.placeFront(blockId.get_value());
+                Symbol blockId = resolve(node.get_paramExps().get(0));
+                gameBridge.placeFront((String) blockId.get_value());
             }
             case "placeAbove" -> {
-                Symbol<String> blockId = resolve(node.get_paramExps().get(0));
-                gameBridge.placeAbove(blockId.get_value());
+                Symbol blockId = resolve(node.get_paramExps().get(0));
+                gameBridge.placeAbove((String) blockId.get_value());
             }
             case "placeUnder" -> {
-                Symbol<String> blockId = resolve(node.get_paramExps().get(0));
-                gameBridge.placeUnder(blockId.get_value());
+                Symbol blockId = resolve(node.get_paramExps().get(0));
+                gameBridge.placeUnder((String) blockId.get_value());
             }
             case "blockFront" -> {
                 String bridgeResult = gameBridge.blockFront();
@@ -348,7 +391,7 @@ public class Interpreter implements INodeVisitor {
         }
 
         String methodName = resolve(node.get_id()).get_name();
-        Symbol result = new Symbol<>(new MctlNothingDescriptor(), null);
+        Symbol result = new Symbol(new MctlNothingDescriptor(), null);
         switch (methodName) {
             //TODO: Implement arrays
             default -> {
@@ -363,8 +406,8 @@ public class Interpreter implements INodeVisitor {
     }
     public Symbol resolve(StringMethodInvokeNode node) {
         String methodName = resolve(node.get_id()).get_name();
-        String subject = resolve(node.get_string()).get_value();
-        Symbol result = new Symbol<>(new MctlNothingDescriptor(), null);
+        String subject = (String) resolve(node.get_string()).get_value();
+        Symbol result = new Symbol(new MctlNothingDescriptor(), null);
         switch(methodName){
             case "length" -> {
                 result.set_value(subject.length());
@@ -431,22 +474,22 @@ public class Interpreter implements INodeVisitor {
     public void visit(BoolTypeNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
-    public Symbol<Boolean> resolve(BoolTypeNode node) {
-        return new Symbol<>(new MctlBooleanDescriptor());
+    public Symbol resolve(BoolTypeNode node) {
+        return new Symbol(new MctlBooleanDescriptor());
     }
 
     public void visit(NumTypeNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
-    public Symbol<Number> resolve(NumTypeNode node) {
-        return new Symbol<>(new MctlNumberDescriptor());
+    public Symbol resolve(NumTypeNode node) {
+        return new Symbol(new MctlNumberDescriptor());
     }
 
     public void visit(StringTypeNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
-    public Symbol<String> resolve(StringTypeNode node) {
-        return new Symbol<>(new MctlStringDescriptor());
+    public Symbol resolve(StringTypeNode node) {
+        return new Symbol(new MctlStringDescriptor());
     }
 
     public void visit(NothingTypeNode node) {
@@ -454,14 +497,14 @@ public class Interpreter implements INodeVisitor {
 
     }
     public Symbol resolve(NothingTypeNode node) {
-        return new Symbol<>(new MctlNothingDescriptor());
+        return new Symbol(new MctlNothingDescriptor());
     }
 
     public void visit(IDTypeNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
     /*public Symbol resolve(IDTypeNode node) {
-        return new Symbol<>(new MctlStructDescriptor());
+        return new Symbol(new MctlStructDescriptor());
     }*/
 
     public void visit(ExpNode node) {
@@ -596,7 +639,7 @@ public class Interpreter implements INodeVisitor {
     public void visit(MulExpNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected arithmetic expression", node.get_lineNumber());
     }
-    public Symbol<Number> resolve(MulExpNode node) {
+    public Symbol resolve(MulExpNode node) {
         Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0));
         Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1));
         double leftInit = ((Number) leftSymbol.get_value()).doubleValue();
@@ -624,7 +667,7 @@ public class Interpreter implements INodeVisitor {
     public void visit(AddExpNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected arithmetic expression", node.get_lineNumber());
     }
-    public Symbol<Number> resolve(AddExpNode node) {
+    public Symbol resolve(AddExpNode node) {
         Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0));
         Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1));
         double leftInit = ((Number) leftSymbol.get_value()).doubleValue();
@@ -648,7 +691,7 @@ public class Interpreter implements INodeVisitor {
     public void visit(AndExpNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected logical expression", node.get_lineNumber());
     }
-    public Symbol<Boolean> resolve(AndExpNode node) {
+    public Symbol resolve(AndExpNode node) {
         Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0));
         Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1));
         boolean leftInit = (boolean) leftSymbol.get_value();
@@ -660,7 +703,7 @@ public class Interpreter implements INodeVisitor {
     public void visit(OrExpNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected logical expression", node.get_lineNumber());
     }
-    public Symbol<Boolean> resolve(OrExpNode node) {
+    public Symbol resolve(OrExpNode node) {
         Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0));
         Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1));
         boolean leftInit = (boolean) leftSymbol.get_value();
@@ -672,12 +715,12 @@ public class Interpreter implements INodeVisitor {
     public void visit(CompExpNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected comparison expression", node.get_lineNumber());
     }
-    public Symbol<Boolean> resolve(CompExpNode node) {
+    public Symbol resolve(CompExpNode node) {
         Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0));
         Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1));
         double leftInit = ((Number) leftSymbol.get_value()).doubleValue();
         double rightInit = ((Number) rightSymbol.get_value()).doubleValue();
-        Symbol<Boolean> resultSymbol = new Symbol<Boolean>(new MctlBooleanDescriptor());
+        Symbol resultSymbol = new Symbol(new MctlBooleanDescriptor());
         switch(node.get_operatorLiteral()) {
             case "<=" -> {
                 resultSymbol.set_value(leftInit <= rightInit);
@@ -705,11 +748,11 @@ public class Interpreter implements INodeVisitor {
     public void visit(EqualExpNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected comparison expression", node.get_lineNumber());
     }
-    public Symbol<Boolean> resolve(EqualExpNode node) {
+    public Symbol resolve(EqualExpNode node) {
         Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0));
         Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1));
         boolean comparison = leftSymbol.get_value() == rightSymbol.get_value();
-        Symbol<Boolean> resultSymbol = new Symbol<>(new MctlBooleanDescriptor());
+        Symbol resultSymbol = new Symbol(new MctlBooleanDescriptor());
         switch(node.get_operatorLiteral()) {
             case "==" -> {
                 resultSymbol.set_value(comparison);
@@ -730,7 +773,11 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected variable expression", node.get_lineNumber());
     }
     public Symbol resolve(IDExpNode node) {
-        if(node instanceof ActualIDExpNode) return resolve((ActualIDExpNode) node);
+        if(node instanceof ActualIDExpNode){
+            return resolve((ActualIDExpNode) node);
+        }else if(node instanceof IDArrayExpNode){
+            return resolve((IDArrayExpNode) node);
+        }
         return resolve(node.get_idNode());
     }
 
@@ -740,13 +787,37 @@ public class Interpreter implements INodeVisitor {
     public Symbol resolve(ActualIDExpNode node) {
         Symbol symbol = symbolTable.searchSymbol(node.get_id());
         if(symbol == null){
-            symbol = new Symbol<>(node.get_id());
+            symbol = new Symbol(node.get_id());
         }
         return symbol;
     }
 
     public void visit(IDArrayExpNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected variable expression", node.get_lineNumber());
+    }
+    public Symbol resolve(IDArrayExpNode node){
+        Symbol intermediate = resolve(node.get_idNode());
+
+        int accessor = ((Number) resolve(node.get_accessor()).get_value()).intValue();
+        intermediate.add_accessor(accessor);
+
+        if(node.get_idNode() instanceof IDArrayExpNode){
+            // We are already running access recursion, therefore we need to use the scoped value.
+            if(intermediate.get_value() != null && ((List) intermediate.get_value()).size() > accessor){
+                intermediate.set_scoped_value( ((ArrayList) intermediate.get_value()).get(accessor) );
+            }else{
+                intermediate.set_scoped_value(null);
+            }
+        }else{
+            // We are starting a new recursion, therefore we need the base value.
+            if(intermediate.get_baseValue() != null && ((List) intermediate.get_baseValue()).size() > accessor){
+                intermediate.set_scoped_value( ((ArrayList) intermediate.get_baseValue()).get(accessor) );
+            }else{
+                intermediate.set_scoped_value(null);
+            }
+        }
+
+        return intermediate;
     }
 
     public void visit(IDStructNode node) {
@@ -756,22 +827,22 @@ public class Interpreter implements INodeVisitor {
     public void visit(BoolExpNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected boolean literal expression", node.get_lineNumber());
     }
-    public Symbol<Boolean> resolve(BoolExpNode node) {
-        return new Symbol<>(new MctlBooleanDescriptor(), node.get_result());
+    public Symbol resolve(BoolExpNode node) {
+        return new Symbol(new MctlBooleanDescriptor(), node.get_result());
     }
 
     public void visit(NumExpNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected numerical literal expression", node.get_lineNumber());
     }
-    public Symbol<Number> resolve(NumExpNode node) {
-        return new Symbol<>(new MctlNumberDescriptor(), node.get_result());
+    public Symbol resolve(NumExpNode node) {
+        return new Symbol(new MctlNumberDescriptor(), node.get_result());
     }
 
     public void visit(StringExpNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected string literal expression", node.get_lineNumber());
     }
-    public Symbol<String> resolve(StringExpNode node) {
-        return new Symbol<>(new MctlStringDescriptor(), node.get_result());
+    public Symbol resolve(StringExpNode node) {
+        return new Symbol(new MctlStringDescriptor(), node.get_result());
     }
 
     public Symbol resolve(BaseNode node) {
