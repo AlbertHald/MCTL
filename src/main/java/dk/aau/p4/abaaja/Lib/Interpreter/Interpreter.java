@@ -422,14 +422,17 @@ public class Interpreter implements INodeVisitor {
                 result.set_type(new MctlStringDescriptor());
                 int start = ((Number) resolve(node.get_paramExps().get(0)).get_value()).intValue();
                 int end = ((Number) resolve(node.get_paramExps().get(1)).get_value()).intValue();
-                if(start <= 0 || subject.length() < start){
-                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access STRING at index " + start + " when only index 1-" +subject.length() + " is valid.", node.get_lineNumber());
+                if(subject.length() == 0){
+                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to call substring on an empty STRING.", node.get_lineNumber());
                     result.set_value("");
-                }else if(end <= start || subject.length()+1 < end){
-                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access end of STRING at index " + end + " when only index " + (start+1) + "-" + (subject.length()+1) + " is valid.", node.get_lineNumber());
+                }else if(start < 0 || subject.length() <= start){
+                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access STRING at index " + start + " when only index 0-" + (subject.length()-1) + " is valid.", node.get_lineNumber());
+                    result.set_value("");
+                }else if(end < start || subject.length() <= end){
+                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access end of STRING at index " + end + " when only index " + start + "-" + (subject.length()-1) + " is valid.", node.get_lineNumber());
                     result.set_value("");
                 }else{
-                    result.set_value(subject.substring(start-1, end-1));
+                    result.set_value(subject.substring(start, end+1));
                 }
             }
             //TODO: Implement indexesOf when arrays are do be have implemented
