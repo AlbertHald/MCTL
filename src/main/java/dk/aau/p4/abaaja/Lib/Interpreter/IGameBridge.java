@@ -28,4 +28,6 @@ public interface IGameBridge {
     String blockAbove();
     String blockUnder();
 
+    void internal_terminate();
+
 }
