@@ -103,6 +103,10 @@ public class Interpreter implements INodeVisitor {
     public void visit(FuncDecNode node) {
         FuncSymbol symbol = new FuncSymbol();
         symbol.set_name(node.get_id());
+
+        Symbol type = resolve(node.get_returnType());
+        symbol.set_type(type.get_type());
+
         symbol.set_funcBlock(node.get_funcBlock());
         symbol.set_formalParams(node.get_paramList());
         symbolTable.insertSymbol(symbol);
