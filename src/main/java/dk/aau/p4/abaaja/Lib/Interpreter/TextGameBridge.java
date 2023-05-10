@@ -106,5 +106,10 @@ public class TextGameBridge implements IGameBridge {
         return "dummy";
     }
 
+    @Override
+    public void internal_terminate() {
+        printFunc("Terminate the program");
+    }
+
 
 }
