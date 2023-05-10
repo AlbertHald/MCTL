@@ -113,7 +113,7 @@ public class Interpreter implements INodeVisitor {
     }
 
     public void visit(StructDecNode node) {
-
+        //Intentionally left blank. Struct definitions are only used for type checking.
     }
 
     public void visit(IfStateNode node) {
@@ -803,7 +803,7 @@ public class Interpreter implements INodeVisitor {
     public void visit(IDArrayExpNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected variable expression", node.get_lineNumber());
     }
-    public Symbol resolve(IDArrayExpNode node){
+    public Symbol resolve(IDArrayExpNode node) {
         Symbol intermediate = resolve(node.get_idNode());
 
         int accessor = ((Number) resolve(node.get_accessor()).get_value()).intValue();
