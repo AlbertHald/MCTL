@@ -759,7 +759,7 @@ public class Interpreter implements INodeVisitor {
     public Symbol resolve(EqualExpNode node) {
         Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0));
         Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1));
-        boolean comparison = leftSymbol.get_value() == rightSymbol.get_value();
+        boolean comparison = leftSymbol.get_value().equals(rightSymbol.get_value());
         Symbol resultSymbol = new Symbol(new MctlBooleanDescriptor());
         switch(node.get_operatorLiteral()) {
             case "==" -> {
