@@ -553,7 +553,7 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected unary expression", node.get_lineNumber());
     }
     public Symbol resolve(UnaryExpNode node) {
-        Symbol result = resolve((ExpNode) node.get_children().get(0));
+        Symbol result = resolve(node.get_unaryExp());
         switch (node.get_operatorLiteral()) {
             case "!" -> {
                 result.set_value(!(boolean) result.get_value());
@@ -570,7 +570,7 @@ public class Interpreter implements INodeVisitor {
                 problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown unary expression", node.get_lineNumber());
             }
         }
-        return null;
+        return result;
     }
 
     public void visit(TypecastExpNode node) {
