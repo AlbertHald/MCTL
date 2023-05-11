@@ -843,7 +843,9 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected numerical literal expression", node.get_lineNumber());
     }
     public Symbol resolve(NumExpNode node) {
-        return new Symbol(new MctlNumberDescriptor(), node.get_result());
+        // The cast to double ensures that all values are floats.
+        // TODO: This is a hacky solution to the problem of using ints and floats together, we should probably allow ints more broadly
+        return new Symbol(new MctlNumberDescriptor(), (Number) node.get_result().doubleValue());
     }
 
     public void visit(StringExpNode node) {
