@@ -3,13 +3,10 @@ package dk.aau.p4.abaaja.Lib.Interpreter;
 import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
-import dk.aau.p4.abaaja.Lib.Symbols.FuncSymbol;
-import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
-import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
+import dk.aau.p4.abaaja.Lib.Symbols.*;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.*;
 import dk.aau.p4.abaaja.Lib.Visitors.INodeVisitor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -197,50 +194,8 @@ public class Interpreter implements INodeVisitor {
         }
 
         Symbol result = resolve(node.get_assignExp());
-        if(symbol.get_accessors().isEmpty()) {
-            // Primitive values can be set directly
-            symbol.set_value(result.get_value());
-        }else{
-            // List values need recursion hell
-            ArrayList intermediate = (ArrayList) symbol.get_baseValue();
-            // Set a new base list in case it has not been initialized
-            if(intermediate == null){
-                intermediate = new ArrayList();
-                symbol.set_value(intermediate);
-            }
-            // Iterate over each accessor until reaching the final nested list to add the value to
-            for(int i = 0; i < symbol.get_accessors().size(); i++){
-                int accessor = (int) symbol.get_accessors().get(i);
 
-                // The array is automatically initialized with NOTHING types all the way up to the index being set
-                while(intermediate.size() <= accessor){
-                    intermediate.add(null);
-                }
-
-                if(i < symbol.get_accessors().size() - 1) {
-                    // Iterate to the next nested list
-
-                    ArrayList nextIntermediate = null;
-
-                    // If there is an existing member, use that, otherwise create one
-                    if(intermediate.size() > accessor){
-                        nextIntermediate = (ArrayList) intermediate.get(accessor);
-                    }
-                    if(nextIntermediate == null){
-                        nextIntermediate = new ArrayList();
-                    }
-
-                    // Prepare for next scope access iteration
-                    intermediate.set(accessor, nextIntermediate);
-                    intermediate = nextIntermediate;
-                }else{
-                    // We have arrived at the last nested list, now set the primitive value
-                    intermediate.set(accessor, result.get_value());
-                }
-            }
-        }
-
-        symbolTable.insertSymbol(symbol);
+        symbol.set_value(result.get_value());
     }
 
     public void visit(InvokeNode node) {
@@ -483,21 +438,24 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
     public Symbol resolve(BoolTypeNode node) {
-        return new Symbol(new MctlBooleanDescriptor());
+        MctlTypeDescriptor type = new MctlBooleanDescriptor();
+        return new Symbol(type);
     }
 
     public void visit(NumTypeNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
     public Symbol resolve(NumTypeNode node) {
-        return new Symbol(new MctlNumberDescriptor());
+        MctlTypeDescriptor type = new MctlNumberDescriptor();
+        return new Symbol(type);
     }
 
     public void visit(StringTypeNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
     public Symbol resolve(StringTypeNode node) {
-        return new Symbol(new MctlStringDescriptor());
+        MctlTypeDescriptor type = new MctlStringDescriptor();
+        return new Symbol(type);
     }
 
     public void visit(NothingTypeNode node) {
@@ -505,15 +463,17 @@ public class Interpreter implements INodeVisitor {
 
     }
     public Symbol resolve(NothingTypeNode node) {
-        return new Symbol(new MctlNothingDescriptor());
+        MctlTypeDescriptor type = new MctlNothingDescriptor();
+        return new Symbol(type);
     }
 
     public void visit(IDTypeNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
-    /*public Symbol resolve(IDTypeNode node) {
-        return new Symbol(new MctlStructDescriptor());
-    }*/
+    public Symbol resolve(IDTypeNode node) {
+        MctlTypeDescriptor type = new MctlStructDescriptor(node.get_type());
+        return new Symbol(type);
+    }
 
     public void visit(ExpNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected expression", node.get_lineNumber());
@@ -785,6 +745,8 @@ public class Interpreter implements INodeVisitor {
             return resolve((ActualIDExpNode) node);
         }else if(node instanceof IDArrayExpNode){
             return resolve((IDArrayExpNode) node);
+        }else if(node instanceof IDStructNode){
+            return resolve((IDStructNode) node);
         }
         return resolve(node.get_idNode());
     }
@@ -804,32 +766,34 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected variable expression", node.get_lineNumber());
     }
     public Symbol resolve(IDArrayExpNode node) {
-        Symbol intermediate = resolve(node.get_idNode());
+        Symbol base = resolve(node.get_idNode());
 
         int accessor = ((Number) resolve(node.get_accessor()).get_value()).intValue();
-        intermediate.add_accessor(accessor);
 
-        if(node.get_idNode() instanceof IDArrayExpNode){
-            // We are already running access recursion, therefore we need to use the scoped value.
-            if(intermediate.get_value() != null && ((List) intermediate.get_value()).size() > accessor){
-                intermediate.set_scoped_value( ((ArrayList) intermediate.get_value()).get(accessor) );
-            }else{
-                intermediate.set_scoped_value(null);
-            }
-        }else{
-            // We are starting a new recursion, therefore we need the base value.
-            if(intermediate.get_baseValue() != null && ((List) intermediate.get_baseValue()).size() > accessor){
-                intermediate.set_scoped_value( ((ArrayList) intermediate.get_baseValue()).get(accessor) );
-            }else{
-                intermediate.set_scoped_value(null);
-            }
+        Symbol indexSymbol = base.get_index(accessor);
+        if(indexSymbol == null){
+            indexSymbol = new Symbol();
+            base.set_index(accessor, indexSymbol);
         }
 
-        return intermediate;
+        return indexSymbol;
     }
 
     public void visit(IDStructNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected variable expression", node.get_lineNumber());
+    }
+    public Symbol resolve(IDStructNode node) {
+        Symbol base = resolve(node.get_idNode());
+
+        String accessor = resolve(node.get_accessor()).get_name();
+
+        Symbol fieldSymbol = base.get_field(accessor);
+        if(fieldSymbol == null){
+            fieldSymbol = new Symbol(accessor);
+            base.set_field(fieldSymbol);
+        }
+
+        return fieldSymbol;
     }
 
     public void visit(BoolExpNode node) {

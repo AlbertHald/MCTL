@@ -4,6 +4,7 @@ import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlTypeDescriptor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 //Symbol table entries
 public class Symbol<T, B> {
@@ -51,18 +52,21 @@ public class Symbol<T, B> {
         this._type = _type;
     }
 
+    public boolean get_isInstantiated() {
+        return _isInstantiated;
+    }
+    public void set_isInstantiated(boolean _isInstantiated) {
+        this._isInstantiated = _isInstantiated;
+    }
+
     /**
-     * When interpreting the language, this is the value of the symbol after any calculations and acesses have been made.
+     * When interpreting the language, this is the value of the symbol after any calculations and accesses have been made.
      * Example: (where `k[2] = 4`),
      * expression: `k[2]` results in `value = 4`.
      * expression: `k[2] + 5` results in `value = 9`.
      */
     private T _value;
     public void set_value(T value){
-        this.set_baseValue((B) value);
-        this.set_scoped_value(value);
-    }
-    public void set_scoped_value(T value){
         this._value = value;
     }
     public T get_value(){
@@ -70,40 +74,51 @@ public class Symbol<T, B> {
     }
 
     /**
-     * When interpreting the language, this is the base value of the symbol before any accesses have been made.
-     * This is used in conjunction with `accessors` when assigning a value to a nested structure.
-     * Example: (where `k[2][0] = 4`),
-     * expression: `k[2][0]` results in `baseValue = [null, null, [4]]`.
+     * If the symbol is a list, the values of each list index is saved here
      */
-    private B _baseValue;
-    public void set_baseValue(B baseValue){
-        this._baseValue = baseValue;
+    private final List<Symbol> _list = new ArrayList<>();
+    public void set_index(int index, Symbol symbol){
+        while(index >= this._list.size()){
+            this._list.add(null);
+        }
+        this._list.set(index, symbol);
     }
-    public B get_baseValue(){
-        return this._baseValue;
+    public void add_index(Symbol symbol){
+        this._list.add(symbol);
+    }
+    public Symbol get_index(int index){
+        if(index < this._list.size()){
+            return this._list.get(index);
+        }else{
+            return null;
+        }
     }
 
     /**
-     * When interpreting the language, this lists the accessors that are defined on a list's `baseValue` to get to the primitive `value`.
-     * This is used in conjunction with `baseValue` when assigning a value to a nested list structure.
-     * Example: (where `k[2][0] = 4`),
-     * expression: `k[2][0]` results in `accessors = [2, 0]`.
+     * If the symbol is a struct, the values of each field is saved here
      */
-    private final ArrayList<Integer> _accessors = new ArrayList<>();
-    public void add_accessor(int accessor){
-        this._accessors.add(accessor);
+    private final List<Symbol> _fields = new ArrayList<>();
+    public void set_field(Symbol symbol){
+        int index = get_field_index(symbol.get_name());
+        if(index == -1) {
+            this._fields.add(symbol);
+        }else{
+            this._fields.set(index, symbol);
+        }
     }
-    public void clear_accessors(){
-        this._accessors.clear();
+    public Symbol get_field(String name){
+        int index = get_field_index(name);
+        if(index == -1){
+            return null;
+        }else{
+            return this._fields.get(index);
+        }
     }
-    public ArrayList<Integer> get_accessors(){
-        return this._accessors;
-    }
-
-    public boolean get_isInstantiated() {
-        return _isInstantiated;
-    }
-    public void set_isInstantiated(boolean _isInstantiated) {
-        this._isInstantiated = _isInstantiated;
+    private int get_field_index(String name){
+        for(int i = 0; i < this._fields.size(); i++){
+            Symbol symbol = this._fields.get(i);
+            if(Objects.equals(symbol.get_name(), name)) return i;
+        }
+        return -1;
     }
 }

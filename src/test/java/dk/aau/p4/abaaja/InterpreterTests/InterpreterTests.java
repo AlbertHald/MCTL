@@ -196,6 +196,82 @@ public class InterpreterTests {
     }
 
     @DataProvider
+    public Object[][] structAssTestData() {
+        return new Object[][] {
+                {"struct S { variable o: BOOLEAN, variable t: BOOLEAN }; variable test: S; test.o = true; test.t = true;", true, true},
+                {"struct S { variable o: BOOLEAN, variable t: BOOLEAN }; variable test: S; test.o = false; test.t = false;", false, false},
+                {"struct S { variable o: BOOLEAN, variable t: BOOLEAN }; variable test: S; test.o = true; test.t = false;", true, false},
+                {"struct S { variable o: BOOLEAN, variable t: BOOLEAN }; variable test: S; test.o = false; test.t = true;", false, true},
+        };
+    }
+    @Test(dataProvider = "structAssTestData")
+    public void structAss_setsValue(String code, boolean value_one, boolean value_two) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+
+        Symbol symbol_one = symbol.get_field("o");
+        Assert.assertNotNull(symbol_one, "Should create a symbol for 'o' and add it to the symbol fields");
+        Assert.assertEquals(symbol_one.get_value(), value_one, "Should set the appropriate value on symbol 'o'");
+
+        Symbol symbol_two = symbol.get_field("t");
+        Assert.assertNotNull(symbol_two, "Should create a symbol for 't' and add it to the symbol fields");
+        Assert.assertEquals(symbol_two.get_value(), value_two, "Should set the appropriate value on symbol 't'");
+
+    }
+
+    @DataProvider
+    public Object[][] structAssNestedTestData() {
+        return new Object[][] {
+                {"struct S { variable s: S, variable o: BOOLEAN, variable t: BOOLEAN }; variable test: S; test.s.s.o = true; test.s.s.t = true;", true, true},
+                {"struct S { variable s: S, variable o: BOOLEAN, variable t: BOOLEAN }; variable test: S; test.s.s.o = false; test.s.s.t = false;", false, false},
+                {"struct S { variable s: S, variable o: BOOLEAN, variable t: BOOLEAN }; variable test: S; test.s.s.o = true; test.s.s.t = false;", true, false},
+                {"struct S { variable s: S, variable o: BOOLEAN, variable t: BOOLEAN }; variable test: S; test.s.s.o = false; test.s.s.t = true;", false, true},
+        };
+    }
+    @Test(dataProvider = "structAssNestedTestData")
+    public void structAssNested_setsValue(String code, boolean value_one, boolean value_two) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+
+        Symbol nested_0s = symbol.get_field("s");
+        Assert.assertNotNull(nested_0s, "Should create a nested symbol for 's' and add it to the symbol fields");
+
+        Symbol nested_1s = nested_0s.get_field("s");
+        Assert.assertNotNull(nested_1s, "Should create a nested symbol for 's' and add it to the nested 's' symbol fields");
+
+        Symbol symbol_one = nested_1s.get_field("o");
+        Assert.assertNotNull(symbol_one, "Should create a symbol for 'o' and add it to the nested 's' symbol fields");
+        Assert.assertEquals(symbol_one.get_value(), value_one, "Should set the appropriate value on symbol 'o'");
+
+        Symbol symbol_two = nested_1s.get_field("t");
+        Assert.assertNotNull(symbol_two, "Should create a symbol for 't' and add it to the nested 's' symbol fields");
+        Assert.assertEquals(symbol_two.get_value(), value_two, "Should set the appropriate value on symbol 't'");
+
+    }
+
+    @DataProvider
     public Object[][] expTestData_number() {
         return new Object[][] {
                 {"variable test: NUMBER; test = +1;", 1.0},

@@ -9,8 +9,11 @@ public class MctlStructDescriptor extends MctlTypeDescriptor {
     //ID is also the struct type
     private final String _typeDescriptor;
     private final HashMap<String, MctlTypeDescriptor> _structVariables = new HashMap<>();
-    private final StructDecNode _nodeReference;
+    private StructDecNode _nodeReference;
 
+    public MctlStructDescriptor(String typeDescriptor) {
+        this._typeDescriptor = typeDescriptor;
+    }
     public MctlStructDescriptor(String typeDescriptor, StructDecNode nodeReference) {
         this._typeDescriptor = typeDescriptor;
         this._nodeReference = nodeReference;
