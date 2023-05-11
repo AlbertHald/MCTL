@@ -717,18 +717,20 @@ public class InterpreterTests {
     @DataProvider
     public Object[][] stringIndexesOfTestData() {
         return new Object[][] {
-                {"variable test: NUMBER[]; test = 'test string'.indexesOf('e');", List.of(1)},
-                {"variable test: NUMBER[]; test = 'test string'.indexesOf('t');", List.of(0, 3, 6)},
-                {"variable test: NUMBER[]; test = 'test string'.indexesOf('te');", List.of(0)},
-                {"variable test: NUMBER[]; test = 'test string'.indexesOf('st');", List.of(2, 5)},
-                {"variable test: NUMBER[]; test = 'test string'.indexesOf('string');", List.of(5)},
-                {"variable test: NUMBER[]; test = 'test string'.indexesOf('test string');", List.of(0)},
+                {"variable test: NUMBER[]; test = 'test string'.indexesOf('e');", List.of(1.0)},
+                {"variable test: NUMBER[]; test = 'test string'.indexesOf('t');", List.of(0.0, 3.0, 6.0)},
+                {"variable test: NUMBER[]; test = 'test string'.indexesOf('te');", List.of(0.0)},
+                {"variable test: NUMBER[]; test = 'test string'.indexesOf('st');", List.of(2.0, 5.0)},
+                {"variable test: NUMBER[]; test = 'test string'.indexesOf('string');", List.of(5.0)},
+                {"variable test: NUMBER[]; test = 'test string'.indexesOf('test string');", List.of(0.0)},
                 {"variable test: NUMBER[]; test = 'test string'.indexesOf('test string ');", List.of()},
                 {"variable test: NUMBER[]; test = 'test string'.indexesOf(' test string');", List.of()},
                 {"variable test: NUMBER[]; test = 'test string'.indexesOf('teststring');", List.of()},
                 {"variable test: NUMBER[]; test = ''.indexesOf('e');", List.of()},
                 {"variable test: NUMBER[]; test = ''.indexesOf('string');", List.of()},
-                // TODO: define what happens with ''.indexesOf(''); and 'test'.indexesOf('');
+                {"variable test: NUMBER[]; test = 'bossman'.indexesOf('');", List.of()},
+                {"variable test: NUMBER[]; test = ' '.indexesOf('');", List.of()},
+                {"variable test: NUMBER[]; test = ''.indexesOf('');", List.of()},
         };
     }
     @Test(dataProvider = "stringIndexesOfTestData")
@@ -746,7 +748,14 @@ public class InterpreterTests {
         }
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
-        Assert.fail("This test is not implemented yet, waiting for a stable list implementation in the interpreter");
+
+        Assert.assertEquals(symbol.get_listLength(), ((Number) indexes.size()).doubleValue(), "There should be exactly " + indexes.size() + " matches");
+
+        for(int i = 0; i < indexes.size(); i++){
+            Symbol match = symbol.get_index(i);
+            Assert.assertNotNull(match, "The symbol should contain a symbol with a match value at index " + i);
+            Assert.assertEquals(match.get_value(), indexes.get(i), "The match symbol should resolve to the correct value");
+        }
 
     }
 

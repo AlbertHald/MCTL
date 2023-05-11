@@ -93,6 +93,9 @@ public class Symbol<T, B> {
             return null;
         }
     }
+    public int get_listLength(){
+        return this._list.size();
+    }
 
     /**
      * If the symbol is a struct, the values of each field is saved here

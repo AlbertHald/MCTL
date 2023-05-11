@@ -370,8 +370,17 @@ public class Interpreter implements INodeVisitor {
         Symbol result = new Symbol(new MctlNothingDescriptor(), null);
         switch(methodName){
             case "length" -> {
-                result.set_value(subject.length());
                 result.set_type(new MctlNumberDescriptor());
+                result.set_value(((Number) subject.length()).doubleValue());
+            }
+            case "add" -> {
+                result.set_type(new MctlStringDescriptor());
+                String end = (String) resolve(node.get_paramExps().get(0)).get_value();
+                result.set_value(subject + end);
+            }
+            case "remove" -> {
+                result.set_type(new MctlStringDescriptor());
+                result.set_value(subject.substring(0, subject.length() - 1));
             }
             case "substring" -> {
                 result.set_type(new MctlStringDescriptor());
@@ -390,7 +399,18 @@ public class Interpreter implements INodeVisitor {
                     result.set_value(subject.substring(start, end+1));
                 }
             }
-            //TODO: Implement indexesOf when arrays are do be have implemented
+            case "indexesOf" -> {
+                result.set_type(new MctlArrayTypeDescriptor(new MctlNumberDescriptor(), 1));
+                String query = (String) resolve(node.get_paramExps().get(0)).get_value();
+                int safeLastIndex = (subject.length() - query.length()) - 1;
+
+                for(int i = 0; i <= safeLastIndex; i++){
+                    if(subject.substring(i, i+query.length()).equals(query)){
+                        Symbol match = new Symbol(new MctlNumberDescriptor(), ((Number) i).doubleValue());
+                        result.add_index(match);
+                    }
+                }
+            }
             default -> {
                 problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unsupported method invocation on STRING: " + methodName, node.get_lineNumber());
             }
