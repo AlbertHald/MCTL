@@ -167,11 +167,13 @@ public class InterpreterTests {
     @DataProvider
     public Object[][] varAssTestData_number() {
         return new Object[][] {
-                {"variable test: NUMBER; test = 1;", 1},
+                {"variable test: NUMBER; test = 1;", 1.0},
                 {"variable test: NUMBER; test = 10.5;", 10.5},
                 {"variable test: NUMBER; test = 1.3789;", 1.3789},
-                {"variable test: NUMBER; test = 1045390435;", 1045390435},
-                {"variable test: NUMBER; test = 0;", 0},
+                {"variable test: NUMBER; test = 0;", 0.0},
+                {"variable test: NUMBER; test = 9435;", 9435.0},
+                //TODO: When we have better int handling, ensure that test cases like the following works:
+                //{"variable test: NUMBER; test = 1045390435;", 1045390435},
         };
     }
     @Test(dataProvider = "varAssTestData_number")
@@ -478,18 +480,18 @@ public class InterpreterTests {
         return new Object[][] {
                 {"variable test: NUMBER; test = 0; repeat(3){ test++; }", 3.0},
                 {"variable test: NUMBER; test = 0; repeat(1){ test++; }", 1.0},
-                {"variable test: NUMBER; test = 0; repeat(0){ test++; }", 0},
-                {"variable test: NUMBER; test = 0; repeat(0){ repeat(3){ test++; } }", 0},
+                {"variable test: NUMBER; test = 0; repeat(0){ test++; }", 0.0},
+                {"variable test: NUMBER; test = 0; repeat(0){ repeat(3){ test++; } }", 0.0},
                 {"variable test: NUMBER; test = 0; repeat(2){ repeat(3){ test++; } }", 6.0},
                 {"variable test: NUMBER; test = 0; repeat(2){ repeat(1){ repeat(3){ test++; } } }", 6.0},
-                {"variable test: NUMBER; test = 0; repeat(2){ repeat(0){ repeat(3){ test++; } } }", 0},
+                {"variable test: NUMBER; test = 0; repeat(2){ repeat(0){ repeat(3){ test++; } } }", 0.0},
                 {"variable test: NUMBER; test = 0; repeat(1){ repeat(1){ repeat(1){ test++; } } }", 1.0},
-                {"variable test: NUMBER; variable sentinel: BOOLEAN; test = 0; repeat(false){ test++; }", 0},
+                {"variable test: NUMBER; variable sentinel: BOOLEAN; test = 0; repeat(false){ test++; }", 0.0},
                 {"variable test: NUMBER; variable sentinel: BOOLEAN; test = 0; sentinel = true; repeat(sentinel){ test++; sentinel = false; }", 1.0},
                 {"variable test: NUMBER; variable sentinel: BOOLEAN; test = 0; sentinel = true; repeat(sentinel){ sentinel = false; test++; }", 1.0},
                 {"variable test: NUMBER; variable sentinel: BOOLEAN; test = 0; sentinel = true; repeat(sentinel){ test++; if(test > 1){ sentinel = false; } }", 2.0},
                 {"variable test: NUMBER; test = 0; repeat(true){ test++; stop; }", 1.0},
-                {"variable test: NUMBER; test = 0; repeat(true){ stop; test++; }", 0},
+                {"variable test: NUMBER; test = 0; repeat(true){ stop; test++; }", 0.0},
                 {"variable test: NUMBER; test = 0; repeat(true){ test++; if(test > 1){ stop; } }", 2.0},
         };
     }
@@ -515,10 +517,10 @@ public class InterpreterTests {
     @DataProvider
     public Object[][] stringLengthTestData() {
         return new Object[][] {
-                {"variable test: NUMBER; test = 'test string'.length();", 11},
-                {"variable test: NUMBER; test = 'bossman'.length();", 7},
-                {"variable test: NUMBER; test = ' '.length();", 1},
-                {"variable test: NUMBER; test = ''.length();", 0},
+                {"variable test: NUMBER; test = 'test string'.length();", 11.0},
+                {"variable test: NUMBER; test = 'bossman'.length();", 7.0},
+                {"variable test: NUMBER; test = ' '.length();", 1.0},
+                {"variable test: NUMBER; test = ''.length();", 0.0},
         };
     }
     @Test(dataProvider = "stringLengthTestData")
