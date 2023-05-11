@@ -742,10 +742,10 @@ public class InterpreterTests {
         return new Object[][] {
                 {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streams: VALVE[] }; variable valve: VALVE; valve.streams[0].on = true; test = valve.streams[0].on;", true},
                 {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streams: VALVE[] }; variable valve: VALVE; valve.on = false; valve.streams[0].on = false; valve.streams[1].on = true; valve.streams[1].streams[1].on = false; valve.streams[2].on = false; test = valve.streams[1].on;", true},
-                {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streams: VALVE[] }; variable valves: VALVE[]; valves[0].on = false; valves[1].on = true; valves[2].on = false; test = valve.streams[1].on;", true},
-                {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streamInception: VALVE[][], stream: VALVE }; variable valve: VALVE; valve.stream.stream.streamInception[3][2].on = true; test = valve.stream.stream.streamInception[3][2].on;", true},
-                {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streamInception: VALVE[][], stream: VALVE }; variable valve: VALVE; valve.streamInception[3][2].stream.streamInception[0][0].stream.stream.on = true; test = valve.streamInception[3][2].stream.streamInception[0][0].stream.stream.on;", true},
-                {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streamInception: VALVE[][], stream: VALVE }; variable valveInception: VALVE[][][]; valveInception[8][2][0].stream.streamInception[8][1] = true; test = valveInception[8][2][0].stream.streamInception[8][1];", true},
+                {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streams: VALVE[] }; variable valves: VALVE[]; valves[0].on = false; valves[1].on = true; valves[2].on = false; test = valves[1].on;", true},
+                {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streamInception: VALVE[][], variable stream: VALVE }; variable valve: VALVE; valve.stream.stream.streamInception[3][2].on = true; test = valve.stream.stream.streamInception[3][2].on;", true},
+                {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streamInception: VALVE[][], variable stream: VALVE }; variable valve: VALVE; valve.streamInception[3][2].stream.streamInception[0][0].stream.stream.on = true; test = valve.streamInception[3][2].stream.streamInception[0][0].stream.stream.on;", true},
+                {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streamInception: VALVE[][], variable stream: VALVE }; variable valveInception: VALVE[][][]; valveInception[8][2][0].stream.streamInception[8][1] = true; test = valveInception[8][2][0].stream.streamInception[8][1];", true},
         };
     }
     @Test(dataProvider = "structAndListUseTestData")
