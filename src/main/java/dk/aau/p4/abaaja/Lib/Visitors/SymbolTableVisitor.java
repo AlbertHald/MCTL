@@ -124,6 +124,10 @@ public class SymbolTableVisitor implements INodeVisitor {
             typeDescriptor = typeCheckingVisitor.visit(node.get_varDecType());
             if (typeDescriptor != null) {
                 Symbol symbol = new Symbol(node.get_id(), typeDescriptor);
+
+                if (typeDescriptor instanceof MctlArrayTypeDescriptor) {
+                    symbol.set_isInstantiated(true);
+                }
                 this.symbolTable.insertSymbol(symbol);
             } else {
                 problemCollection.addFormattedProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_varDecType().get_type() + "\" does not exist", node.get_lineNumber());
