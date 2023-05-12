@@ -4,4 +4,8 @@ public class MctlTypeDescriptor {
     public String get_type_literal() {
         return "ANY";
     };
+
+    public MctlTypeDescriptor clone(){
+        return new MctlTypeDescriptor();
+    }
 }

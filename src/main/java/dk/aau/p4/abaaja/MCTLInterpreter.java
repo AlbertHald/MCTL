@@ -48,10 +48,8 @@ public class MCTLInterpreter {
             if (!problemCollection.getHasErrors()) {
                 //concreteNode.accept(new Interpreter(problemCollection, new SymbolTable(), gameBridge));
             }
-            else {
-                for (Problem problem : problemCollection.getProblems()) {
-                    System.out.println(problem.getMessage());
-                }
+            for (Problem problem : problemCollection.getProblems()) {
+                System.out.println(problem.getMessage());
             }
         }
         else {

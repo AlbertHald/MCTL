@@ -2,12 +2,12 @@ package dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors;
 
 public class MctlArrayTypeDescriptor extends MctlTypeDescriptor {
 
-    private int _degree;
     private MctlTypeDescriptor _type;
+    private int _degree;
 
     public MctlArrayTypeDescriptor(MctlTypeDescriptor type, int degree) {
-        this._degree = degree;
         this._type = type;
+        this._degree = degree;
     }
     @Override
     public String get_type_literal() {
@@ -27,5 +27,10 @@ public class MctlArrayTypeDescriptor extends MctlTypeDescriptor {
 
     public MctlTypeDescriptor getType() {
         return _type;
+    }
+
+    @Override
+    public MctlArrayTypeDescriptor clone() {
+        return new MctlArrayTypeDescriptor(this._type.clone(), this._degree);
     }
 }
