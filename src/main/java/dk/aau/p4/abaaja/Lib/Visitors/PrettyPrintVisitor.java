@@ -217,6 +217,14 @@ public class PrettyPrintVisitor implements INodeVisitor{
     public void visit(InvokeNode node){
         beginLineNode(node);
         printIndented();
+        printInlineInvoke(node);
+        print(";");
+        endLineNode(node);
+    }
+    public void visit(InvokeExpNode node) {
+        printInlineInvoke(node.getInvokeNode());
+    }
+    public void printInlineInvoke(InvokeNode node){
         if(node instanceof VarMethodInvokeNode){
             ((VarMethodInvokeNode) node).get_varId().accept(this);
             print(".");
@@ -250,11 +258,10 @@ public class PrettyPrintVisitor implements INodeVisitor{
             }
         }
         if(breakParamLines) {
-            printIndented(");");
+            printIndented(")");
         }else {
-            print(");");
+            print(")");
         }
-        endLineNode(node);
     }
     public void visit(ReturnNode node){
         BaseNode returnExp = node.get_returnExp();
@@ -358,7 +365,6 @@ public class PrettyPrintVisitor implements INodeVisitor{
         print(node.get_result());
         print("\"");
     }
-    public void visit(InvokeExpNode node) { node.getInvokeNode().accept(this); }
 
     /**
      * After a thorough evaluation of our current operations and needs, we have come to the difficult conclusion that the following classes are not necessary.
