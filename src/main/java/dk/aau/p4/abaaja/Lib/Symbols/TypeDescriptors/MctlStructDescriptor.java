@@ -1,7 +1,6 @@
 package dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors;
 
 import dk.aau.p4.abaaja.Lib.Nodes.StructDecNode;
-import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 
 import java.util.HashMap;
 

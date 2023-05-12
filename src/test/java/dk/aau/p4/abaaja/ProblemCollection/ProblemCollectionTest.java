@@ -3,7 +3,6 @@ package dk.aau.p4.abaaja.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.Problem;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
-import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
