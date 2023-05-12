@@ -102,7 +102,7 @@ public class Interpreter implements INodeVisitor {
         symbol.set_name(node.get_id());
 
         Symbol type = resolve(node.get_returnType());
-        symbol.set_type(type.get_type());
+        symbol.set_type(type.get_type().clone());
 
         symbol.set_funcBlock(node.get_funcBlock());
         symbol.set_formalParams(node.get_paramList());
@@ -567,7 +567,7 @@ public class Interpreter implements INodeVisitor {
 
         if(Objects.equals(originalType.get_type_literal(), castType.get_type_literal())) {
             cast.set_value(original.get_value());
-            cast.set_type(original.get_type());
+            cast.set_type(original.get_type().clone());
         }else if(originalType instanceof MctlBooleanDescriptor && castType instanceof MctlStringDescriptor){
             Boolean value = (Boolean) original.get_value();
             if(value == null){

@@ -6,4 +6,9 @@ public class MctlBooleanDescriptor extends MctlTypeDescriptor {
     public String get_type_literal() {
         return "BOOLEAN";
     }
+
+    @Override
+    public MctlBooleanDescriptor clone() {
+        return new MctlBooleanDescriptor();
+    }
 }

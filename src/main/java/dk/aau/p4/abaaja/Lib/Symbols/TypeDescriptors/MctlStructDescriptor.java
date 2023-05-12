@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 public class MctlStructDescriptor extends MctlTypeDescriptor {
     //ID is also the struct type
-    private final String _typeDescriptor;
+    private String _typeDescriptor;
     private final HashMap<String, MctlTypeDescriptor> _structVariables = new HashMap<>();
     private StructDecNode _nodeReference;
 
@@ -38,5 +38,10 @@ public class MctlStructDescriptor extends MctlTypeDescriptor {
 
     public StructDecNode get_nodeReference() {
         return _nodeReference;
+    }
+
+    @Override
+    public MctlStructDescriptor clone() {
+        return new MctlStructDescriptor(this._typeDescriptor, this._nodeReference);
     }
 }

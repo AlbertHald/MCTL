@@ -138,4 +138,20 @@ public class Symbol<T> {
         }
         return -1;
     }
+
+    public Symbol clone(){
+        Symbol clone = new Symbol();
+        clone.set_name(this.get_name());
+        clone.set_type(this.get_type());
+        clone.set_isInstantiated(this.get_isInstantiated());
+
+        for(Symbol index : this._list){
+            clone.add_index(index.clone());
+        }
+        for(Symbol field : this._fields){
+            clone.set_field(field.clone());
+        }
+
+        return clone;
+    }
 }
