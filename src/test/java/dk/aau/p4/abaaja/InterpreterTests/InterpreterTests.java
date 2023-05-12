@@ -47,6 +47,11 @@ public class InterpreterTests {
                 {"variable test: STRING;", "STRING"},
                 {"variable test: BOOLEAN;", "BOOLEAN"},
                 {"variable test: NUMBER;", "NUMBER"},
+                {"variable test: NUMBER[];", "NUMBER"},
+                {"variable test: NUMBER[][];", "NUMBER"},
+                {"struct STRUCTURE { variable x: NUMBER }; variable test: STRUCTURE;", "STRUCTURE"},
+                {"struct STRUCTURE { variable x: NUMBER }; variable test: STRUCTURE[];", "STRUCTURE"},
+                {"struct STRUCTURE { variable x: NUMBER }; variable test: STRUCTURE[][];", "STRUCTURE"},
         };
     }
     @Test(dataProvider = "varDecTestData")
@@ -81,6 +86,8 @@ public class InterpreterTests {
                 {"to test(left: NUMBER, right: NUMBER): NUMBER {}", List.of("left", "right"), List.of("NUMBER", "NUMBER"), "NUMBER"},
                 {"to test(left: NUMBER, right: NUMBER): BOOLEAN {}", List.of("left", "right"), List.of("NUMBER", "NUMBER"), "BOOLEAN"},
                 {"to test(name: STRING, surname: STRING, age: NUMBER, address: STRING, bossman: BOOLEAN): STRING {}", List.of("name", "surname", "age", "address", "bossman"), List.of("STRING", "STRING", "NUMBER", "STRING", "BOOLEAN"), "STRING"},
+                {"to test(input: NUMBER[]): NUMBER[] {}", List.of("input"), List.of("NUMBER"), "NUMBER"},
+                {"struct STRUCTURE { variable x: NUMBER }; to test(input: STRUCTURE): STRUCTURE {}", List.of("input"), List.of("STRUCTURE"), "STRUCTURE"},
         };
     }
     @Test(dataProvider = "funcDecTestData")
@@ -117,6 +124,9 @@ public class InterpreterTests {
                 {"variable test: STRING; test = 'test string';", "test string"},
                 {"variable test: STRING; test = ' ';", " "},
                 {"variable test: STRING; test = '';", ""},
+                {"variable test: STRING; test = '\"';", "\""},
+                {"variable test: STRING; test = '1';", "1"},
+                {"variable test: STRING; test = 'true';", "true"},
         };
     }
     @Test(dataProvider = "varAssTestData_string")
@@ -170,8 +180,10 @@ public class InterpreterTests {
                 {"variable test: NUMBER; test = 1;", 1.0},
                 {"variable test: NUMBER; test = 10.5;", 10.5},
                 {"variable test: NUMBER; test = 1.3789;", 1.3789},
-                {"variable test: NUMBER; test = 0;", 0.0},
                 {"variable test: NUMBER; test = 9435;", 9435.0},
+                {"variable test: NUMBER; test = 0;", 0.0},
+                {"variable test: NUMBER; test = -0;", -0.0},
+                {"variable test: NUMBER; test = -8;", -8.0},
                 //TODO: When we have better int handling, ensure that test cases like the following works:
                 //{"variable test: NUMBER; test = 1045390435;", 1045390435},
         };
@@ -291,6 +303,8 @@ public class InterpreterTests {
                 {"variable test: NUMBER; test = 1; test--;", 0.0},
                 {"variable test: NUMBER; test = 5; test--;", 4.0},
                 {"variable test: NUMBER; test = 7; test--; test--;", 5.0},
+                {"variable test: NUMBER; test = -4; test++;", -3.0},
+                {"variable test: NUMBER; test = -5; test--;", -6.0},
                 {"variable test: NUMBER; test = 1 + 1;", 2.0},
                 {"variable test: NUMBER; test = 37 + 46;", 83.0},
                 {"variable test: NUMBER; test = 0 + 0;", 0.0},
@@ -298,6 +312,7 @@ public class InterpreterTests {
                 {"variable test: NUMBER; test = 0 + 1;", 1.0},
                 {"variable test: NUMBER; test = 0.5 + 0.5;", 1.0},
                 {"variable test: NUMBER; test = 0.3 + 1.7;", 2.0},
+                {"variable test: NUMBER; test = -5 + -20;", -25.0},
                 {"variable test: NUMBER; test = 2 - 1;", 1.0},
                 {"variable test: NUMBER; test = 46 - 37;", 9.0},
                 {"variable test: NUMBER; test = 1 - 1;", 0.0},
@@ -305,22 +320,28 @@ public class InterpreterTests {
                 {"variable test: NUMBER; test = 0 - 1;", -1.0},
                 {"variable test: NUMBER; test = 0.5 - 0.5;", 0.0},
                 {"variable test: NUMBER; test = 0.3 - 1.7;", -1.4},
+                {"variable test: NUMBER; test = -8 - -9;", 1.0},
                 {"variable test: NUMBER; test = 2 / 2;", 1.0},
                 {"variable test: NUMBER; test = 0 / 1;", 0.0},
                 {"variable test: NUMBER; test = 1 / 1;", 1.0},
                 {"variable test: NUMBER; test = 48 / 12;", 4.0},
+                {"variable test: NUMBER; test = -50 / -10;", 5.0},
                 {"variable test: NUMBER; test = 1 * 1;", 1.0},
                 {"variable test: NUMBER; test = 34 * 27;", 918.0},
                 {"variable test: NUMBER; test = 1 * 0;", 0.0},
                 {"variable test: NUMBER; test = 0 * 1;", 0.0},
                 {"variable test: NUMBER; test = 0 * 0;", 0.0},
+                {"variable test: NUMBER; test = -5 * -6;", 30.0},
                 {"variable test: NUMBER; test = 4 % 3;", 1.0},
                 {"variable test: NUMBER; test = 4 % 4;", 0.0},
                 {"variable test: NUMBER; test = 4 % 1;", 0.0},
                 {"variable test: NUMBER; test = 0 % 1;", 0.0},
                 {"variable test: NUMBER; test = 0 % 5;", 0.0},
                 {"variable test: NUMBER; test = 34 % 27;", 7.0},
+                {"variable test: NUMBER; test = 34.0 % 27.0;", 7.0},
                 {"variable test: NUMBER; test = 27 % 34;", 27.0},
+                {"variable test: NUMBER; test = -100 % -9;", -1.0},
+                {"variable test: NUMBER; test = -100 % 9;", -1.0},
         };
     }
     @Test(dataProvider = "expTestData_number")
@@ -339,6 +360,33 @@ public class InterpreterTests {
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
         Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+
+    }
+
+    @DataProvider
+    public Object[][] expErrorTestData_number() {
+        return new Object[][] {
+                {"variable test: NUMBER; test = 0 / 0;", "øøhh"},
+        };
+    }
+    @Test(dataProvider = "expErrorTestData_number")
+    public void expError_resolvesValue_number(String code, String errorMessage) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        Assert.assertEquals(problemCollection.getProblems().size(), 1);
+        for (Problem problem : problemCollection.getProblems()) {
+            System.out.println("problem oh oh: " + problem.getMessage());
+            Assert.assertEquals(errorMessage, problem.getMessage(), "Expected: " + errorMessage + ", but got: " + problem.getMessage());
+        }
+
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNull(symbol.get_value(), "Should create a symbol but not initialize it");
 
     }
 
@@ -405,6 +453,8 @@ public class InterpreterTests {
                 {"variable test: BOOLEAN; test = 'string' != 'bossman';", true},
                 {"variable test: BOOLEAN; test = 'bossman' != '';", true},
                 {"variable test: BOOLEAN; test = '' != 'bossman';", true},
+                {"variable test: BOOLEAN; test = 1 == true;", false},
+                {"variable test: BOOLEAN; test = 0 == false;", false},
                 {"variable test: BOOLEAN; test = 5 == 5;", true},
                 {"variable test: BOOLEAN; test = 420 == 420;", true},
                 {"variable test: BOOLEAN; test = 1.378 == 1.378;", true},
@@ -419,6 +469,7 @@ public class InterpreterTests {
                 {"variable test: BOOLEAN; test = 0.0 == 0.0;", true},
                 {"variable test: BOOLEAN; test = 0 == 0.0;", true},
                 {"variable test: BOOLEAN; test = 0.0 == 0;", true},
+                {"variable test: BOOLEAN; test = -0.0 == 0.0;", false},
                 {"variable test: BOOLEAN; test = 5 != 5;", false},
                 {"variable test: BOOLEAN; test = 420 != 420;", false},
                 {"variable test: BOOLEAN; test = 1.378 != 1.378;", false},
@@ -462,6 +513,8 @@ public class InterpreterTests {
                 {"variable test: STRING; test = (STRING) 1;", "1"},
                 {"variable test: STRING; test = (STRING) 0;", "0"},
                 {"variable test: STRING; test = (STRING) 1.345;", "1.345"},
+                {"variable test: STRING; test = (STRING) 1.345;", "1.345"},
+                {"variable test: STRING; test = (STRING) 'ooga booga';", "ooga booga"},
         };
     }
     @Test(dataProvider = "expTestData_string")
@@ -597,6 +650,7 @@ public class InterpreterTests {
                 {"variable test: NUMBER; test = 'bossman'.length();", 7.0},
                 {"variable test: NUMBER; test = ' '.length();", 1.0},
                 {"variable test: NUMBER; test = ''.length();", 0.0},
+                {"variable test: NUMBER; test = '\"string\"inside\"string\"'.length();", 22.0},
         };
     }
     @Test(dataProvider = "stringLengthTestData")
@@ -622,6 +676,7 @@ public class InterpreterTests {
     public Object[][] stringAddTestData() {
         return new Object[][] {
                 {"variable test: STRING; test = 'test'.add(' string');", "test string"},
+                {"variable test: STRING; test = 'test'; test = test.add(test);", "testtest"},
                 {"variable test: STRING; test = 'boss'.add('man');", "bossman"},
                 {"variable test: STRING; test = 'bb'.add('bb');", "bbbb"},
                 {"variable test: STRING; test = ''.add('k');", "k"},
@@ -648,6 +703,34 @@ public class InterpreterTests {
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
         Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+
+    }
+
+    @DataProvider
+    public Object[][] stringAddErrorTestData() {
+        return new Object[][] {
+                {"variable test: STRING; test = 'test'.add(1);", "message"},
+                {"variable test: STRING; test = 'test'.add(test);", "message"},
+        };
+    }
+    @Test(dataProvider = "stringAddErrorTestData")
+    public void stringAddError_returnsValue(String code, String errorMessage) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        Assert.assertEquals(problemCollection.getProblems().size(), 1);
+        for (Problem problem : problemCollection.getProblems()) {
+            System.out.println("problem oh oh: " + problem.getMessage());
+            Assert.assertEquals(errorMessage, problem.getMessage(), "Expected: " + errorMessage + ", but got: " + problem.getMessage());
+        }
+
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNull(symbol.get_value(), "Should create a symbol but not initialize it");
 
     }
 
