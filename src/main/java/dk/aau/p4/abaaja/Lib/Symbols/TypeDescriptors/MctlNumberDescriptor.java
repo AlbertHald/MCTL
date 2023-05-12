@@ -5,4 +5,9 @@ public class MctlNumberDescriptor extends MctlTypeDescriptor {
     public String get_type_literal() {
         return "NUMBER";
     }
+
+    @Override
+    public MctlNumberDescriptor clone() {
+        return new MctlNumberDescriptor();
+    }
 }
