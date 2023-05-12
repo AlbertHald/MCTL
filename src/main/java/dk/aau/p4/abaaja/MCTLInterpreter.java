@@ -3,7 +3,6 @@ package dk.aau.p4.abaaja;
 // Antlr imports
 import dk.aau.p4.abaaja.Lib.Interpreter.IGameBridge;
 import dk.aau.p4.abaaja.Lib.Interpreter.Interpreter;
-import dk.aau.p4.abaaja.Lib.Interpreter.TextGameBridge;
 import dk.aau.p4.abaaja.Lib.Nodes.MctlNode;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
 import dk.aau.p4.abaaja.Lib.TextSinks.*;
