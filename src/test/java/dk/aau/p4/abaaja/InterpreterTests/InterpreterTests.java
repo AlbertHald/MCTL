@@ -680,7 +680,7 @@ public class InterpreterTests {
     }
 
     @DataProvider
-    public Object[][] substringTestData() {
+    public Object[][] stringSubstringTestData() {
         return new Object[][] {
                 {"variable test: STRING; test = 'test string'.substring(0, 10);", "test string"},
                 {"variable test: STRING; test = 'bossman'.substring(0, 6);", "bossman"},
@@ -695,8 +695,8 @@ public class InterpreterTests {
                 {"variable test: STRING; test = ' '.substring(0, 0);", " "},
         };
     }
-    @Test(dataProvider = "substringTestData")
-    public void substring_returnsValue(String code, String value) {
+    @Test(dataProvider = "stringSubstringTestData")
+    public void stringSubstring_returnsValue(String code, String value) {
         MctlNode concreteNode = parseNode(code);
 
         ProblemCollection problemCollection = new ProblemCollection();
