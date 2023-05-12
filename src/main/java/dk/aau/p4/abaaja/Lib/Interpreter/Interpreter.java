@@ -335,10 +335,9 @@ public class Interpreter implements INodeVisitor {
     }
     public Symbol resolve(VarMethodInvokeNode node) {
         Symbol subject = resolve(node.get_varId());
-        MctlTypeDescriptor subjectType = subject.get_type();
 
         // If string, convert to a string invoke and call that instead.
-        if (subjectType instanceof MctlStringDescriptor) {
+        if (subject.get_type() instanceof MctlStringDescriptor && subject.get_indexes().size() == 0) {
             StringMethodInvokeNode stringNode = new StringMethodInvokeNode();
             stringNode.set_lineNumber(node.get_lineNumber());
             stringNode.set_lineEndNumber(node.get_lineEndNumber());
@@ -355,9 +354,53 @@ public class Interpreter implements INodeVisitor {
         String methodName = resolve(node.get_id()).get_name();
         Symbol result = new Symbol(new MctlNothingDescriptor(), null);
         switch (methodName) {
-            //TODO: Implement arrays
+            case "length" -> {
+                result.set_type(new MctlNumberDescriptor());
+                result.set_value( ((Number) subject.get_listLength()).doubleValue() );
+            }
+            case "add" -> {
+                result = subject.clone();
+
+                result.add_index(resolve(node.get_paramExps().get(0)));
+            }
+            case "remove" -> {
+                result = subject.clone();
+
+                result.remove_index();
+            }
+            case "sublist" -> {
+                result.set_type(subject.get_type().clone());
+
+                int start = ((Number) resolve(node.get_paramExps().get(0)).get_value()).intValue();
+                int end = ((Number) resolve(node.get_paramExps().get(1)).get_value()).intValue();
+                if(subject.get_listLength() == 0){
+                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to call sublist on an empty list.", node.get_lineNumber());
+                }else if(start < 0 || subject.get_listLength() <= start){
+                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access list at index " + start + " when only index 0-" + (subject.get_listLength()-1) + " is valid.", node.get_lineNumber());
+                }else if(end < start || subject.get_listLength() <= end){
+                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access end of list at index " + end + " when only index " + start + "-" + (subject.get_listLength()-1) + " is valid.", node.get_lineNumber());
+                }else{
+                    for(int i = start; i <= end; i++){
+                        result.add_index(subject.get_index(start));
+                    }
+                }
+            }
+            case "indexesOf" -> {
+                result.set_type(new MctlArrayTypeDescriptor(new MctlNumberDescriptor(), 1));
+                List<Symbol> subjectList = subject.get_indexes();
+                Symbol query = resolve(node.get_paramExps().get(0));
+
+                for(int i = 0; i < subjectList.size(); i++){
+                    Symbol subjectIndex = subjectList.get(i);
+                    if(subjectIndex == null) continue;
+                    if(subjectIndex.get_value().equals(query.get_value())){
+                        Symbol match = new Symbol(new MctlNumberDescriptor(), ((Number) i).doubleValue());
+                        result.add_index(match);
+                    }
+                }
+            }
             default -> {
-                problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unsupported method invocation on " + subjectType.get_type_literal() + ": " + methodName, node.get_lineNumber());
+                problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unsupported method invocation on " + subject.get_type().get_type_literal() + ": " + methodName, node.get_lineNumber());
             }
         }
         return result;

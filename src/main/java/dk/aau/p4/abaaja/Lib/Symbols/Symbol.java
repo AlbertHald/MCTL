@@ -91,6 +91,9 @@ public class Symbol<T> {
     public void add_index(Symbol symbol){
         this._list.add(symbol);
     }
+    public void remove_index(){
+        this._list.remove(this._list.size()-1);
+    }
     public List<Symbol> get_indexes(){
         return this._list;
     }
@@ -143,6 +146,7 @@ public class Symbol<T> {
         Symbol clone = new Symbol();
         clone.set_name(this.get_name());
         clone.set_type(this.get_type());
+        clone.set_value(this.get_value());
         clone.set_isInstantiated(this.get_isInstantiated());
 
         for(Symbol index : this._list){

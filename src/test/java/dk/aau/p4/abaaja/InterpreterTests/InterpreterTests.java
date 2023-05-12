@@ -761,6 +761,220 @@ public class InterpreterTests {
     }
 
     @DataProvider
+    public Object[][] listLengthTestData() {
+        return new Object[][] {
+                // TODO: Expand these tests with more cases and more types
+                {"variable test: NUMBER; variable list: BOOLEAN[]; list[0] = true; test = list.length();", 1.0},
+                {"variable test: NUMBER; variable list: BOOLEAN[]; list[0] = false; test = list.length();", 1.0},
+                {"variable test: NUMBER; variable list: BOOLEAN[]; list[4] = true; test = list.length();", 5.0},
+                {"variable test: NUMBER; variable list: BOOLEAN[]; list[4] = false; test = list.length();", 5.0},
+                {"variable test: NUMBER; variable list: BOOLEAN[]; test = list.length();", 0.0},
+        };
+    }
+    @Test(dataProvider = "listLengthTestData")
+    public void listLength_returnsValue(String code, Number length) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+
+        Assert.assertEquals(symbol.get_value(), length, "The symbol list should be the correct length");
+
+    }
+
+    @DataProvider
+    public Object[][] listAddTestData() {
+        return new Object[][] {
+                // TODO: Expand these tests with more cases and more types
+                {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; test = list.add(true);", List.of(true)},
+                {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; test = list.add(false);", List.of(false)},
+                {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = true; test = list.add(true);", List.of(true, true)},
+                {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = false; test = list.add(false);", List.of(false, false)},
+                {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = false; list[1] = true; list[2] = true; test = list.add(false);", List.of(false, true, true, false)},
+                {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = false; list[1] = false; list[2] = false; test = list.add(true);", List.of(false, false, false, true)},
+        };
+    }
+    @Test(dataProvider = "listAddTestData")
+    public void listAdd_returnsValue(String code, List<Boolean> indexes) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+
+        Assert.assertEquals(symbol.get_listLength(), ((Number) indexes.size()).doubleValue(), "The list should be the correct length");
+
+        for(int i = 0; i < indexes.size(); i++){
+            Symbol match = symbol.get_index(i);
+            Assert.assertNotNull(match, "The symbol should contain a symbol with a value at index " + i);
+            Assert.assertEquals(match.get_value(), indexes.get(i), "The index symbol should resolve to the correct value");
+        }
+
+    }
+
+    @DataProvider
+    public Object[][] listRemoveTestData() {
+        return new Object[][] {
+                // TODO: Expand these tests with more cases and more types
+                {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = false; list[1] = true; list[2] = true; test = list.remove();", List.of(false, true)},
+                {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = false; list[1] = false; list[2] = false; test = list.remove();", List.of(false, false)},
+                {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = true; test = list.remove();", List.of()},
+                {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = false; test = list.remove();", List.of()},
+        };
+    }
+    @Test(dataProvider = "listRemoveTestData")
+    public void listRemove_returnsValue(String code, List<Boolean> indexes) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+
+        Assert.assertEquals(symbol.get_listLength(), ((Number) indexes.size()).doubleValue(), "The list should be the correct length");
+
+        for(int i = 0; i < indexes.size(); i++){
+            Symbol match = symbol.get_index(i);
+            Assert.assertNotNull(match, "The symbol should contain a symbol with a value at index " + i);
+            Assert.assertEquals(match.get_value(), indexes.get(i), "The index symbol should resolve to the correct value");
+        }
+
+    }
+
+    @DataProvider
+    public Object[][] listSublistTestData_bool() {
+        return new Object[][] {
+                // TODO: Expand these tests with more cases and more types
+                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = true; l[2] = true; test = l.sublist(0, 0);", List.of(true)},
+                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = true; l[2] = true; test = l.sublist(1, 1);", List.of(true)},
+                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = true; l[2] = true; test = l.sublist(2, 2);", List.of(true)},
+                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = true; l[2] = true; test = l.sublist(0, 1);", List.of(true, true)},
+                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = true; l[2] = true; test = l.sublist(1, 2);", List.of(true, true)},
+                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = true; l[2] = true; test = l.sublist(0, 2);", List.of(true, true, true)},
+        };
+    }
+    @Test(dataProvider = "listSublistTestData_bool")
+    public void listSublist_returnsValue_bool(String code, List<Number> indexes) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+
+        Assert.assertEquals(symbol.get_listLength(), ((Number) indexes.size()).doubleValue(), "There should be exactly " + indexes.size() + " matches");
+
+        for(int i = 0; i < indexes.size(); i++){
+            Symbol match = symbol.get_index(i);
+            Assert.assertNotNull(match, "The symbol should contain a symbol with a match value at index " + i);
+            Assert.assertEquals(match.get_value(), indexes.get(i), "The match symbol should resolve to the correct value");
+        }
+
+    }
+
+    @DataProvider
+    public Object[][] listIndexesOfTestData() {
+        return new Object[][] {
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = true; test = l.indexesOf(true);", List.of(0.0)},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = true; test = l.indexesOf(false);", List.of()},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = false; test = l.indexesOf(true);", List.of()},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = false; test = l.indexesOf(false);", List.of(0.0)},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = true; l[1] = true; test = l.indexesOf(true);", List.of(0.0, 1.0)},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = true; l[1] = true; test = l.indexesOf(false);", List.of()},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = false; l[1] = false; test = l.indexesOf(true);", List.of()},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = false; l[1] = false; test = l.indexesOf(false);", List.of(0.0, 1.0)},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = true; l[1] = false; test = l.indexesOf(true);", List.of(0.0)},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = true; l[1] = false; test = l.indexesOf(false);", List.of(1.0)},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = false; l[1] = true; test = l.indexesOf(true);", List.of(1.0)},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = false; l[1] = true; test = l.indexesOf(false);", List.of(0.0)},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = true; l[1] = true; test = l.indexesOf(true);", List.of(0.0, 1.0)},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = true; l[1] = true; test = l.indexesOf(false);", List.of()},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = false; l[1] = false; test = l.indexesOf(true);", List.of()},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = false; l[1] = false; test = l.indexesOf(false);", List.of(0.0, 1.0)},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[1] = true; test = l.indexesOf(true);", List.of(1.0)},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[1] = true; test = l.indexesOf(false);", List.of()},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[1] = false; test = l.indexesOf(true);", List.of()},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[1] = false; test = l.indexesOf(false);", List.of(1.0)},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[6] = true; test = l.indexesOf(true);", List.of(6.0)},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[6] = true; test = l.indexesOf(false);", List.of()},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[6] = false; test = l.indexesOf(true);", List.of()},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[6] = false; test = l.indexesOf(false);", List.of(6.0)},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = true; l[1] = true; l[3] = true; l[4] = true; test = l.indexesOf(true);", List.of(0.0, 1.0, 3.0, 4.0)},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; l[0] = false; l[1] = false; l[3] = false; l[4] = false; test = l.indexesOf(false);", List.of(0.0, 1.0, 3.0, 4.0)},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; test = l.indexesOf(true);", List.of()},
+                {"variable test: NUMBER[]; variable l: BOOLEAN[]; test = l.indexesOf(false);", List.of()},
+                {"variable test: NUMBER[]; variable l: STRING[]; l[0] = 'string'; l[1] = 'bossman'; l[2] = 't'; l[3] = ''; test = l.indexesOf('string');", List.of(0.0)},
+                {"variable test: NUMBER[]; variable l: STRING[]; l[0] = 'string'; l[1] = 'bossman'; l[2] = 't'; l[3] = ''; test = l.indexesOf('bossman');", List.of(1.0)},
+                {"variable test: NUMBER[]; variable l: STRING[]; l[0] = 'string'; l[1] = 'bossman'; l[2] = 't'; l[3] = ''; test = l.indexesOf('t');", List.of(2.0)},
+                {"variable test: NUMBER[]; variable l: STRING[]; l[0] = 'string'; l[1] = 'bossman'; l[2] = 't'; l[3] = ''; test = l.indexesOf('');", List.of(3.0)},
+                {"variable test: NUMBER[]; variable l: STRING[]; l[7] = ' '; test = l.indexesOf(' ');", List.of(7.0)},
+                {"variable test: NUMBER[]; variable l: STRING[]; l[7] = ''; test = l.indexesOf('');", List.of(7.0)},
+                {"variable test: NUMBER[]; variable l: STRING[]; test = l.indexesOf('');", List.of()},
+                {"variable test: NUMBER[]; variable l: NUMBER[]; l[0] = 0; l[1] = 1; l[2] = 2; test = l.indexesOf(0);", List.of(0.0)},
+                {"variable test: NUMBER[]; variable l: NUMBER[]; l[0] = 0; l[1] = 1; l[2] = 2; test = l.indexesOf(1);", List.of(1.0)},
+                {"variable test: NUMBER[]; variable l: NUMBER[]; l[0] = 0; l[1] = 1; l[2] = 2; test = l.indexesOf(2);", List.of(2.0)},
+                {"variable test: NUMBER[]; variable l: NUMBER[]; l[7] = 0; test = l.indexesOf(0);", List.of(7.0)},
+                {"variable test: NUMBER[]; variable l: NUMBER[]; test = l.indexesOf(0);", List.of()},
+        };
+    }
+    @Test(dataProvider = "listIndexesOfTestData")
+    public void listIndexesOf_returnsValue(String code, List<Number> indexes) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+
+        Assert.assertEquals(symbol.get_listLength(), ((Number) indexes.size()).doubleValue(), "There should be exactly " + indexes.size() + " matches");
+
+        for(int i = 0; i < indexes.size(); i++){
+            Symbol match = symbol.get_index(i);
+            Assert.assertNotNull(match, "The symbol should contain a symbol with a match value at index " + i);
+            Assert.assertEquals(match.get_value(), indexes.get(i), "The match symbol should resolve to the correct value");
+        }
+
+    }
+
+    @DataProvider
     public Object[][] listUseTestData() {
         return new Object[][] {
                 {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[0] = true; test = list[0];", true},
