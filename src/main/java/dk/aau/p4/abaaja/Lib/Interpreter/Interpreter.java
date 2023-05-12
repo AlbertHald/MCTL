@@ -196,6 +196,8 @@ public class Interpreter implements INodeVisitor {
         Symbol result = resolve(node.get_assignExp());
 
         symbol.set_value(result.get_value());
+        symbol.set_indexes(result.get_indexes());
+        symbol.set_fields(result.get_fields());
     }
 
     public void visit(InvokeNode node) {
@@ -402,7 +404,8 @@ public class Interpreter implements INodeVisitor {
             case "indexesOf" -> {
                 result.set_type(new MctlArrayTypeDescriptor(new MctlNumberDescriptor(), 1));
                 String query = (String) resolve(node.get_paramExps().get(0)).get_value();
-                int safeLastIndex = (subject.length() - query.length()) - 1;
+                if(query.length() == 0) break;
+                int safeLastIndex = (subject.length() - query.length());
 
                 for(int i = 0; i <= safeLastIndex; i++){
                     if(subject.substring(i, i+query.length()).equals(query)){

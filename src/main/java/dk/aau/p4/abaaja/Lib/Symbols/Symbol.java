@@ -1,13 +1,15 @@
 package dk.aau.p4.abaaja.Lib.Symbols;
 
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlArrayTypeDescriptor;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlTypeDescriptor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 //Symbol table entries
-public class Symbol<T, B> {
+public class Symbol<T> {
     private String _name;
     private MctlTypeDescriptor _type;
     private boolean _isInstantiated = false;
@@ -76,7 +78,10 @@ public class Symbol<T, B> {
     /**
      * If the symbol is a list, the values of each list index is saved here
      */
-    private final List<Symbol> _list = new ArrayList<>();
+    private List<Symbol> _list = new ArrayList<>();
+    public void set_indexes(List<Symbol> indexes){
+        this._list = indexes;
+    }
     public void set_index(int index, Symbol symbol){
         while(index >= this._list.size()){
             this._list.add(null);
@@ -85,6 +90,9 @@ public class Symbol<T, B> {
     }
     public void add_index(Symbol symbol){
         this._list.add(symbol);
+    }
+    public List<Symbol> get_indexes(){
+        return this._list;
     }
     public Symbol get_index(int index){
         if(index < this._list.size()){
@@ -100,7 +108,10 @@ public class Symbol<T, B> {
     /**
      * If the symbol is a struct, the values of each field is saved here
      */
-    private final List<Symbol> _fields = new ArrayList<>();
+    private List<Symbol> _fields = new ArrayList<>();
+    public void set_fields(List<Symbol> fields){
+        this._fields = fields;
+    }
     public void set_field(Symbol symbol){
         int index = get_field_index(symbol.get_name());
         if(index == -1) {
@@ -108,6 +119,9 @@ public class Symbol<T, B> {
         }else{
             this._fields.set(index, symbol);
         }
+    }
+    public List<Symbol> get_fields(){
+        return this._fields;
     }
     public Symbol get_field(String name){
         int index = get_field_index(name);

@@ -721,6 +721,7 @@ public class InterpreterTests {
                 {"variable test: NUMBER[]; test = 'test string'.indexesOf('t');", List.of(0.0, 3.0, 6.0)},
                 {"variable test: NUMBER[]; test = 'test string'.indexesOf('te');", List.of(0.0)},
                 {"variable test: NUMBER[]; test = 'test string'.indexesOf('st');", List.of(2.0, 5.0)},
+                {"variable test: NUMBER[]; test = 'test string'.indexesOf('test');", List.of(0.0)},
                 {"variable test: NUMBER[]; test = 'test string'.indexesOf('string');", List.of(5.0)},
                 {"variable test: NUMBER[]; test = 'test string'.indexesOf('test string');", List.of(0.0)},
                 {"variable test: NUMBER[]; test = 'test string'.indexesOf('test string ');", List.of()},
