@@ -34,9 +34,11 @@ public class PrettyPrintVisitor implements INodeVisitor{
      * Can output to console by passing `System.out`, can output to String by passing `StringSink`.
      */
     public static ITextSink _sink;
-    public void set_sink(ITextSink sink){
+
+    public PrettyPrintVisitor(ITextSink sink){
         PrettyPrintVisitor._sink = sink;
     }
+
     void print(String out){
         PrettyPrintVisitor._sink.print(out);
     }
