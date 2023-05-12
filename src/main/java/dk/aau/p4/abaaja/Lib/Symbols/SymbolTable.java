@@ -16,7 +16,7 @@ public class SymbolTable {
     // Predefined functions of the programming language
     private List<PredefinedFunction> predefinedFunctions = Arrays.asList(
             new PredefinedFunction("add", Arrays.asList(Arrays.asList(new MctlTypeDescriptor())), new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0), true, true, new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0)),
-            new PredefinedFunction("remove", new ArrayList<>(), new MctlNothingDescriptor(), true, false, new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0)),
+            new PredefinedFunction("remove", new ArrayList<>(), new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0), true, true, new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0)),
             new PredefinedFunction("length", new ArrayList<>(), new MctlNumberDescriptor(), true, true, new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0)),
             new PredefinedFunction("indexesOf",
                     Arrays.asList(Arrays.asList(new MctlStringDescriptor(), new MctlBooleanDescriptor(), new MctlNumberDescriptor(), new MctlNothingDescriptor())),
