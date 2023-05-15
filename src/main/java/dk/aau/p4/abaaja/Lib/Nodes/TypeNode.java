@@ -1,7 +1,5 @@
 package dk.aau.p4.abaaja.Lib.Nodes;
 
-import dk.aau.p4.abaaja.Lib.Visitors.INodeVisitor;
-
 public abstract class TypeNode extends BaseNode {
     private int _arrayDegree = 0;
 

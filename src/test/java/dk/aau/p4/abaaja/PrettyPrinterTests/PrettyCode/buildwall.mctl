@@ -1,0 +1,30 @@
+
+variable chatNum: NUMBER;
+print("How long do you want the wall to be?");
+chatNum = (NUMBER) read();
+
+variable block: STRING;
+print("What block do you want to use?");
+block = read();
+
+moveUp();
+BuildWall(chatNum);
+
+
+to BuildWall (length: NUMBER): NOTHING {
+  repeat(length){
+    repeat(2){
+      placeUnder(block);
+      moveUp();
+    }
+    placeUnder(block);
+    moveForward();
+    Down(2);
+  }
+}
+
+to Down (times: NUMBER): NOTHING {
+  repeat(times){
+    moveDown();
+  }
+}

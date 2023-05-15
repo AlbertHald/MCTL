@@ -1,0 +1,33 @@
+
+invoke();
+
+invoke(true);
+
+invoke(test);
+
+invoke("test");
+
+invoke(10);
+
+invoke(1, 2, 3);
+
+invoke(
+  "very",
+  "many",
+  "params",
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+);
+
+invoke(nested());
+
+invoke(nested(), nested());
+
+"test".add("test");
+
+list.sublist(1, 4);

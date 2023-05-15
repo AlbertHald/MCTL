@@ -3,7 +3,6 @@ package dk.aau.p4.abaaja;
 // Antlr imports
 import dk.aau.p4.abaaja.Lib.Interpreter.IGameBridge;
 import dk.aau.p4.abaaja.Lib.Interpreter.Interpreter;
-import dk.aau.p4.abaaja.Lib.Interpreter.TextGameBridge;
 import dk.aau.p4.abaaja.Lib.Nodes.MctlNode;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
 import dk.aau.p4.abaaja.Lib.TextSinks.*;
@@ -39,9 +38,7 @@ public class MCTLInterpreter {
             // Continue parsing here
             MctlNode concreteNode = (MctlNode) tree.accept(new AstBuilder(problemCollection));
 
-            PrettyPrintVisitor prettyPrintVisitor = new PrettyPrintVisitor();
-            prettyPrintVisitor.set_sink(new ConsoleSink());
-            concreteNode.accept(prettyPrintVisitor);
+            concreteNode.accept(new PrettyPrintVisitor(new ConsoleSink()));
 
             concreteNode.accept(new SymbolTableVisitor(problemCollection));
 

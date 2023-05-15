@@ -1,6 +1,5 @@
 package dk.aau.p4.abaaja.Lib.Symbols;
 
-import dk.aau.p4.abaaja.Lib.Nodes.NothingTypeNode;
 import dk.aau.p4.abaaja.Lib.PredefinedFunction;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.*;
 

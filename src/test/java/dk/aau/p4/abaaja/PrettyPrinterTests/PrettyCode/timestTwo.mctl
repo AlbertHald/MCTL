@@ -1,0 +1,6 @@
+
+variable input_number: STRING;
+
+input_number = read();
+
+print((STRING) ((NUMBER) input_number * 2));
