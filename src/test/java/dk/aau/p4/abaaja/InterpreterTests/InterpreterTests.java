@@ -879,6 +879,34 @@ public class InterpreterTests {
     }
 
     @DataProvider
+    public Object[][] stringIndexesOfErrorTestData() {
+        return new Object[][] {
+                {"variable test: NUMBER[]; test = '1'.indexesOf(1);", "message"},
+                {"variable test: NUMBER[]; test = 'true'.indexesOf(true);", "message"},
+        };
+    }
+    @Test(dataProvider = "stringIndexesOfErrorTestData")
+    public void stringIndexesOfError_returnsValue(String code, String errorMessage) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        Assert.assertEquals(problemCollection.getProblems().size(), 1);
+        for (Problem problem : problemCollection.getProblems()) {
+            System.out.println("problem oh oh: " + problem.getMessage());
+            Assert.assertEquals(errorMessage, problem.getMessage(), "Expected: " + errorMessage + ", but got: " + problem.getMessage());
+        }
+
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNull(symbol.get_value(), "Should create a symbol but not initialize it");
+
+    }
+
+    @DataProvider
     public Object[][] listLengthTestData() {
         return new Object[][] {
                 // TODO: Expand these tests with more cases and more types
@@ -887,6 +915,15 @@ public class InterpreterTests {
                 {"variable test: NUMBER; variable list: BOOLEAN[]; list[4] = true; test = list.length();", 5.0},
                 {"variable test: NUMBER; variable list: BOOLEAN[]; list[4] = false; test = list.length();", 5.0},
                 {"variable test: NUMBER; variable list: BOOLEAN[]; test = list.length();", 0.0},
+                {"variable test: NUMBER; variable list: BOOLEAN[][]; list[0][8] = true; test = list.length();", 1.0},
+                {"variable test: NUMBER; variable list: BOOLEAN[][]; list[0][8] = true; test = list[0].length();", 9.0},
+                {"variable test: NUMBER; variable list: STRING[]; list[0] = 'string'; test = list.length();", 1.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 1; test = list.length();", 1.0},
+                {"variable test: NUMBER; struct STRUCTURE { variable x: NUMBER }; variable list: STRUCTURE[]; list[0].x = 1; test = list.length();", 1.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 1; test = list.length(100);", 1.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 1; test = list.length('yes');", 1.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 1; test = list.length(true);", 1.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 1; test = list.length(false);", 1.0},
         };
     }
     @Test(dataProvider = "listLengthTestData")
