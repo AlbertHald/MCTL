@@ -741,6 +741,7 @@ public class InterpreterTests {
                 {"variable test: STRING; test = 'bossman'.remove();", "bossma"},
                 {"variable test: STRING; test = 'b'.remove();", ""},
                 {"variable test: STRING; test = ' '.remove();", ""},
+                {"variable test: STRING; test = ''.remove();", ""},
         };
     }
     @Test(dataProvider = "stringRemoveTestData")
