@@ -21,7 +21,6 @@ public class ParserProblemListener extends BaseErrorListener {
                             int charPositionInLine,
                             String msg,
                             RecognitionException e) {
-        // TODO: Implement proper error messages
         CommonTokenStream tokens = (CommonTokenStream)recognizer.getInputStream();
         Token offendingToken = (Token) offendingSymbol;
 
@@ -36,17 +35,21 @@ public class ParserProblemListener extends BaseErrorListener {
         int tokenLength = offendingToken.getStopIndex() - offendingToken.getStartIndex();
         int tokenEnd = charPositionInLine + tokenLength + 1;
 
-        // Create line with highlighted error
-        String tempLine = problematicLine.substring(0, charPositionInLine);
-        tempLine += "  >>" + problematicLine.substring(charPositionInLine, tokenEnd) + "<<  ";
-        tempLine += problematicLine.substring(tokenEnd, problematicLine.length());
-
-        String title = problemCollection.createProblemTitle(ProblemType.ERROR_PARSER.toString(), problemCollection.totalCharacters);
-        String codeDelim = "---- code ----";
-        String errorDelim = "---- error ----";
+        // Create line with highlighted error and problem title
+        String highlightedLine = ProblemCollection.createHighlightedLine(problematicLine, charPositionInLine, tokenEnd);
+        String title = ProblemCollection.createProblemTitle(ProblemType.ERROR_PARSER.toString(), ProblemCollection.totalCharacters);
 
         // Format message string
-        String errorMessage = String.format("%s\nParse error at Line %d, Character %d:\n%s\n%s\n%s\n%s", title, line, charPositionInLine, codeDelim, tempLine, errorDelim, msg);
+        String errorMessage = String.format(
+                "%s\nParse error at Line %d, Character %d:\n%s\n%s\n%s\n%s",
+                title,
+                line,
+                charPositionInLine,
+                ProblemCollection.codeDelim,
+                highlightedLine,
+                ProblemCollection.errorDelim,
+                msg
+        );
 
         problemCollection.addProblem(ProblemType.ERROR_PARSER, errorMessage, line, charPositionInLine, tokenEnd);
     }
