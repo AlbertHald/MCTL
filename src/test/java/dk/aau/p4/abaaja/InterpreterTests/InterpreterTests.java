@@ -1057,6 +1057,7 @@ public class InterpreterTests {
         IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
 
         concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
         for (Problem problem : problemCollection.getProblems()) {
             Assert.fail("Should not fail with message: " + problem.getMessage());
         }
