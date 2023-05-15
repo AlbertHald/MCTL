@@ -742,6 +742,9 @@ public class InterpreterTests {
                 {"variable test: STRING; test = 'b'.remove();", ""},
                 {"variable test: STRING; test = ' '.remove();", ""},
                 {"variable test: STRING; test = ''.remove();", ""},
+                {"variable test: STRING; test = 'hej'.remove(1);", "he"},
+                {"variable test: STRING; test = 'hej'.remove(true);", "he"},
+                {"variable test: STRING; test = 'hej'.remove('yo');", "he"},
         };
     }
     @Test(dataProvider = "stringRemoveTestData")
@@ -779,6 +782,7 @@ public class InterpreterTests {
                 {"variable test: STRING; test = ' '.substring(0, 0);", " "},
                 {"variable test: STRING; test = ''.substring(0, 0);", ""},
                 {"variable test: STRING; test = 'hej'.substring(1);", "ej"},
+                {"variable test: STRING; test = 'hej'.substring(1, 2, 500, true, 'yo');", "ej"},
         };
     }
     @Test(dataProvider = "stringSubstringTestData")
@@ -797,6 +801,34 @@ public class InterpreterTests {
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
         Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+
+    }
+
+    @DataProvider
+    public Object[][] stringSubstringErrorTestData() {
+        return new Object[][] {
+                {"variable test: STRING; test = 'hej'.substring(true);", "message"},
+                {"variable test: STRING; test = 'hej'.substring('yo');", "message"},
+        };
+    }
+    @Test(dataProvider = "stringSubstringErrorTestData")
+    public void stringSubstringError_returnsValue(String code, String errorMessage) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        Assert.assertEquals(problemCollection.getProblems().size(), 1);
+        for (Problem problem : problemCollection.getProblems()) {
+            System.out.println("problem oh oh: " + problem.getMessage());
+            Assert.assertEquals(errorMessage, problem.getMessage(), "Expected: " + errorMessage + ", but got: " + problem.getMessage());
+        }
+
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNull(symbol.get_value(), "Should create a symbol but not initialize it");
 
     }
 
