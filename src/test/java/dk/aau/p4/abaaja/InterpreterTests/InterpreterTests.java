@@ -777,6 +777,7 @@ public class InterpreterTests {
                 {"variable test: STRING; test = 'bossman'.substring(6, 6);", "n"},
                 {"variable test: STRING; test = 'k'.substring(0, 0);", "k"},
                 {"variable test: STRING; test = ' '.substring(0, 0);", " "},
+                {"variable test: STRING; test = ''.substring(0, 0);", ""},
         };
     }
     @Test(dataProvider = "stringSubstringTestData")
