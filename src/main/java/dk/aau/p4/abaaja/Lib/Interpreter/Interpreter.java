@@ -381,7 +381,7 @@ public class Interpreter implements INodeVisitor {
                     problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access end of list at index " + end + " when only index " + start + "-" + (subject.get_listLength()-1) + " is valid.", node.get_lineNumber());
                 }else{
                     for(int i = start; i <= end; i++){
-                        result.add_index(subject.get_index(start));
+                        result.add_index(subject.get_index(i));
                     }
                 }
             }
