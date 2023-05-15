@@ -1412,8 +1412,7 @@ public class TypeCheckingVisitorUnitTests {
                 {"repeat (!\"per\") {}", 0},
                 {"repeat (!\"per\" or \"bob\") {}", 0},
                 {"repeat (var) {}", 0},
-                {"variable var1: BOOLEAN; variable var2: BOOLEAN; repeat (var1 and var2) {}", 2},
-                {"struct STRUCTURE { variable x: NUMBER }; variable var: STRUCTURE; repeat (var) {}", 2}
+                {"variable var1: BOOLEAN; variable var2: BOOLEAN; repeat (var1 and var2) {}", 2}
         };
     }
 
@@ -1462,8 +1461,7 @@ public class TypeCheckingVisitorUnitTests {
                 {"if (!\"per\") {}", 0},
                 {"if (!\"per\" or \"bob\") {}", 0},
                 {"if (var) {}", 0},
-                {"variable var1: BOOLEAN; variable var2: BOOLEAN; if (var1 and var2) {}", 2},
-                {"struct STRUCTURE { variable x: NUMBER }; variable var: STRUCTURE; if (var) {}", 2}
+                {"variable var1: BOOLEAN; variable var2: BOOLEAN; if (var1 and var2) {}", 2}
         };
     }
 

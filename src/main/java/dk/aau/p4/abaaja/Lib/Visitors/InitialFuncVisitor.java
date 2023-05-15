@@ -6,6 +6,7 @@ import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Symbols.FuncSymbol;
 import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlArrayTypeDescriptor;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlTypeDescriptor;
 
 import java.util.ArrayList;
@@ -54,7 +55,12 @@ public class InitialFuncVisitor implements INodeVisitor {
                         "The type \"" + node.get_returnType().get_type() + "\" does not exist",
                         node.get_lineNumber());
             } else {
-                functionSymbol.set_type(returnTypeDescriptor);
+                if (node.get_returnType().get_arrayDegree() > 0) {
+                    functionSymbol.set_type(new MctlArrayTypeDescriptor(returnTypeDescriptor, node.get_returnType().get_arrayDegree()));
+                }
+                else {
+                    functionSymbol.set_type(returnTypeDescriptor);
+                }
             }
 
             // Creating temporary list containing the function parameters
