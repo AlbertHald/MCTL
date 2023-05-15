@@ -1045,7 +1045,7 @@ public class InterpreterTests {
                 {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streams: VALVE[] }; variable valves: VALVE[]; valves[0].on = false; valves[1].on = true; valves[2].on = false; test = valves[1].on;", true},
                 {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streamInception: VALVE[][], variable stream: VALVE }; variable valve: VALVE; valve.stream.stream.streamInception[3][2].on = true; test = valve.stream.stream.streamInception[3][2].on;", true},
                 {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streamInception: VALVE[][], variable stream: VALVE }; variable valve: VALVE; valve.streamInception[3][2].stream.streamInception[0][0].stream.stream.on = true; test = valve.streamInception[3][2].stream.streamInception[0][0].stream.stream.on;", true},
-                {"variable test: BOOLEAN;\n struct VALVE { \nvariable on: BOOLEAN,\n variable streamInception: VALVE[][],\n variable stream: VALVE \n};\n variable valveInception: VALVE[][][];\n valveInception[8][2][0].stream.streamInception[8][1].on = true; test = valveInception[8][2][0].stream.streamInception[8][1].on;", true},
+                {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streamInception: VALVE[][], variable stream: VALVE }; variable valveInception: VALVE[][][]; valveInception[8][2][0].stream.streamInception[8][1].on = true; test = valveInception[8][2][0].stream.streamInception[8][1].on;", true},
         };
     }
     @Test(dataProvider = "structAndListUseTestData")
