@@ -125,7 +125,7 @@ public class SymbolTableVisitor implements INodeVisitor {
             if (typeDescriptor != null) {
                 Symbol symbol = new Symbol(node.get_id(), typeDescriptor);
 
-                if (typeDescriptor instanceof MctlArrayTypeDescriptor) {
+                if (typeDescriptor instanceof MctlArrayTypeDescriptor || typeDescriptor instanceof MctlStructDescriptor) {
                     symbol.set_isInstantiated(true);
                 }
                 this.symbolTable.insertSymbol(symbol);
