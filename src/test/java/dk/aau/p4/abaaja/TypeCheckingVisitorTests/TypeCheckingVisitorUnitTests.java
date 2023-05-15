@@ -53,18 +53,17 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] createParseTreeTestData() {
         return new Object[][] {
-                {"a = \"a\";"},
-                {"a = \"a\"; a = \"a\";"},
-                {"a = \"a\"; a = \"a\"; a = \"a\";"}
+                {"a = \"a\";", 2},
+                {"a = \"a\"; a = \"a\";", 3},
+                {"a = \"a\"; a = \"a\"; a = \"a\";", 4}
         };
     }
 
-    // TODO: Condition 'parseTree != null' is always 'true'
     @Test(dataProvider = "createParseTreeTestData")
-    public void createParseTree_ValidInput_CreatesParseTree(String code) {
+    public void createParseTree_ValidInput_CreatesParseTree(String code, int expectedNodes) {
         ParseTree parseTree = createParseTree(code);
 
-        softAssert.assertTrue(parseTree != null, "Create Parse Tree: " + code);
+        softAssert.assertEquals(parseTree.getChildCount(), expectedNodes, "Create Parse Tree: " + code);
         softAssert.assertAll();
     }
 

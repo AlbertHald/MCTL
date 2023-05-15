@@ -21,7 +21,6 @@ public class ParserProblemListener extends BaseErrorListener {
                             int charPositionInLine,
                             String msg,
                             RecognitionException e) {
-        // TODO: Implement proper error messages
         CommonTokenStream tokens = (CommonTokenStream)recognizer.getInputStream();
         Token offendingToken = (Token) offendingSymbol;
 
@@ -39,7 +38,7 @@ public class ParserProblemListener extends BaseErrorListener {
         // Create line with highlighted error
         String tempLine = problematicLine.substring(0, charPositionInLine);
         tempLine += "  >>" + problematicLine.substring(charPositionInLine, tokenEnd) + "<<  ";
-        tempLine += problematicLine.substring(tokenEnd, problematicLine.length());
+        tempLine += problematicLine.substring(tokenEnd);
 
         String title = problemCollection.createProblemTitle(ProblemType.ERROR_PARSER.toString(), problemCollection.totalCharacters);
         String codeDelim = "---- code ----";
