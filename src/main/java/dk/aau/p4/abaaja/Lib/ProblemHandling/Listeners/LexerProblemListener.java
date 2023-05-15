@@ -31,16 +31,20 @@ public class LexerProblemListener extends BaseErrorListener {
         // Get problematic line
         String problematicLine = lines[line - 1];
 
-        // Create line with highlighted error
-        String tempLine = problematicLine.substring(0, charPositionInLine);
-        tempLine += "  >>" + problematicLine.charAt(charPositionInLine) + "<<  ";
-        tempLine += problematicLine.substring(charPositionInLine + 1);
+        // Create line with highlighted error and problem title
+        String highlightedLine = ProblemCollection.createHighlightedLine(problematicLine, charPositionInLine, charPositionInLine + 1);
+        String title = ProblemCollection.createProblemTitle(ProblemType.ERROR_LEXER.toString(), ProblemCollection.totalCharacters);
 
-        String title = problemCollection.createProblemTitle(ProblemType.ERROR_LEXER.toString(), problemCollection.totalCharacters);
-        String codeDelim = "---- code ----";
-        String errorDelim = "---- error ----";
-
-        String problemString = String.format("%s\nUnrecognizable token at Line %d, Character %d:\n%s\n%s\n%s\n%s", title, line, charPositionInLine, codeDelim, tempLine, errorDelim, msg);
+        String problemString = String.format(
+                "%s\nUnrecognizable token at Line %d, Character %d:\n%s\n%s\n%s\n%s",
+                title,
+                line,
+                charPositionInLine,
+                ProblemCollection.codeDelim,
+                highlightedLine,
+                ProblemCollection.errorDelim,
+                msg
+        );
 
         problemCollection.addProblem(ProblemType.ERROR_LEXER, problemString, line);
     }
