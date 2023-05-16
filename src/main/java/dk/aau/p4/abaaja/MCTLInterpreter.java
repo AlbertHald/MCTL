@@ -45,6 +45,9 @@ public class MCTLInterpreter {
             if (!problemCollection.getHasErrors()) {
                 concreteNode.accept(new Interpreter(problemCollection, new SymbolTable(), gameBridge));
             }
+            else {
+                gameBridge.internal_terminate();
+            }
             for (Problem problem : problemCollection.getProblems()) {
                 gameBridge.print(problem.getMessage());
             }
@@ -54,6 +57,7 @@ public class MCTLInterpreter {
             for (Problem problem : problemCollection.getProblems()) {
                 gameBridge.print(problem.getMessage());
             }
+            gameBridge.internal_terminate();
         }
     }
 
