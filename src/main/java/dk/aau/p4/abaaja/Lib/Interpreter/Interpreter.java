@@ -47,7 +47,6 @@ public class Interpreter implements INodeVisitor {
 
     public void visit(MctlNode node) {
         visitChildren(node.get_children());
-        gameBridge.internal_terminate();
     }
 
     public void visit(LineNode node) {
