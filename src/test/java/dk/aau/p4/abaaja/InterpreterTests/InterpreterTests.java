@@ -1090,4 +1090,132 @@ public class InterpreterTests {
         Assert.assertEquals(symbol.get_value(), expectedValue, "Should set the appropriate value on the symbol");
     }
 
+    @DataProvider
+    public Object[][] lateAssignNoAssignTestData_number() {
+        return new Object[][] {
+                {"variable test: NUMBER; variable other: NUMBER; other = 4; test = other; other = 2;", 4.0},
+        };
+    }
+    @Test(dataProvider = "lateAssignNoAssignTestData_number")
+    public void lateVarAssign_doesNotAssign_number(String code, Number expectedValue) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertEquals(symbol.get_value(), expectedValue, "Should not change the value after assignment");
+    }
+
+    @DataProvider
+    public Object[][] expNoAssignTestData_number() {
+        return new Object[][] {
+                {"variable test: NUMBER; variable sink: NUMBER; test = -4; sink = +test;", -4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = -test;", 4.0},
+                {"variable test: NUMBER; variable sink: STRING; test = 4; sink = (STRING) test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test + 6;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = 6 + test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test + test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test - 3;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = 3 - test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test - test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test / 2;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = 2 / test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test / test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test * 7;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = 7 * test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test * test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test % 2;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = 2 % test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test % test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test < 1;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = 1 < test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test < test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test > 1;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = 1 > test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test > test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test <= 1;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = 1 <= test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test <= test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test >= 1;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = 1 >= test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test >= test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test == 1;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = 1 == test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test == test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 1; sink = test * 2 / (test + test) + 4;", 1.0},
+                {"variable test: NUMBER; test = 10; if(test * 2 < 8){}", 10.0},
+                {"variable test: NUMBER; test = 8; repeat(test / 2){}", 8.0},
+                {"variable test: NUMBER; variable list: STRING[]; list[2] = 1; test = 1; list[test+1] = list[test+1];", 1.0},
+                {"variable test: NUMBER; to noop(n: NUMBER):NOTHING{} test = 9; noop(test - 3);", 9.0},
+        };
+    }
+    @Test(dataProvider = "expNoAssignTestData_number")
+    public void exp_doesNotAssign_number(String code, Number expectedValue) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertEquals(symbol.get_value(), expectedValue, "Should not change the value after using it in an expression");
+    }
+
+    @DataProvider
+    public Object[][] expNoAssignTestData_bool() {
+        return new Object[][] {
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = !test;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = !test;", false},
+                {"variable test: BOOLEAN; variable sink: STRING; test = true; sink = (STRING) test;", true},
+                {"variable test: BOOLEAN; variable sink: STRING; test = false; sink = (STRING) test;", false},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = test == false;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = false == test;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = test == false;", false},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = false == test;", false},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = test != false;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = false != test;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = test != false;", false},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = false != test;", false},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = test or false;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = false or test;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = test or false;", false},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = false or test;", false},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = test and false;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = false and test;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = test and false;", false},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = false and test;", false},
+        };
+    }
+    @Test(dataProvider = "expNoAssignTestData_bool")
+    public void exp_doesNotAssign_bool(String code, boolean expectedValue) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertEquals(symbol.get_value(), expectedValue, "Should not change the value after using it in an expression");
+    }
+
 }

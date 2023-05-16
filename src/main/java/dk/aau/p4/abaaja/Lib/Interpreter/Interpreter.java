@@ -589,7 +589,7 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected unary expression", node.get_lineNumber());
     }
     public Symbol resolve(UnaryExpNode node) {
-        Symbol result = resolve(node.get_unaryExp());
+        Symbol result = resolve(node.get_unaryExp()).clone();
         switch (node.get_operatorLiteral()) {
             case "!" -> {
                 result.set_value(!(boolean) result.get_value());
@@ -613,8 +613,8 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected typecast expression", node.get_lineNumber());
     }
     public Symbol resolve(TypecastExpNode node) {
-        Symbol original = resolve(node.get_expression_node());
-        Symbol cast = resolve(node.get_typeNode());
+        Symbol original = resolve(node.get_expression_node()).clone();
+        Symbol cast = resolve(node.get_typeNode()).clone();
         MctlTypeDescriptor originalType = original.get_type();
         MctlTypeDescriptor castType = cast.get_type();
 
@@ -684,8 +684,8 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected arithmetic expression", node.get_lineNumber());
     }
     public Symbol resolve(MulExpNode node) {
-        Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0));
-        Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1));
+        Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0)).clone();
+        Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1)).clone();
         double leftInit = ((Number) leftSymbol.get_value()).doubleValue();
         double rightInit = ((Number) rightSymbol.get_value()).doubleValue();
         switch(node.get_operatorLiteral()) {
@@ -712,8 +712,8 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected arithmetic expression", node.get_lineNumber());
     }
     public Symbol resolve(AddExpNode node) {
-        Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0));
-        Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1));
+        Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0)).clone();
+        Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1)).clone();
         double leftInit = ((Number) leftSymbol.get_value()).doubleValue();
         double rightInit = ((Number) rightSymbol.get_value()).doubleValue();
         switch(node.get_operatorLiteral()) {
@@ -736,8 +736,8 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected logical expression", node.get_lineNumber());
     }
     public Symbol resolve(AndExpNode node) {
-        Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0));
-        Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1));
+        Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0)).clone();
+        Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1)).clone();
         boolean leftInit = (boolean) leftSymbol.get_value();
         boolean rightInit = (boolean) rightSymbol.get_value();
         leftSymbol.set_value(leftInit && rightInit);
@@ -748,8 +748,8 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected logical expression", node.get_lineNumber());
     }
     public Symbol resolve(OrExpNode node) {
-        Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0));
-        Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1));
+        Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0)).clone();
+        Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1)).clone();
         boolean leftInit = (boolean) leftSymbol.get_value();
         boolean rightInit = (boolean) rightSymbol.get_value();
         leftSymbol.set_value(leftInit || rightInit);
@@ -760,8 +760,8 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected comparison expression", node.get_lineNumber());
     }
     public Symbol resolve(CompExpNode node) {
-        Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0));
-        Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1));
+        Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0)).clone();
+        Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1)).clone();
         double leftInit = ((Number) leftSymbol.get_value()).doubleValue();
         double rightInit = ((Number) rightSymbol.get_value()).doubleValue();
         Symbol resultSymbol = new Symbol(new MctlBooleanDescriptor());
@@ -793,8 +793,8 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected comparison expression", node.get_lineNumber());
     }
     public Symbol resolve(EqualExpNode node) {
-        Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0));
-        Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1));
+        Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0)).clone();
+        Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1)).clone();
         boolean comparison = leftSymbol.get_value().equals(rightSymbol.get_value());
         Symbol resultSymbol = new Symbol(new MctlBooleanDescriptor());
         switch(node.get_operatorLiteral()) {
