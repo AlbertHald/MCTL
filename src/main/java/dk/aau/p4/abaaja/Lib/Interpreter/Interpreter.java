@@ -320,7 +320,7 @@ public class Interpreter implements INodeVisitor {
 
                 int i = 0;
                 for(ExpNode actualParam : node.get_paramExps()){
-                    Symbol paramSymbol = resolve(actualParam);
+                    Symbol paramSymbol = resolve(actualParam).clone();
                     paramSymbol.set_name(symbol.get_formalParams().get(i).get_id());
                     symbolTable.insertSymbol(paramSymbol);
                     i++;
