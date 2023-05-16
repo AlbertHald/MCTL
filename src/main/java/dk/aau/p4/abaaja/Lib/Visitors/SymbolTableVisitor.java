@@ -189,6 +189,11 @@ public class SymbolTableVisitor implements INodeVisitor {
                 );
             }
         }
+
+        // Type check the individual blocks
+        for (BlockNode block : node.get_blockChildrenNode()) {
+            visit(block);
+        }
     }
 
     public void visit(RepeatStateNode node) {
