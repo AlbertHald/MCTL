@@ -46,13 +46,13 @@ public class MCTLInterpreter {
                 concreteNode.accept(new Interpreter(problemCollection, new SymbolTable(), gameBridge));
             }
             for (Problem problem : problemCollection.getProblems()) {
-                System.out.println(problem.getMessage());
+                gameBridge.print(problem.getMessage());
             }
         }
         else {
             // Prints parse errors
             for (Problem problem : problemCollection.getProblems()) {
-                System.out.println(problem.getMessage());
+                gameBridge.print(problem.getMessage());
             }
         }
     }
