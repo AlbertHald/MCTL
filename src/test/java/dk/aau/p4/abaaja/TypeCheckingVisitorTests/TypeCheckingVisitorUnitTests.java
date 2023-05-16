@@ -11,6 +11,7 @@ import dk.aau.p4.abaaja.mctlParser;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -1476,5 +1477,23 @@ public class TypeCheckingVisitorUnitTests {
 
         softAssert.assertTrue(typeDescriptor.get_type_literal().equals("NOTHING"), "Visit IfState: Expected type NOTHING for '" + code + "' but got: " + typeDescriptor.get_type_literal());
         softAssert.assertAll();
+    }
+
+    @DataProvider
+    public Object[][] variableScopeTestData() {
+        return new Object[][] {
+                {"variable x: NUMBER; x = 10; to f(): NUMBER { return x; } to g(x: BOOLEAN): NUMBER { return f(); } g(true);", 0}, // Will fail if the variable scope rules are dynamic
+                {"variable x: BOOLEAN; to f(): BOOLEAN { return x; } to g(x: BOOLEAN): BOOLEAN { return f(); } g(true);", 1} // Will fail if the correct scope rules applies for variables as x in global scope is not instantiated
+        };
+    }
+    @Test(dataProvider = "variableScopeTestData")
+    public void variableScopeTest_usesStaticScoping_returnsCorrectValue(String code, int expectedProblems) {
+        ParseTree parseTree = createParseTree(code);
+        MctlNode mctlNode = (MctlNode) parseTree.accept(astBuilder);
+
+        symbolTableVisitor.visit(mctlNode);
+
+        Assert.assertNotNull(mctlNode, "Should create a mctl abstract syntax tree");
+        Assert.assertEquals(problemCollection.getProblems().size(), expectedProblems, "Should add: \"" + expectedProblems + "\" to the problem collection but added: \"" + problemCollection.getProblems().size() + "\"");
     }
 }
