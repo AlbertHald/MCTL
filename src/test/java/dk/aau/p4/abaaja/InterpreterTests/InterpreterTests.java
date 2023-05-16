@@ -1064,7 +1064,30 @@ public class InterpreterTests {
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
         Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+    }
 
+    @DataProvider
+    public Object[][] variableScopeTestData() {
+        return new Object[][] {
+                {"variable result : STRING; variable x: NUMBER; x = 10; to f(): NUMBER { return x; } to g(x: NUMBER): NUMBER { return f(); } result = (STRING) g(20);", "10"}
+        };
+    }
+    @Test(dataProvider = "variableScopeTestData")
+    public void variableScopeTest_usesStaticScoping_returnsCorrectValue(String code, String expectedValue) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("result");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertEquals(symbol.get_value(), expectedValue, "Should set the appropriate value on the symbol");
     }
 
 }
