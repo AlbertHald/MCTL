@@ -104,6 +104,8 @@ public class Interpreter implements INodeVisitor {
         Symbol type = resolve(node.get_returnType());
         symbol.set_type(type.get_type().clone());
 
+        symbol.set_originScope(symbolTable.get_currentScope());
+
         symbol.set_funcBlock(node.get_funcBlock());
         symbol.set_formalParams(node.get_paramList());
         symbolTable.insertSymbol(symbol);
@@ -311,7 +313,12 @@ public class Interpreter implements INodeVisitor {
             }
             default -> {
                 FuncSymbol symbol = (FuncSymbol) resolve(node.get_id());
+
+                // Functions are statically scoped. We open the function scope in the scope it was declared in.
+                Scope currentScope = symbolTable.get_currentScope();
+                symbolTable.set_currentScope(symbol.get_originScope());
                 symbolTable.createScope();
+
                 int i = 0;
                 for(ExpNode actualParam : node.get_paramExps()){
                     Symbol paramSymbol = resolve(actualParam);
@@ -323,7 +330,11 @@ public class Interpreter implements INodeVisitor {
                 if(stopper instanceof ReturnNode returnNode){
                     if(returnNode.get_returnExp() != null) result = resolve(returnNode.get_returnExp());
                 }
+
+                // Close the static function scope and return to the current scope
                 symbolTable.closeScope();
+                symbolTable.set_currentScope(currentScope);
+
                 return result;
             }
         }
