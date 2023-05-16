@@ -1,0 +1,85 @@
+struct COORDINATE {
+  variable x: NUMBER,
+  variable y: NUMBER,
+  variable z: NUMBER,
+};
+to getCoordinates (): COORDINATE {
+  variable test: COORDINATE;
+  test.x = 0;
+  test.y = 0;
+  test.z = 0;
+  return test;
+}
+
+to move (coordinate: COORDINATE): NOTHING {
+
+}
+to select (id: NUMBER): NOTHING {
+
+}
+to place (location: COORDINATE): NOTHING {
+
+}
+
+variable oakInvId: NUMBER;
+variable oakStairInvId: NUMBER;
+variable axeInvId: NUMBER;
+
+oakInvId = 1;
+oakStairInvId = 2;
+axeInvId = 9;
+
+buildStairUpwards(
+  10,
+  axeInvId,
+  oakStairInvId,
+  oakInvId,
+  getCoordinates(),
+);
+
+#{ 
+    Function for building a stair with a given height
+    PlaceholderInvId must be a solid block (Not sand blocks and so on)
+}
+to buildStairUpwards (
+  height: NUMBER,
+  axeInvId: NUMBER,
+  stairInvId: NUMBER,
+  placeholderInvId: NUMBER,
+  startCoordinate: COORDINATE,
+): NOTHING {
+  variable currCoordinate: COORDINATE;
+  currCoordinate = startCoordinate;
+
+  move(currCoordinate);
+  moveBackward();
+
+  currCoordinate = getCoordinates();
+
+  #{ Place initial stair }
+  select(stairInvId);
+  place(startCoordinate);
+
+  currCoordinate.x++;
+
+  height--;
+
+  #{ Iteratively Build Stair }
+  repeat(height){
+    select(placeholderInvId);
+    place(currCoordinate);
+
+    currCoordinate.x++;
+
+    select(stairInvId);
+    place(currCoordinate);
+
+    #{ Mine placeholder block }
+    select(axeInvId);
+    moveForward();
+    breakUnder();
+    moveBackward();
+
+    #{ Increment coordinates in the stairs direction by one }
+  }
+}

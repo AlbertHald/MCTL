@@ -614,6 +614,20 @@ public class TypeCheckingVisitor {
                 // Check function parameters
                 checkFunctionParams(node.get_paramExps(), funcSymbol, node.get_lineNumber());
 
+                // Special case in-which the add function has been called on a string literal
+                if (funcSymbol.get_name().equals("add")) {
+                    MctlTypeDescriptor firstParamType = visit(node.get_paramExps().get(0));
+
+                    if (!firstParamType.get_type_literal().equals(varType.get_type_literal().replaceFirst("\\[\\]", ""))) {
+                        // Trying to add a non-string type to a string.
+                        _problemCollection.addFormattedProblem(
+                                ProblemType.ERROR_PARAMETERS_DOES_NOT_MATCH,
+                                "The first parameter resolved to type: \"" + firstParamType.get_type_literal() + "\" and does not match the expected type: \"" + varType.get_type_literal().replaceFirst("\\[\\]", "") + "\"",
+                                node.get_lineNumber()
+                        );
+                    }
+                }
+
                 // Return the variable type if the function returns ANY type
                 if (funcSymbol.get_type().get_type_literal().equals("ANY")) return varType;
                 else return funcSymbol.get_type();
@@ -643,7 +657,7 @@ public class TypeCheckingVisitor {
             // Is valid function symbol
             FuncSymbol funcSymbol = (FuncSymbol) symbol;
             if (!funcSymbol.getIsStringFunction()) {
-                // Function should be called on string
+                // Function should not be called on string
                 _problemCollection.addFormattedProblem(
                         ProblemType.ERROR_UTILITY_FUNCTION_INVOKED_IN_WRONG_CONTEXT,
                         "The function \"" + node.get_id().get_id() + "\" cannot be called on type STRING",
@@ -662,8 +676,23 @@ public class TypeCheckingVisitor {
                 // Check function parameters
                 checkFunctionParams(node.get_paramExps(), funcSymbol, node.get_lineNumber());
 
+                // Special case in-which the add function has been called on a string literal
+                if (funcSymbol.get_name().equals("add")) {
+                    MctlTypeDescriptor firstParamType = visit(node.get_paramExps().get(0));
+                    if (!firstParamType.get_type_literal().equals("STRING")) {
+                        // Trying to add a non-string type to a string.
+                        _problemCollection.addFormattedProblem(
+                                ProblemType.ERROR_PARAMETERS_DOES_NOT_MATCH,
+                                "The first parameter resolved to type: " + firstParamType.get_type_literal() + " and does not match the expected type: \"STRING\"",
+                                node.get_lineNumber()
+                        );
+                    }
+                }
+
                 // Return the variable type if the function returns ANY type
-                if (funcSymbol.get_type().get_type_literal().equals("ANY")) return _symbolTable.searchType("STRING");
+                if (funcSymbol.get_type().get_type_literal().equals("ANY")) {
+                    return _symbolTable.searchType("STRING");
+                }
                 else return funcSymbol.get_type();
             }
         }
@@ -714,9 +743,6 @@ public class TypeCheckingVisitor {
             boolean typeMatched = false;
 
             MctlTypeDescriptor expressionType = visit(expressionNode);
-
-            // Check if the expression is also an invoke node
-            if (expressionNode instanceof InvokeExpNode) { visit(expressionNode); }
 
             // Check if type of parameter is ANY or one of the expected types
             if (!((List<MctlTypeDescriptor>) funcSymbol.get_types().get(counter)).get(0).get_type_literal().equals("ANY")){

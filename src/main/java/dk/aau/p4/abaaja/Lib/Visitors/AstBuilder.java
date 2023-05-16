@@ -65,7 +65,13 @@ public class AstBuilder extends mctlBaseVisitor<BaseNode> {
     @Override public CommentNode visitComment(mctlParser.CommentContext ctx) {
         CommentNode commentNode = new CommentNode();
         commentNode.set_lineNumber(ctx.getStart().getLine());
-        commentNode.set_lineEndNumber(ctx.getStop().getLine());
+
+        // `getEnd` returns the last line that a token was started on.
+        // Since a comment is one big token, we have to implement our own method to know which line the comment ends on.
+        int stopLine = ctx.getStart().getLine();
+        String[] lines = ctx.getText().split(System.lineSeparator());
+        stopLine += lines.length - 1;
+        commentNode.set_lineEndNumber(stopLine);
 
         commentNode.set_text(ctx.COMMENT().getText());
 

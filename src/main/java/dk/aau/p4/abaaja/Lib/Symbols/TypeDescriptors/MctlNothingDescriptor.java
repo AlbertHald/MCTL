@@ -6,4 +6,9 @@ public class MctlNothingDescriptor extends MctlTypeDescriptor {
     public String get_type_literal() {
         return "NOTHING";
     }
+
+    @Override
+    public MctlNothingDescriptor clone() {
+        return new MctlNothingDescriptor();
+    }
 }

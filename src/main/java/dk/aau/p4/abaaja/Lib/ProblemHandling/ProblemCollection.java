@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProblemCollection {
+    public static final String codeDelim = "---- code ----";
+    public static final String errorDelim = "---- error ----";
+    public static final String lineDelim = "---- line ----";
+
+
     /*
      * Get / Set methods for the problem collection variables
      */
@@ -44,9 +49,8 @@ public class ProblemCollection {
     /*
      * Method for creatingProblemMessages
      */
-    public final int totalCharacters = 60;
-    final String startDelimChar = "=";
-    final String lineDelim = "---- line ----";
+    public static final int totalCharacters = 60;
+    public static final String startDelimChar = "=";
 
     public void addFormattedProblem(ProblemType type, String message, int line) {
         // Format message string
@@ -57,7 +61,7 @@ public class ProblemCollection {
         if (type.getProblemString().startsWith("E") && !hasErrors) hasErrors = true;
     }
 
-    public String createProblemTitle(String title, int totalCharacters) {
+    public static String createProblemTitle(String title, int totalCharacters) {
         // Format the padding strings
         int padding = totalCharacters - title.length();
         int leftPaddingNumber = (int) Math.ceil(padding / 2.0);
@@ -68,5 +72,14 @@ public class ProblemCollection {
 
         // Format message string
         return String.format("%s %s %s", leftPadding, title, rightPadding);
+    }
+
+    public static String createHighlightedLine(String orgLine, int startChar, int endChar) {
+        // Create line with highlighted error
+        String tempLine = orgLine.substring(0, startChar);
+        tempLine += "  >>" + orgLine.substring(startChar, endChar) + "<<  ";
+        tempLine += orgLine.substring(endChar);
+
+        return tempLine;
     }
 }

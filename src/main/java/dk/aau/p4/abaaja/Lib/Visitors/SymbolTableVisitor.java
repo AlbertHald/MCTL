@@ -4,13 +4,13 @@ import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.Problem;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
-import dk.aau.p4.abaaja.Lib.Symbols.FuncSymbol;
 import dk.aau.p4.abaaja.Lib.Symbols.Scope;
-import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlArrayTypeDescriptor;
-import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlStructDescriptor;
-import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
+import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
+import dk.aau.p4.abaaja.Lib.Symbols.FuncSymbol;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlTypeDescriptor;
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlStructDescriptor;
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlArrayTypeDescriptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -124,6 +124,10 @@ public class SymbolTableVisitor implements INodeVisitor {
             typeDescriptor = typeCheckingVisitor.visit(node.get_varDecType());
             if (typeDescriptor != null) {
                 Symbol symbol = new Symbol(node.get_id(), typeDescriptor);
+
+                if (typeDescriptor instanceof MctlArrayTypeDescriptor || typeDescriptor instanceof MctlStructDescriptor) {
+                    symbol.set_isInstantiated(true);
+                }
                 this.symbolTable.insertSymbol(symbol);
             } else {
                 problemCollection.addFormattedProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_varDecType().get_type() + "\" does not exist", node.get_lineNumber());

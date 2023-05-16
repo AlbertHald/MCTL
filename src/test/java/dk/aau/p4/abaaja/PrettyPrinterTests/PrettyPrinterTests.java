@@ -43,10 +43,8 @@ public class PrettyPrinterTests {
 
         // Create pretty printed code from tree:
 
-        PrettyPrintVisitor prettyPrintVisitor = new PrettyPrintVisitor();
         StringSink stringSink = new StringSink();
-        prettyPrintVisitor.set_sink(stringSink);
-        concreteNode.accept(prettyPrintVisitor);
+        concreteNode.accept(new PrettyPrintVisitor(stringSink));
 
         return stringSink.get_result();
     }

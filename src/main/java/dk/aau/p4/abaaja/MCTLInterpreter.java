@@ -3,7 +3,6 @@ package dk.aau.p4.abaaja;
 // Antlr imports
 import dk.aau.p4.abaaja.Lib.Interpreter.IGameBridge;
 import dk.aau.p4.abaaja.Lib.Interpreter.Interpreter;
-import dk.aau.p4.abaaja.Lib.Interpreter.TextGameBridge;
 import dk.aau.p4.abaaja.Lib.Nodes.MctlNode;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
 import dk.aau.p4.abaaja.Lib.TextSinks.*;
@@ -39,25 +38,21 @@ public class MCTLInterpreter {
             // Continue parsing here
             MctlNode concreteNode = (MctlNode) tree.accept(new AstBuilder(problemCollection));
 
-            PrettyPrintVisitor prettyPrintVisitor = new PrettyPrintVisitor();
-            prettyPrintVisitor.set_sink(new ConsoleSink());
-            concreteNode.accept(prettyPrintVisitor);
+            concreteNode.accept(new PrettyPrintVisitor(new ConsoleSink()));
 
             concreteNode.accept(new SymbolTableVisitor(problemCollection));
 
             if (!problemCollection.getHasErrors()) {
                 concreteNode.accept(new Interpreter(problemCollection, new SymbolTable(), gameBridge));
             }
-            else {
-                for (Problem problem : problemCollection.getProblems()) {
-                    System.out.println(problem.getMessage());
-                }
+            for (Problem problem : problemCollection.getProblems()) {
+                gameBridge.print(problem.getMessage());
             }
         }
         else {
             // Prints parse errors
             for (Problem problem : problemCollection.getProblems()) {
-                System.out.println(problem.getMessage());
+                gameBridge.print(problem.getMessage());
             }
         }
     }

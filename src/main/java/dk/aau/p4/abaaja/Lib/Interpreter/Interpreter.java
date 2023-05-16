@@ -3,13 +3,10 @@ package dk.aau.p4.abaaja.Lib.Interpreter;
 import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
-import dk.aau.p4.abaaja.Lib.Symbols.FuncSymbol;
-import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
-import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
+import dk.aau.p4.abaaja.Lib.Symbols.*;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.*;
 import dk.aau.p4.abaaja.Lib.Visitors.INodeVisitor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -103,13 +100,17 @@ public class Interpreter implements INodeVisitor {
     public void visit(FuncDecNode node) {
         FuncSymbol symbol = new FuncSymbol();
         symbol.set_name(node.get_id());
+
+        Symbol type = resolve(node.get_returnType());
+        symbol.set_type(type.get_type().clone());
+
         symbol.set_funcBlock(node.get_funcBlock());
         symbol.set_formalParams(node.get_paramList());
         symbolTable.insertSymbol(symbol);
     }
 
     public void visit(StructDecNode node) {
-
+        //Intentionally left blank. Struct definitions are only used for type checking.
     }
 
     public void visit(IfStateNode node) {
@@ -193,50 +194,10 @@ public class Interpreter implements INodeVisitor {
         }
 
         Symbol result = resolve(node.get_assignExp());
-        if(symbol.get_accessors().isEmpty()) {
-            // Primitive values can be set directly
-            symbol.set_value(result.get_value());
-        }else{
-            // List values need recursion hell
-            ArrayList intermediate = (ArrayList) symbol.get_baseValue();
-            // Set a new base list in case it has not been initialized
-            if(intermediate == null){
-                intermediate = new ArrayList();
-                symbol.set_value(intermediate);
-            }
-            // Iterate over each accessor until reaching the final nested list to add the value to
-            for(int i = 0; i < symbol.get_accessors().size(); i++){
-                int accessor = (int) symbol.get_accessors().get(i);
 
-                // The array is automatically initialized with NOTHING types all the way up to the index being set
-                while(intermediate.size() <= accessor){
-                    intermediate.add(null);
-                }
-
-                if(i < symbol.get_accessors().size() - 1) {
-                    // Iterate to the next nested list
-
-                    ArrayList nextIntermediate = null;
-
-                    // If there is an existing member, use that, otherwise create one
-                    if(intermediate.size() > accessor){
-                        nextIntermediate = (ArrayList) intermediate.get(accessor);
-                    }
-                    if(nextIntermediate == null){
-                        nextIntermediate = new ArrayList();
-                    }
-
-                    // Prepare for next scope access iteration
-                    intermediate.set(accessor, nextIntermediate);
-                    intermediate = nextIntermediate;
-                }else{
-                    // We have arrived at the last nested list, now set the primitive value
-                    intermediate.set(accessor, result.get_value());
-                }
-            }
-        }
-
-        symbolTable.insertSymbol(symbol);
+        symbol.set_value(result.get_value());
+        symbol.set_indexes(result.get_indexes());
+        symbol.set_fields(result.get_fields());
     }
 
     public void visit(InvokeNode node) {
@@ -374,10 +335,9 @@ public class Interpreter implements INodeVisitor {
     }
     public Symbol resolve(VarMethodInvokeNode node) {
         Symbol subject = resolve(node.get_varId());
-        MctlTypeDescriptor subjectType = subject.get_type();
 
         // If string, convert to a string invoke and call that instead.
-        if (subjectType instanceof MctlStringDescriptor) {
+        if (subject.get_type() instanceof MctlStringDescriptor && subject.get_indexes().size() == 0) {
             StringMethodInvokeNode stringNode = new StringMethodInvokeNode();
             stringNode.set_lineNumber(node.get_lineNumber());
             stringNode.set_lineEndNumber(node.get_lineEndNumber());
@@ -394,9 +354,53 @@ public class Interpreter implements INodeVisitor {
         String methodName = resolve(node.get_id()).get_name();
         Symbol result = new Symbol(new MctlNothingDescriptor(), null);
         switch (methodName) {
-            //TODO: Implement arrays
+            case "length" -> {
+                result.set_type(new MctlNumberDescriptor());
+                result.set_value( ((Number) subject.get_listLength()).doubleValue() );
+            }
+            case "add" -> {
+                result = subject.clone();
+
+                result.add_index(resolve(node.get_paramExps().get(0)));
+            }
+            case "remove" -> {
+                result = subject.clone();
+
+                result.remove_index();
+            }
+            case "sublist" -> {
+                result.set_type(subject.get_type().clone());
+
+                int start = ((Number) resolve(node.get_paramExps().get(0)).get_value()).intValue();
+                int end = ((Number) resolve(node.get_paramExps().get(1)).get_value()).intValue();
+                if(subject.get_listLength() == 0){
+                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to call sublist on an empty list.", node.get_lineNumber());
+                }else if(start < 0 || subject.get_listLength() <= start){
+                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access list at index " + start + " when only index 0-" + (subject.get_listLength()-1) + " is valid.", node.get_lineNumber());
+                }else if(end < start || subject.get_listLength() <= end){
+                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access end of list at index " + end + " when only index " + start + "-" + (subject.get_listLength()-1) + " is valid.", node.get_lineNumber());
+                }else{
+                    for(int i = start; i <= end; i++){
+                        result.add_index(subject.get_index(start));
+                    }
+                }
+            }
+            case "indexesOf" -> {
+                result.set_type(new MctlArrayTypeDescriptor(new MctlNumberDescriptor(), 1));
+                List<Symbol> subjectList = subject.get_indexes();
+                Symbol query = resolve(node.get_paramExps().get(0));
+
+                for(int i = 0; i < subjectList.size(); i++){
+                    Symbol subjectIndex = subjectList.get(i);
+                    if(subjectIndex == null) continue;
+                    if(subjectIndex.get_value().equals(query.get_value())){
+                        Symbol match = new Symbol(new MctlNumberDescriptor(), ((Number) i).doubleValue());
+                        result.add_index(match);
+                    }
+                }
+            }
             default -> {
-                problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unsupported method invocation on " + subjectType.get_type_literal() + ": " + methodName, node.get_lineNumber());
+                problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unsupported method invocation on " + subject.get_type().get_type_literal() + ": " + methodName, node.get_lineNumber());
             }
         }
         return result;
@@ -411,24 +415,48 @@ public class Interpreter implements INodeVisitor {
         Symbol result = new Symbol(new MctlNothingDescriptor(), null);
         switch(methodName){
             case "length" -> {
-                result.set_value(subject.length());
                 result.set_type(new MctlNumberDescriptor());
+                result.set_value(((Number) subject.length()).doubleValue());
+            }
+            case "add" -> {
+                result.set_type(new MctlStringDescriptor());
+                String end = (String) resolve(node.get_paramExps().get(0)).get_value();
+                result.set_value(subject + end);
+            }
+            case "remove" -> {
+                result.set_type(new MctlStringDescriptor());
+                result.set_value(subject.substring(0, subject.length() - 1));
             }
             case "substring" -> {
                 result.set_type(new MctlStringDescriptor());
                 int start = ((Number) resolve(node.get_paramExps().get(0)).get_value()).intValue();
                 int end = ((Number) resolve(node.get_paramExps().get(1)).get_value()).intValue();
-                if(start <= 0 || subject.length() < start){
-                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access STRING at index " + start + " when only index 1-" +subject.length() + " is valid.", node.get_lineNumber());
+                if(subject.length() == 0){
+                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to call substring on an empty STRING.", node.get_lineNumber());
                     result.set_value("");
-                }else if(end <= start || subject.length()+1 < end){
-                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access end of STRING at index " + end + " when only index " + (start+1) + "-" + (subject.length()+1) + " is valid.", node.get_lineNumber());
+                }else if(start < 0 || subject.length() <= start){
+                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access STRING at index " + start + " when only index 0-" + (subject.length()-1) + " is valid.", node.get_lineNumber());
+                    result.set_value("");
+                }else if(end < start || subject.length() <= end){
+                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access end of STRING at index " + end + " when only index " + start + "-" + (subject.length()-1) + " is valid.", node.get_lineNumber());
                     result.set_value("");
                 }else{
-                    result.set_value(subject.substring(start-1, end-1));
+                    result.set_value(subject.substring(start, end+1));
                 }
             }
-            //TODO: Implement indexesOf when arrays are do be have implemented
+            case "indexesOf" -> {
+                result.set_type(new MctlArrayTypeDescriptor(new MctlNumberDescriptor(), 1));
+                String query = (String) resolve(node.get_paramExps().get(0)).get_value();
+                if(query.length() == 0) break;
+                int safeLastIndex = (subject.length() - query.length());
+
+                for(int i = 0; i <= safeLastIndex; i++){
+                    if(subject.substring(i, i+query.length()).equals(query)){
+                        Symbol match = new Symbol(new MctlNumberDescriptor(), ((Number) i).doubleValue());
+                        result.add_index(match);
+                    }
+                }
+            }
             default -> {
                 problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unsupported method invocation on STRING: " + methodName, node.get_lineNumber());
             }
@@ -476,21 +504,24 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
     public Symbol resolve(BoolTypeNode node) {
-        return new Symbol(new MctlBooleanDescriptor());
+        MctlTypeDescriptor type = new MctlBooleanDescriptor();
+        return new Symbol(type);
     }
 
     public void visit(NumTypeNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
     public Symbol resolve(NumTypeNode node) {
-        return new Symbol(new MctlNumberDescriptor());
+        MctlTypeDescriptor type = new MctlNumberDescriptor();
+        return new Symbol(type);
     }
 
     public void visit(StringTypeNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
     public Symbol resolve(StringTypeNode node) {
-        return new Symbol(new MctlStringDescriptor());
+        MctlTypeDescriptor type = new MctlStringDescriptor();
+        return new Symbol(type);
     }
 
     public void visit(NothingTypeNode node) {
@@ -498,15 +529,17 @@ public class Interpreter implements INodeVisitor {
 
     }
     public Symbol resolve(NothingTypeNode node) {
-        return new Symbol(new MctlNothingDescriptor());
+        MctlTypeDescriptor type = new MctlNothingDescriptor();
+        return new Symbol(type);
     }
 
     public void visit(IDTypeNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
-    /*public Symbol resolve(IDTypeNode node) {
-        return new Symbol(new MctlStructDescriptor());
-    }*/
+    public Symbol resolve(IDTypeNode node) {
+        MctlTypeDescriptor type = new MctlStructDescriptor(node.get_type());
+        return new Symbol(type);
+    }
 
     public void visit(ExpNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected expression", node.get_lineNumber());
@@ -546,7 +579,7 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected unary expression", node.get_lineNumber());
     }
     public Symbol resolve(UnaryExpNode node) {
-        Symbol result = resolve((ExpNode) node.get_children().get(0));
+        Symbol result = resolve(node.get_unaryExp());
         switch (node.get_operatorLiteral()) {
             case "!" -> {
                 result.set_value(!(boolean) result.get_value());
@@ -563,7 +596,7 @@ public class Interpreter implements INodeVisitor {
                 problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown unary expression", node.get_lineNumber());
             }
         }
-        return null;
+        return result;
     }
 
     public void visit(TypecastExpNode node) {
@@ -577,7 +610,7 @@ public class Interpreter implements INodeVisitor {
 
         if(Objects.equals(originalType.get_type_literal(), castType.get_type_literal())) {
             cast.set_value(original.get_value());
-            cast.set_type(original.get_type());
+            cast.set_type(original.get_type().clone());
         }else if(originalType instanceof MctlBooleanDescriptor && castType instanceof MctlStringDescriptor){
             Boolean value = (Boolean) original.get_value();
             if(value == null){
@@ -752,7 +785,7 @@ public class Interpreter implements INodeVisitor {
     public Symbol resolve(EqualExpNode node) {
         Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0));
         Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1));
-        boolean comparison = leftSymbol.get_value() == rightSymbol.get_value();
+        boolean comparison = leftSymbol.get_value().equals(rightSymbol.get_value());
         Symbol resultSymbol = new Symbol(new MctlBooleanDescriptor());
         switch(node.get_operatorLiteral()) {
             case "==" -> {
@@ -778,6 +811,8 @@ public class Interpreter implements INodeVisitor {
             return resolve((ActualIDExpNode) node);
         }else if(node instanceof IDArrayExpNode){
             return resolve((IDArrayExpNode) node);
+        }else if(node instanceof IDStructNode){
+            return resolve((IDStructNode) node);
         }
         return resolve(node.get_idNode());
     }
@@ -796,33 +831,35 @@ public class Interpreter implements INodeVisitor {
     public void visit(IDArrayExpNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected variable expression", node.get_lineNumber());
     }
-    public Symbol resolve(IDArrayExpNode node){
-        Symbol intermediate = resolve(node.get_idNode());
+    public Symbol resolve(IDArrayExpNode node) {
+        Symbol base = resolve(node.get_idNode());
 
         int accessor = ((Number) resolve(node.get_accessor()).get_value()).intValue();
-        intermediate.add_accessor(accessor);
 
-        if(node.get_idNode() instanceof IDArrayExpNode){
-            // We are already running access recursion, therefore we need to use the scoped value.
-            if(intermediate.get_value() != null && ((List) intermediate.get_value()).size() > accessor){
-                intermediate.set_scoped_value( ((ArrayList) intermediate.get_value()).get(accessor) );
-            }else{
-                intermediate.set_scoped_value(null);
-            }
-        }else{
-            // We are starting a new recursion, therefore we need the base value.
-            if(intermediate.get_baseValue() != null && ((List) intermediate.get_baseValue()).size() > accessor){
-                intermediate.set_scoped_value( ((ArrayList) intermediate.get_baseValue()).get(accessor) );
-            }else{
-                intermediate.set_scoped_value(null);
-            }
+        Symbol indexSymbol = base.get_index(accessor);
+        if(indexSymbol == null){
+            indexSymbol = new Symbol();
+            base.set_index(accessor, indexSymbol);
         }
 
-        return intermediate;
+        return indexSymbol;
     }
 
     public void visit(IDStructNode node) {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected variable expression", node.get_lineNumber());
+    }
+    public Symbol resolve(IDStructNode node) {
+        Symbol base = resolve(node.get_idNode());
+
+        String accessor = resolve(node.get_accessor()).get_name();
+
+        Symbol fieldSymbol = base.get_field(accessor);
+        if(fieldSymbol == null){
+            fieldSymbol = new Symbol(accessor);
+            base.set_field(fieldSymbol);
+        }
+
+        return fieldSymbol;
     }
 
     public void visit(BoolExpNode node) {
@@ -836,7 +873,9 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected numerical literal expression", node.get_lineNumber());
     }
     public Symbol resolve(NumExpNode node) {
-        return new Symbol(new MctlNumberDescriptor(), node.get_result());
+        // The cast to double ensures that all values are floats.
+        // TODO: This is a hacky solution to the problem of using ints and floats together, we should probably allow ints more broadly
+        return new Symbol(new MctlNumberDescriptor(), (Number) node.get_result().doubleValue());
     }
 
     public void visit(StringExpNode node) {

@@ -5,4 +5,9 @@ public class MctlStringDescriptor extends MctlTypeDescriptor {
     public String get_type_literal() {
         return "STRING";
     }
+
+    @Override
+    public MctlStringDescriptor clone() {
+        return new MctlStringDescriptor();
+    }
 }

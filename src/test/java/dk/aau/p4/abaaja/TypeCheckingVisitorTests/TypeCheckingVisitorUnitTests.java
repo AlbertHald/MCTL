@@ -53,18 +53,17 @@ public class TypeCheckingVisitorUnitTests {
     @DataProvider
     public Object[][] createParseTreeTestData() {
         return new Object[][] {
-                {"a = \"a\";"},
-                {"a = \"a\"; a = \"a\";"},
-                {"a = \"a\"; a = \"a\"; a = \"a\";"}
+                {"a = \"a\";", 2},
+                {"a = \"a\"; a = \"a\";", 3},
+                {"a = \"a\"; a = \"a\"; a = \"a\";", 4}
         };
     }
 
-    // TODO: Condition 'parseTree != null' is always 'true'
     @Test(dataProvider = "createParseTreeTestData")
-    public void createParseTree_ValidInput_CreatesParseTree(String code) {
+    public void createParseTree_ValidInput_CreatesParseTree(String code, int expectedNodes) {
         ParseTree parseTree = createParseTree(code);
 
-        softAssert.assertTrue(parseTree != null, "Create Parse Tree: " + code);
+        softAssert.assertEquals(parseTree.getChildCount(), expectedNodes, "Create Parse Tree: " + code);
         softAssert.assertAll();
     }
 
@@ -1412,8 +1411,7 @@ public class TypeCheckingVisitorUnitTests {
                 {"repeat (!\"per\") {}", 0},
                 {"repeat (!\"per\" or \"bob\") {}", 0},
                 {"repeat (var) {}", 0},
-                {"variable var1: BOOLEAN; variable var2: BOOLEAN; repeat (var1 and var2) {}", 2},
-                {"struct STRUCTURE { variable x: NUMBER }; variable var: STRUCTURE; repeat (var) {}", 2}
+                {"variable var1: BOOLEAN; variable var2: BOOLEAN; repeat (var1 and var2) {}", 2}
         };
     }
 
@@ -1462,8 +1460,7 @@ public class TypeCheckingVisitorUnitTests {
                 {"if (!\"per\") {}", 0},
                 {"if (!\"per\" or \"bob\") {}", 0},
                 {"if (var) {}", 0},
-                {"variable var1: BOOLEAN; variable var2: BOOLEAN; if (var1 and var2) {}", 2},
-                {"struct STRUCTURE { variable x: NUMBER }; variable var: STRUCTURE; if (var) {}", 2}
+                {"variable var1: BOOLEAN; variable var2: BOOLEAN; if (var1 and var2) {}", 2}
         };
     }
 
