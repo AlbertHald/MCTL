@@ -1069,11 +1069,11 @@ public class InterpreterTests {
     @DataProvider
     public Object[][] variableScopeTestData() {
         return new Object[][] {
-                {"variable result : STRING; variable x: NUMBER; x = 10; to f(): NUMBER { return x; } to g(x: NUMBER): NUMBER { return f(); } result = (STRING) g(20);", "10"}
+                {"variable result : NUMBER; variable x: NUMBER; x = 10; to f(): NUMBER { return x; } to g(x: NUMBER): NUMBER { return f(); } result = g(20);", 10.0}
         };
     }
     @Test(dataProvider = "variableScopeTestData")
-    public void variableScopeTest_usesStaticScoping_returnsCorrectValue(String code, String expectedValue) {
+    public void variableScopeTest_usesStaticScoping_returnsCorrectValue(String code, Number expectedValue) {
         MctlNode concreteNode = parseNode(code);
 
         ProblemCollection problemCollection = new ProblemCollection();
