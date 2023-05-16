@@ -313,7 +313,7 @@ public class Interpreter implements INodeVisitor {
             default -> {
                 FuncSymbol symbol = (FuncSymbol) resolve(node.get_id());
 
-                // Functions are statically scoped. We open the function scope in the scope it was declared in.
+                // Variables are statically scoped. We open the function block in the scope the function was declared in.
                 Scope currentScope = symbolTable.get_currentScope();
                 symbolTable.set_currentScope(symbol.get_originScope());
                 symbolTable.createScope();
