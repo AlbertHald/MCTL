@@ -54,7 +54,7 @@ public class ProblemCollection {
 
     public void addFormattedProblem(ProblemType type, String message, int line) {
         // Format message string
-        String problemMessage = String.format("%s\n%s\n%s\nLine: %o", createProblemTitle(type.toString(), totalCharacters), message, lineDelim, line);
+        String problemMessage = String.format("%s\n%s\n%s\nLine: %d\n", createProblemTitle(type.toString(), totalCharacters), message, lineDelim, line);
 
         problems.add(new Problem(type, problemMessage, line, 0, 0));
 
