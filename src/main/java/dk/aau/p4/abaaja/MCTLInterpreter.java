@@ -46,10 +46,10 @@ public class MCTLInterpreter {
                 concreteNode.accept(new Interpreter(problemCollection, new SymbolTable(), gameBridge));
             }
             else {
-                gameBridge.internal_terminate();
-            }
-            for (Problem problem : problemCollection.getProblems()) {
-                gameBridge.print(problem.getMessage());
+                // Prints interpretation errors
+                for (Problem problem : problemCollection.getProblems()) {
+                    gameBridge.print(problem.getMessage());
+                }
             }
         }
         else {
@@ -57,8 +57,8 @@ public class MCTLInterpreter {
             for (Problem problem : problemCollection.getProblems()) {
                 gameBridge.print(problem.getMessage());
             }
-            gameBridge.internal_terminate();
         }
+        gameBridge.internal_terminate();
     }
 
     /**
