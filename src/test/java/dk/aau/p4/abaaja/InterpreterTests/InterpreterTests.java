@@ -1094,6 +1094,7 @@ public class InterpreterTests {
     public Object[][] lateAssignNoAssignTestData_number() {
         return new Object[][] {
                 {"variable test: NUMBER; variable other: NUMBER; other = 4; test = other; other = 2;", 4.0},
+                {"variable test: NUMBER; test = 4; to run(other: NUMBER): NOTHING { other++; } run(test);", 4.0},
         };
     }
     @Test(dataProvider = "lateAssignNoAssignTestData_number")
