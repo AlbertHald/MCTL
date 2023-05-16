@@ -1219,4 +1219,37 @@ public class InterpreterTests {
         Assert.assertEquals(symbol.get_value(), expectedValue, "Should not change the value after using it in an expression");
     }
 
+    @DataProvider
+    public Object[][] expNoAssignTestData_string() {
+        return new Object[][] {
+                // TODO: Also make these tests for lists
+                {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = test.add('man');", "boss"},
+                {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = 'man'.add(test);", "boss"},
+                {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = test.add(test);", "boss"},
+                {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = test.remove();", "boss"},
+                {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = test.substring(0, 2);", "boss"},
+                {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = test.substring(2, 2);", "boss"},
+                {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = test.substring(0, 3);", "boss"},
+                {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = test.substring(0, 0);", "boss"},
+                {"variable test: STRING; variable sink: NUMBER; test = 'boss'; sink = test.length()", "boss"},
+        };
+    }
+    @Test(dataProvider = "expNoAssignTestData_string")
+    public void exp_doesNotAssign_string(String code, String expectedValue) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertEquals(symbol.get_value(), expectedValue, "Should not change the value after using it in an expression");
+    }
+
 }
