@@ -97,6 +97,9 @@ public class SymbolTable {
         }
     }
 
+    public void set_currentScope(Scope scope) {
+        this._currentScope = scope;
+    }
     public Scope get_currentScope() {
         return _currentScope;
     }

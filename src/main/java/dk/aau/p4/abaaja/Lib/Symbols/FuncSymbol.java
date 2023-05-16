@@ -14,6 +14,7 @@ public class FuncSymbol extends Symbol{
     private boolean _isVarFunction;
     private boolean _isStringFunction;
     private MctlTypeDescriptor _expectedVarType;
+    private Scope _originScope;
 
     public FuncSymbol() {
         _isVarFunction = false;
@@ -49,4 +50,11 @@ public class FuncSymbol extends Symbol{
     public boolean getIsStringFunction() { return _isStringFunction; }
     public void setExpectedVarType(MctlTypeDescriptor expectedVarType) { this._expectedVarType = expectedVarType; }
     public MctlTypeDescriptor getExpectedVarType() { return _expectedVarType; }
+
+    public void set_originScope(Scope scope){
+        this._originScope = scope;
+    }
+    public Scope get_originScope(){
+        return this._originScope;
+    }
 }
