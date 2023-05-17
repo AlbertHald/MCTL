@@ -2,6 +2,7 @@ package dk.aau.p4.abaaja.TypeCheckingVisitorTests;
 
 import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
+import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Symbols.FuncSymbol;
 import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
@@ -92,10 +93,63 @@ public class TypeCheckingVisitorUnitTests {
         // Act
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(funcInvokeNode);
 
-        System.out.println("typeDescriptor.get_type_literal() = " + typeDescriptor.get_type_literal());
-
         // Assert
         softAssert.assertEquals(typeDescriptor.get_type_literal(), "NUMBER", "FuncInvokeNode type checking went wrong");
+        softAssert.assertAll();
+    }
+
+    @Test()
+    public void IDTypeNode_Error_ReturnsCorrectType() {
+
+        IDTypeNode idTypeNode = new IDTypeNode();
+
+        idTypeNode.set_type("test");
+
+        when(_symbolTable.searchType("test")).thenReturn(null);
+        typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, _symbolTable);
+
+        MctlTypeDescriptor result = typeCheckingVisitor.visit(idTypeNode);
+
+        softAssert.assertNull(result, "IDTypeNode Error type checking went wrong");
+        softAssert.assertEquals(problemCollection.getProblems().size(), 1, "IDTypeNode Error type checking went wrong");
+        softAssert.assertEquals(problemCollection.getProblems().get(0).getProblemType(), ProblemType.ERROR_UNKNOWN_TYPE, "IDTypeNode Error type checking went wrong");
+        softAssert.assertAll();
+    }
+
+    @Test()
+    public void IDTypeNode_ValidNode_ReturnsCorrectType() {
+
+        MctlTypeDescriptor MctlNumberDescriptor = new MctlNumberDescriptor();
+        IDTypeNode idTypeNode = new IDTypeNode();
+
+        idTypeNode.set_type("NUMBER");
+
+        when(_symbolTable.searchType("NUMBER")).thenReturn(MctlNumberDescriptor);
+        typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, _symbolTable);
+
+
+        MctlTypeDescriptor result = typeCheckingVisitor.visit(idTypeNode);
+
+        softAssert.assertEquals(result.get_type_literal(), "NUMBER", "IDTypeNode type checking went wrong");
+        softAssert.assertAll();
+    }
+
+    @Test()
+    public void IDTypeNode_ValidArrayNode_ReturnsCorrectType() {
+
+        MctlTypeDescriptor MctlNumberDescriptor = new MctlNumberDescriptor();
+        IDTypeNode idTypeNode = new IDTypeNode();
+
+        idTypeNode.set_arrayDegree(1);
+        idTypeNode.set_type("NUMBER");
+
+        when(_symbolTable.searchType("NUMBER")).thenReturn(MctlNumberDescriptor);
+        typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, _symbolTable);
+
+        MctlArrayTypeDescriptor result = (MctlArrayTypeDescriptor) typeCheckingVisitor.visit(idTypeNode);
+
+        softAssert.assertEquals(result.get_type_literal(), "NUMBER[]", "IDTypeNode Array type checking went wrong");
+        softAssert.assertEquals(result.getDegree(), 1, "IDTypeNode Array type checking went wrong");
         softAssert.assertAll();
     }
 }
