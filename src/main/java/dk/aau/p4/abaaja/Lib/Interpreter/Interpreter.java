@@ -194,7 +194,7 @@ public class Interpreter implements INodeVisitor {
             return;
         }
 
-        Symbol result = resolve(node.get_assignExp());
+        Symbol result = resolve(node.get_assignExp()).clone();
 
         symbol.set_value(result.get_value());
         symbol.set_indexes(result.get_indexes());
