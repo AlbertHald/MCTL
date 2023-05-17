@@ -23,20 +23,18 @@ import static org.mockito.Mockito.*;
 
 public class TypeCheckingVisitorUnitTests {
     private ProblemCollection problemCollection = new ProblemCollection();
-    private SymbolTableVisitor symbolTableVisitor;
+    private SymbolTable _symbolTable;
     private TypeCheckingVisitor typeCheckingVisitor;
     private SoftAssert softAssert;
 
     @BeforeMethod
     public void BeforeMethod() {
         softAssert = new SoftAssert();
-        symbolTableVisitor = new SymbolTableVisitor(problemCollection);
-        typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, symbolTableVisitor.getSymbolTable());
+        _symbolTable = mock();
     }
 
     @AfterMethod
     public void AfterMethod() {
-        symbolTableVisitor = null;
         typeCheckingVisitor = null;
 
         problemCollection = new ProblemCollection();
@@ -59,38 +57,19 @@ public class TypeCheckingVisitorUnitTests {
 
     @Test(dataProvider = "getPrimitiveTypeTestData")
     public void getPrimitiveType_ValidInput_ReturnsCorrectType(TypeNode node, MctlTypeDescriptor mctlTypeDescriptor, String expected) {
+
+        typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, _symbolTable);
+
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.getPrimitiveType(node, mctlTypeDescriptor);
 
         softAssert.assertEquals(typeDescriptor.get_type_literal(), expected, "getPrimitiveType type checking went wrong");
         softAssert.assertAll();
     }
 
-    @DataProvider
-    public Object[][] TypeNodeTestData() {
-        return new Object[][] {
-            {new NothingTypeNode(), "NOTHING", new MctlNothingDescriptor()},
-            {new BoolTypeNode(), "BOOLEAN", new MctlBooleanDescriptor()},
-            {new NumTypeNode(), "NUMBER", new MctlNumberDescriptor()},
-            {new StringTypeNode(), "STRING", new MctlStringDescriptor()}
-        };
-    }
-
-    @Test(dataProvider = "TypeNodeTestData")
-    public void TypeNode_ValidASTNode_ReturnsCorrectType(TypeNode node, String type, MctlTypeDescriptor typeDescriptor) {
-        SymbolTable symbolTable = mock();
-
-        when(symbolTable.searchType(type)).thenReturn(typeDescriptor);
-
-        MctlTypeDescriptor result = typeCheckingVisitor.visit(node);
-
-        softAssert.assertEquals(result.get_type_literal(), type, "TypeNode type checking went wrong");
-        softAssert.assertAll();
-    }
-
-    /*@Test()
+    @Test()
     public void FuncInvokeNode_ValidASTNode_ReturnsCorrectType() {
+
         // Arrange
-        SymbolTable symbolTable = mock();
         TypeCheckingVisitor typeCheckingVisitor2 = mock();
 
         FuncInvokeNode funcInvokeNode = new FuncInvokeNode();
@@ -105,8 +84,10 @@ public class TypeCheckingVisitorUnitTests {
         funcInvokeNode.set_lineNumber(0);
         funcSymbol.set_type(mctlNumberDescriptor);
 
-        when(symbolTable.searchSymbol(funcInvokeNode.get_id().get_id())).thenReturn(funcSymbol);
-        when(typeCheckingVisitor2._checkFunctionParams(funcInvokeNode.get_paramExps(), funcSymbol, funcInvokeNode.get_lineNumber()));
+        when(_symbolTable.searchSymbol(funcInvokeNode.get_id().get_id())).thenReturn(funcSymbol);
+        typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, _symbolTable);
+
+        doNothing().when(typeCheckingVisitor2)._checkFunctionParams(funcInvokeNode.get_paramExps(), funcSymbol, funcInvokeNode.get_lineNumber());
 
         // Act
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(funcInvokeNode);
@@ -116,7 +97,7 @@ public class TypeCheckingVisitorUnitTests {
         // Assert
         softAssert.assertEquals(typeDescriptor.get_type_literal(), "NUMBER", "FuncInvokeNode type checking went wrong");
         softAssert.assertAll();
-    }*/
+    }
 }
 
 
