@@ -488,11 +488,25 @@ public class InterpreterTests {
         return new Object[][] {
                 {"variable test: BOOLEAN; to run(): BOOLEAN { return true; } test = run();", true},
                 {"variable test: BOOLEAN; to run(): BOOLEAN { return false; } test = run();", false},
+                {"variable test: BOOLEAN; struct ON { variable isOn: BOOLEAN }; variable on: ON; variable res: ON; on.isOn = true; to run(): ON { return on; } res = run(); test = res.isOn;", true},
+                {"variable test: BOOLEAN; struct ON { variable isOn: BOOLEAN }; variable on: ON; variable res: ON; on.isOn = false; to run(): ON { return on; } res = run(); test = res.isOn;", false},
+                {"variable test: BOOLEAN; variable ons: BOOLEAN[]; variable res: BOOLEAN[]; ons[3] = true; to run(): BOOLEAN[] { return ons; } res = run(); test = res[3];", true},
+                {"variable test: BOOLEAN; variable ons: BOOLEAN[]; variable res: BOOLEAN[]; ons[3] = false; to run(): BOOLEAN[] { return ons; } res = run(); test = res[3];", false},
                 {"variable test: BOOLEAN; to run(condition: BOOLEAN): BOOLEAN { return condition; } test = run(true);", true},
                 {"variable test: BOOLEAN; to run(condition: BOOLEAN): BOOLEAN { return condition; } test = run(false);", false},
+                {"variable test: BOOLEAN; struct ON { variable isOn: BOOLEAN }; variable on: ON; variable res: ON; on.isOn = true; to run(condition: ON): ON { return condition; } res = run(on); test = res.isOn;", true},
+                {"variable test: BOOLEAN; struct ON { variable isOn: BOOLEAN }; variable on: ON; variable res: ON; on.isOn = false; to run(condition: ON): ON { return condition; } res = run(on); test = res.isOn;", false},
+                {"variable test: BOOLEAN; variable ons: BOOLEAN[]; variable res: BOOLEAN[]; ons[3] = true; to run(condition: BOOLEAN[]): BOOLEAN[] { return condition; } res = run(ons); test = res[3];", true},
+                {"variable test: BOOLEAN; variable ons: BOOLEAN[]; variable res: BOOLEAN[]; ons[3] = false; to run(condition: BOOLEAN[]): BOOLEAN[] { return condition; } res = run(ons); test = res[3];", false},
                 {"variable test: BOOLEAN; to run(left: BOOLEAN, right: BOOLEAN): BOOLEAN { return left and right; } test = run(true, true);", true},
                 {"variable test: BOOLEAN; to run(left: BOOLEAN, right: BOOLEAN): BOOLEAN { return left and right; } test = run(true, false);", false},
                 {"variable test: BOOLEAN; to run(left: BOOLEAN, right: BOOLEAN): BOOLEAN { return left and right; } test = run(false, true);", false},
+                {"variable test: BOOLEAN; to run(condition: BOOLEAN): BOOLEAN { variable local: BOOLEAN; local = condition; return local; } test = run(true);", true},
+                {"variable test: BOOLEAN; to run(condition: BOOLEAN): BOOLEAN { variable local: BOOLEAN; local = condition; return local; } test = run(false);", false},
+                {"variable test: BOOLEAN; struct ON { variable isOn: BOOLEAN }; variable on: ON; variable res: ON; on.isOn = true; to run(condition: ON): ON { variable local: ON; local = condition; return local; } res = run(on); test = res.isOn;", true},
+                {"variable test: BOOLEAN; struct ON { variable isOn: BOOLEAN }; variable on: ON; variable res: ON; on.isOn = false; to run(condition: ON): ON { variable local: ON; local = condition; return local; } res = run(on); test = res.isOn;", false},
+                {"variable test: BOOLEAN; variable ons: BOOLEAN[]; variable res: BOOLEAN[]; ons[3] = true; to run(condition: BOOLEAN[]): BOOLEAN[] { variable local: BOOLEAN[]; local = condition; return local; } res = run(ons); test = res[3];", true},
+                {"variable test: BOOLEAN; variable ons: BOOLEAN[]; variable res: BOOLEAN[]; ons[3] = false; to run(condition: BOOLEAN[]): BOOLEAN[] { variable local: BOOLEAN[]; local = condition; return local; } res = run(ons); test = res[3];", false},
         };
     }
     @Test(dataProvider = "invokeTestData")
