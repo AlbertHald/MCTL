@@ -42,6 +42,11 @@ public class TextGameBridge implements IGameBridge {
     }
 
     @Override
+    public void setDelay(int delay){
+        printFunc("Set turtle delay to: " + delay + " milliseconds");
+    }
+
+    @Override
     public boolean moveForward(){
         printFunc("Move 1 forward", "true");
         return true;

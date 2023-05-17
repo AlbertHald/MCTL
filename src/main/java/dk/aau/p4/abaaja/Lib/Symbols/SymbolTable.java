@@ -24,6 +24,7 @@ public class SymbolTable {
             new PredefinedFunction("sublist", Arrays.asList(Arrays.asList(new MctlNumberDescriptor()), Arrays.asList(new MctlNumberDescriptor())), new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0), true, false, new MctlArrayTypeDescriptor(new MctlTypeDescriptor(),0)),
             new PredefinedFunction("read", new ArrayList<>(), new MctlStringDescriptor(), false, false, new MctlNothingDescriptor()),
             new PredefinedFunction("print", Arrays.asList(Arrays.asList(new MctlStringDescriptor())), new MctlNothingDescriptor(), false, false, new MctlNothingDescriptor()),
+            new PredefinedFunction("setDelay", Arrays.asList(Arrays.asList(new MctlNumberDescriptor())), new MctlNothingDescriptor(), false, false, new MctlNothingDescriptor()),
             new PredefinedFunction("moveForward", new ArrayList<>(), new MctlBooleanDescriptor(), false, false, new MctlNothingDescriptor()),
             new PredefinedFunction("moveUp", new ArrayList<>(), new MctlBooleanDescriptor(), false, false, new MctlNothingDescriptor()),
             new PredefinedFunction("moveDown", new ArrayList<>(), new MctlBooleanDescriptor(), false, false, new MctlNothingDescriptor()),

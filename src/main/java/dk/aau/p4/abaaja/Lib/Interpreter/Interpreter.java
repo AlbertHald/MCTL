@@ -242,6 +242,10 @@ public class Interpreter implements INodeVisitor {
                 result.set_value(bridgeResult);
                 return result;
             }
+            case "setDelay" -> {
+                Symbol delay = resolve(node.get_paramExps().get(0));
+                gameBridge.setDelay(((Number) delay.get_value()).intValue());
+            }
             case "moveForward" -> {
                 boolean bridgeResult = gameBridge.moveForward();
                 result.set_type(new MctlBooleanDescriptor());
