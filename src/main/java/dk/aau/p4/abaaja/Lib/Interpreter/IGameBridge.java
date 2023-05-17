@@ -5,6 +5,9 @@ public interface IGameBridge {
     void print(String text);
     String read();
 
+    // speed ----
+    void setDelay(int delay);
+
     // move ----
     boolean moveForward();
     boolean moveUp();
