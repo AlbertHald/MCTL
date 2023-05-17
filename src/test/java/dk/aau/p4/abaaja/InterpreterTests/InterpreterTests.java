@@ -1083,7 +1083,8 @@ public class InterpreterTests {
     @DataProvider
     public Object[][] variableScopeTestData() {
         return new Object[][] {
-                {"variable result : NUMBER; variable x: NUMBER; x = 10; to f(): NUMBER { return x; } to g(x: NUMBER): NUMBER { return f(); } result = g(20);", 10.0}
+                {"variable test : NUMBER; variable x: NUMBER; x = 10; to f(): NUMBER { return x; } to g(x: NUMBER): NUMBER { return f(); } test = g(20);", 10.0},
+                {"variable test : NUMBER; variable x: NUMBER; x = 10; to f(x: NUMBER): NUMBER { return x; } to g(x: NUMBER): NUMBER { return f(x); } test = g(20);", 20.0},
         };
     }
     @Test(dataProvider = "variableScopeTestData")
@@ -1099,7 +1100,7 @@ public class InterpreterTests {
         for (Problem problem : problemCollection.getProblems()) {
             Assert.fail("Should not fail with message: " + problem.getMessage());
         }
-        Symbol symbol = symbolTable.searchSymbol("result");
+        Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
         Assert.assertEquals(symbol.get_value(), expectedValue, "Should set the appropriate value on the symbol");
     }
