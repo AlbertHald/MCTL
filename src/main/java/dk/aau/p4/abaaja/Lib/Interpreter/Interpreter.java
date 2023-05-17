@@ -200,6 +200,7 @@ public class Interpreter implements INodeVisitor {
         symbol.set_value(result.get_value());
         symbol.set_indexes(result.get_indexes());
         symbol.set_fields(result.get_fields());
+        symbol.set_type(result.get_type());
     }
 
     public void visit(InvokeNode node) {
