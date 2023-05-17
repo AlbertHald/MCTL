@@ -389,7 +389,7 @@ public class TypeCheckingVisitor {
         } else {
             _problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_CANNOT_BE_CAST,
-                    "The type \"" + previousType.get_type_literal() + "\" cannot be cast to " + newType.get_type_literal(),
+                    "The type \"" + previousType.get_type_literal() + "\" cannot be cast to \"" + newType.get_type_literal() + "\"",
                     lineNumber
             );
         }
