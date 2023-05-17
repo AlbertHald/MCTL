@@ -49,7 +49,7 @@ public class ProblemCollection {
     /*
      * Method for creatingProblemMessages
      */
-    public static final int totalCharacters = 60;
+    public static final int totalCharacters = 32;
     public static final String startDelimChar = "=";
 
     public void addFormattedProblem(ProblemType type, String message, int line) {
@@ -67,8 +67,8 @@ public class ProblemCollection {
         int leftPaddingNumber = (int) Math.ceil(padding / 2.0);
         int rightPaddingNumber = (int) Math.floor(padding / 2.0);
 
-        String leftPadding = startDelimChar.repeat(leftPaddingNumber);
-        String rightPadding = startDelimChar.repeat(rightPaddingNumber);
+        String leftPadding = leftPaddingNumber > 0 ? startDelimChar.repeat(leftPaddingNumber) : "===";
+        String rightPadding = rightPaddingNumber > 0 ? startDelimChar.repeat(rightPaddingNumber) : "===";
 
         // Format message string
         return String.format("%s %s %s", leftPadding, title, rightPadding);
