@@ -195,18 +195,18 @@ public class TypeCheckingVisitor {
                     accessorDegree = arrayDescriptor.getDegree() - arrayDegree;
 
                     // The type referred to is a primitive type
-                    accessorArrayTypeDescriptor = getArrayType(arrayDescriptor, accessorDegree, node.get_lineNumber());
+                    accessorArrayTypeDescriptor = _getArrayType(arrayDescriptor, accessorDegree, node.get_lineNumber());
                 }
             }
             else if (arrayTypeDescriptor.getType() instanceof MctlStructDescriptor && tempIdNode instanceof  ActualIDExpNode actualIDExpNode) {
                 accessorDegree = arrayTypeDescriptor.getDegree() - arrayDegree;
 
                 // The type referred to is a primitive type
-                accessorArrayTypeDescriptor = getArrayType(arrayTypeDescriptor, accessorDegree, node.get_lineNumber());
+                accessorArrayTypeDescriptor = _getArrayType(arrayTypeDescriptor, accessorDegree, node.get_lineNumber());
             }
             else {
                 // The type referred to is a primitive type
-                accessorArrayTypeDescriptor = getArrayType(arrayTypeDescriptor, accessorDegree, node.get_lineNumber());
+                accessorArrayTypeDescriptor = _getArrayType(arrayTypeDescriptor, accessorDegree, node.get_lineNumber());
             }
         }
         else if (symbol.get_type() instanceof MctlStructDescriptor structTypeDescriptor) {
@@ -224,7 +224,7 @@ public class TypeCheckingVisitor {
                 int accessorDegree = derivedArrayType.getDegree() - arrayDegree;
 
                 // The type referred to is not an array
-                accessorArrayTypeDescriptor = getArrayType(derivedArrayType, accessorDegree, node.get_lineNumber());
+                accessorArrayTypeDescriptor = _getArrayType(derivedArrayType, accessorDegree, node.get_lineNumber());
             }
             else {
                 accessorArrayTypeDescriptor = derivedType;
@@ -241,7 +241,7 @@ public class TypeCheckingVisitor {
         return accessorArrayTypeDescriptor;
     }
 
-    private MctlTypeDescriptor getArrayType(MctlArrayTypeDescriptor descriptor, int degree, int lineNumber) {
+    public MctlTypeDescriptor _getArrayType(MctlArrayTypeDescriptor descriptor, int degree, int lineNumber) {
         MctlTypeDescriptor accessorType = _symbolTable.searchType("NOTHING");
 
         // The type referred to is not an array
@@ -301,7 +301,7 @@ public class TypeCheckingVisitor {
                 if (accessorType instanceof MctlArrayTypeDescriptor accessorDescriptor) {
                     int accessorDegree = accessorDescriptor.getDegree() - 1;
 
-                    accessorType = getArrayType(accessorDescriptor, accessorDegree, idExp.get_lineNumber());
+                    accessorType = _getArrayType(accessorDescriptor, accessorDegree, idExp.get_lineNumber());
                 } else {
                     // Happens if user is trying to access an array type on a type that is not an array
                     _problemCollection.addFormattedProblem(
@@ -429,7 +429,7 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(AndExpNode node) { return expectsType(node, "BOOLEAN"); }
     public MctlTypeDescriptor visit(OrExpNode node) { return expectsType(node, "BOOLEAN"); }
 
-    public MctlTypeDescriptor getPrimitiveType(TypeNode node, MctlTypeDescriptor type) {
+    public MctlTypeDescriptor _getPrimitiveType(TypeNode node, MctlTypeDescriptor type) {
         MctlTypeDescriptor typeDescriptor;
 
         // Check if the type is an array
@@ -444,15 +444,15 @@ public class TypeCheckingVisitor {
 
     public MctlTypeDescriptor visit(BoolTypeNode node) {
         MctlTypeDescriptor typeDescriptor = _symbolTable.searchType("BOOLEAN");
-        return getPrimitiveType(node, typeDescriptor);
+        return _getPrimitiveType(node, typeDescriptor);
     }
     public MctlTypeDescriptor visit(NumTypeNode node) {
         MctlTypeDescriptor typeDescriptor = _symbolTable.searchType("NUMBER");
-        return getPrimitiveType(node, typeDescriptor);
+        return _getPrimitiveType(node, typeDescriptor);
     }
     public MctlTypeDescriptor visit(StringTypeNode node) {
         MctlTypeDescriptor typeDescriptor = _symbolTable.searchType("STRING");
-        return getPrimitiveType(node, typeDescriptor);
+        return _getPrimitiveType(node, typeDescriptor);
     }
 
     public MctlTypeDescriptor visit(NothingTypeNode node) { return _symbolTable.searchType("NOTHING"); }
