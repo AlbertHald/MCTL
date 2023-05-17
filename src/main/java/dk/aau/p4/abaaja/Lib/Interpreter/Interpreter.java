@@ -7,6 +7,7 @@ import dk.aau.p4.abaaja.Lib.Symbols.*;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.*;
 import dk.aau.p4.abaaja.Lib.Visitors.INodeVisitor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -313,18 +314,27 @@ public class Interpreter implements INodeVisitor {
             default -> {
                 FuncSymbol symbol = (FuncSymbol) resolve(node.get_id());
 
+                // Resolve the values of all actual parameters at calltime
+                List<Symbol> parameters = new ArrayList<>();
+                int i = 0;
+                for(ExpNode actualParam : node.get_paramExps()){
+                    Symbol paramSymbol = resolve(actualParam).clone();
+                    paramSymbol.set_name(symbol.get_formalParams().get(i).get_id());
+                    parameters.add(paramSymbol);
+                    i++;
+                }
+
                 // Variables are statically scoped. We open the function block in the scope the function was declared in.
                 Scope currentScope = symbolTable.get_currentScope();
                 symbolTable.set_currentScope(symbol.get_originScope());
                 symbolTable.createScope();
 
-                int i = 0;
-                for(ExpNode actualParam : node.get_paramExps()){
-                    Symbol paramSymbol = resolve(actualParam).clone();
-                    paramSymbol.set_name(symbol.get_formalParams().get(i).get_id());
-                    symbolTable.insertSymbol(paramSymbol);
-                    i++;
+                // Insert the values of the actual parameters in the function block scope
+                for(Symbol parameter : parameters){
+                    symbolTable.insertSymbol(parameter);
                 }
+
+                // Run the block
                 BaseNode stopper = visitChildrenStoppable(symbol.get_funcBlock().get_children());
                 if(stopper instanceof ReturnNode returnNode){
                     if(returnNode.get_returnExp() != null) result = resolve(returnNode.get_returnExp());
