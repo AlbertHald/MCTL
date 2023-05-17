@@ -9,6 +9,7 @@ import dk.aau.p4.abaaja.Lib.Visitors.TypeCheckingVisitor;
 import dk.aau.p4.abaaja.mctlParser;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
@@ -53,7 +54,104 @@ public class TypeCheckingVisitorUnitTests {
         MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(addExpNode);
 
         // Assert
-        softAssert.assertEquals(typeDescriptor.get_type_literal(), "NUMBER", "AddExpNode type checking went wrong.");
+        softAssert.assertEquals(typeDescriptor.get_type_literal(), "NUMBER", "AddExpNode type checking went wrong");
+        softAssert.assertAll();
+    }
+
+    @Test()
+    public void numExpNode_ValidASTNode_ReturnsTypeNUMBER() {
+        // Arrange
+        NumExpNode numExpNode = new NumExpNode();
+
+        // Act
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(numExpNode);
+
+        // Assert
+        softAssert.assertEquals(typeDescriptor.get_type_literal(), "NUMBER", "NumExpNode type checking went wrong");
+        softAssert.assertAll();
+    }
+
+    @Test()
+    public void boolExpNode_ValidASTNode_ReturnsTypeBOOLEAN() {
+        // Arrange
+        BoolExpNode boolExpNode = new BoolExpNode();
+
+        // Act
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(boolExpNode);
+
+        // Assert
+        softAssert.assertEquals(typeDescriptor.get_type_literal(), "BOOLEAN", "BoolExpNode type checking went wrong");
+        softAssert.assertAll();
+    }
+
+    @Test()
+    public void stringExpNode_ValidASTNode_ReturnsTypeSTRING() {
+        // Arrange
+        StringExpNode stringExpNode = new StringExpNode();
+
+        // Act
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(stringExpNode);
+
+        // Assert
+        softAssert.assertEquals(typeDescriptor.get_type_literal(), "STRING", "StringExpNode type checking went wrong");
+        softAssert.assertAll();
+    }
+
+    @DataProvider
+    public Object[][] numTypeNodeTestData() {
+        return new Object[][] {
+                {new NumTypeNode(), "NUMBER"},
+                {new NumTypeNode(1), "NUMBER[]"},
+                {new NumTypeNode(2), "NUMBER[][]"},
+        };
+    }
+
+    @Test(dataProvider = "numTypeNodeTestData")
+    public void numTypeNode_ValidASTNode_ReturnsNumberType(NumTypeNode typeNode, String expectedLiteral) {
+        // Act
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(typeNode);
+
+        // Assert
+        softAssert.assertEquals(typeDescriptor.get_type_literal(), expectedLiteral, "NumTypeNode type checking went wrong");
+        softAssert.assertAll();
+    }
+
+    @DataProvider
+    public Object[][] stringTypeNodeTestData() {
+        return new Object[][] {
+                {new StringTypeNode(), "STRING"},
+                {new StringTypeNode(1), "STRING[]"},
+                {new StringTypeNode(2), "STRING[][]"},
+        };
+    }
+
+    @Test(dataProvider = "stringTypeNodeTestData")
+    public void stringTypeNode_ValidASTNode_ReturnsStringType(StringTypeNode typeNode, String expectedLiteral) {
+        // Act
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(typeNode);
+
+        // Assert
+        softAssert.assertEquals(typeDescriptor.get_type_literal(), expectedLiteral, "StringTypeNode type checking went wrong");
+        softAssert.assertAll();
+    }
+
+    @DataProvider
+    public Object[][] boolTypeNodeTestData() {
+        return new Object[][] {
+                {new BoolTypeNode(), "BOOLEAN"},
+                {new BoolTypeNode(1), "BOOLEAN[]"},
+                {new BoolTypeNode(2), "BOOLEAN[][]"},
+        };
+    }
+
+    @Test(dataProvider = "boolTypeNodeTestData")
+    public void boolTypeNode_ValidASTNode_ReturnsBoolType(BoolTypeNode typeNode, String expectedLiteral) {
+
+        // Act
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(typeNode);
+
+        // Assert
+        softAssert.assertEquals(typeDescriptor.get_type_literal(), expectedLiteral, "BoolTypeNode type checking went wrong");
         softAssert.assertAll();
     }
 }
