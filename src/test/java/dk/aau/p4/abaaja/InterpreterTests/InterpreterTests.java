@@ -1231,7 +1231,7 @@ public class InterpreterTests {
                 {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = test.substring(2, 2);", "boss"},
                 {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = test.substring(0, 3);", "boss"},
                 {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = test.substring(0, 0);", "boss"},
-                {"variable test: STRING; variable sink: NUMBER; test = 'boss'; sink = test.length()", "boss"},
+                {"variable test: STRING; variable sink: NUMBER; test = 'boss'; sink = test.length();", "boss"},
         };
     }
     @Test(dataProvider = "expNoAssignTestData_string")
