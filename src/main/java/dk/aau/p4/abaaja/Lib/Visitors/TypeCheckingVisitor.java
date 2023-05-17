@@ -171,7 +171,7 @@ public class TypeCheckingVisitor {
         Symbol symbol = _symbolTable.searchSymbol(node.get_contained_id());
         MctlTypeDescriptor accessorArrayTypeDescriptor = new MctlNothingDescriptor();
 
-        if ((symbol != null && !symbol.get_isInstantiated()) || symbol == null) {
+        if (symbol == null || !symbol.get_isInstantiated()) {
             return accessorArrayTypeDescriptor;
         }
 
@@ -333,7 +333,7 @@ public class TypeCheckingVisitor {
         MctlTypeDescriptor type;
 
         // Return if the variable has not yet been instantiated
-        if ((symbol != null && !symbol.get_isInstantiated()) || symbol == null) {
+        if (symbol == null || !symbol.get_isInstantiated()) {
             return new MctlNothingDescriptor();
         }
 
