@@ -6,6 +6,9 @@ public abstract class TypeNode extends BaseNode {
     public int get_arrayDegree() { return _arrayDegree; }
     public void set_arrayDegree(int _arrayDegree) { this._arrayDegree = _arrayDegree; }
 
+    public TypeNode() {}
+    public TypeNode(int arrayDegree) { this.set_arrayDegree(arrayDegree); }
+
     public abstract String get_type();
     public void set_type(String type) {};
 }

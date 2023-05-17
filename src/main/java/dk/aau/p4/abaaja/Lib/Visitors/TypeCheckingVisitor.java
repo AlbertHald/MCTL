@@ -57,7 +57,7 @@ public class TypeCheckingVisitor {
                         expNode.get_lineNumber()
                 );
 
-                typeDescriptor = _symbolTable.searchType("NOTHING");
+                typeDescriptor = new MctlNothingDescriptor();
             }
         }
 
@@ -142,7 +142,7 @@ public class TypeCheckingVisitor {
                     node.get_lineNumber()
             );
 
-            return _symbolTable.searchType("NOTHING");
+            return new MctlNothingDescriptor();
         }
         else if (!type1.get_type_literal().equals(type2.get_type_literal())) {
             _problemCollection.addFormattedProblem(
@@ -151,14 +151,14 @@ public class TypeCheckingVisitor {
                     node.get_lineNumber()
             );
 
-            return _symbolTable.searchType("NOTHING");
+            return new MctlNothingDescriptor();
         }
 
         return _symbolTable.searchType("BOOLEAN");
     }
 
     public MctlTypeDescriptor visit(IDExpNode node) {
-        MctlTypeDescriptor typeDescriptor = _symbolTable.searchType("NOTHING");
+        MctlTypeDescriptor typeDescriptor = new MctlNothingDescriptor();
 
         if (node instanceof IDArrayExpNode idArrayExpNode) { typeDescriptor = visit(idArrayExpNode); }
         else if (node instanceof IDStructNode idStructNode) { typeDescriptor = visit(idStructNode); }
@@ -169,7 +169,7 @@ public class TypeCheckingVisitor {
 
     public MctlTypeDescriptor visit(IDArrayExpNode node) {
         Symbol symbol = _symbolTable.searchSymbol(node.get_contained_id());
-        MctlTypeDescriptor accessorArrayTypeDescriptor = _symbolTable.searchType("NOTHING");
+        MctlTypeDescriptor accessorArrayTypeDescriptor = new MctlNothingDescriptor();
 
         if ((symbol != null && !symbol.get_isInstantiated()) || symbol == null) {
             return accessorArrayTypeDescriptor;
@@ -195,18 +195,18 @@ public class TypeCheckingVisitor {
                     accessorDegree = arrayDescriptor.getDegree() - arrayDegree;
 
                     // The type referred to is a primitive type
-                    accessorArrayTypeDescriptor = getArrayType(arrayDescriptor, accessorDegree, node.get_lineNumber());
+                    accessorArrayTypeDescriptor = _getArrayType(arrayDescriptor, accessorDegree, node.get_lineNumber());
                 }
             }
             else if (arrayTypeDescriptor.getType() instanceof MctlStructDescriptor && tempIdNode instanceof  ActualIDExpNode actualIDExpNode) {
                 accessorDegree = arrayTypeDescriptor.getDegree() - arrayDegree;
 
                 // The type referred to is a primitive type
-                accessorArrayTypeDescriptor = getArrayType(arrayTypeDescriptor, accessorDegree, node.get_lineNumber());
+                accessorArrayTypeDescriptor = _getArrayType(arrayTypeDescriptor, accessorDegree, node.get_lineNumber());
             }
             else {
                 // The type referred to is a primitive type
-                accessorArrayTypeDescriptor = getArrayType(arrayTypeDescriptor, accessorDegree, node.get_lineNumber());
+                accessorArrayTypeDescriptor = _getArrayType(arrayTypeDescriptor, accessorDegree, node.get_lineNumber());
             }
         }
         else if (symbol.get_type() instanceof MctlStructDescriptor structTypeDescriptor) {
@@ -218,13 +218,13 @@ public class TypeCheckingVisitor {
                         "The type \"" + derivedType.get_type_literal() + "\" cannot be accessed in array degree: " + arrayDegree,
                         node.get_lineNumber()
                 );
-                return _symbolTable.searchType("NOTHING");
+                return new MctlNothingDescriptor();
             } else if (arrayDegree > 0 && derivedType instanceof MctlArrayTypeDescriptor derivedArrayType) {
                 // Calculating the accessory array degree
                 int accessorDegree = derivedArrayType.getDegree() - arrayDegree;
 
                 // The type referred to is not an array
-                accessorArrayTypeDescriptor = getArrayType(derivedArrayType, accessorDegree, node.get_lineNumber());
+                accessorArrayTypeDescriptor = _getArrayType(derivedArrayType, accessorDegree, node.get_lineNumber());
             }
             else {
                 accessorArrayTypeDescriptor = derivedType;
@@ -241,8 +241,8 @@ public class TypeCheckingVisitor {
         return accessorArrayTypeDescriptor;
     }
 
-    private MctlTypeDescriptor getArrayType(MctlArrayTypeDescriptor descriptor, int degree, int lineNumber) {
-        MctlTypeDescriptor accessorType = _symbolTable.searchType("NOTHING");
+    public MctlTypeDescriptor _getArrayType(MctlArrayTypeDescriptor descriptor, int degree, int lineNumber) {
+        MctlTypeDescriptor accessorType = new MctlNothingDescriptor();
 
         // The type referred to is not an array
         if (degree == 0) {
@@ -285,7 +285,7 @@ public class TypeCheckingVisitor {
                                 "The type \"" + accessorDescriptor.get_type_literal() + "\" does not contain a field \"" + tempIDStructNode.get_accessor().get_contained_id() + "\"",
                                 tempIDStructNode.get_lineNumber()
                         );
-                        return _symbolTable.searchType("NOTHING");
+                        return new MctlNothingDescriptor();
                     }
                 } else {
                     // Happens if user is trying to access a struct on a type that is not a struct and so on
@@ -295,13 +295,13 @@ public class TypeCheckingVisitor {
                             idExp.get_lineNumber()
                     );
 
-                    return _symbolTable.searchType("NOTHING");
+                    return new MctlNothingDescriptor();
                 }
             } else if (idExp instanceof IDArrayExpNode) {
                 if (accessorType instanceof MctlArrayTypeDescriptor accessorDescriptor) {
                     int accessorDegree = accessorDescriptor.getDegree() - 1;
 
-                    accessorType = getArrayType(accessorDescriptor, accessorDegree, idExp.get_lineNumber());
+                    accessorType = _getArrayType(accessorDescriptor, accessorDegree, idExp.get_lineNumber());
                 } else {
                     // Happens if user is trying to access an array type on a type that is not an array
                     _problemCollection.addFormattedProblem(
@@ -310,7 +310,7 @@ public class TypeCheckingVisitor {
                             idExp.get_lineNumber()
                     );
 
-                    return _symbolTable.searchType("NOTHING");
+                    return new MctlNothingDescriptor();
                 }
             }
         }
@@ -321,8 +321,8 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(ActualIDExpNode node) {
         Symbol symbol = _symbolTable.searchSymbol(node.get_id());
 
-        if ((symbol != null && !symbol.get_isInstantiated()) || symbol == null) {
-            return _symbolTable.searchType("NOTHING");
+        if (symbol == null || !symbol.get_isInstantiated()) {
+            return new MctlNothingDescriptor();
         }
 
         return symbol.get_type();
@@ -334,7 +334,7 @@ public class TypeCheckingVisitor {
 
         // Return if the variable has not yet been instantiated
         if ((symbol != null && !symbol.get_isInstantiated()) || symbol == null) {
-            return _symbolTable.searchType("NOTHING");
+            return new MctlNothingDescriptor();
         }
 
         type = symbol.get_type();
@@ -374,17 +374,17 @@ public class TypeCheckingVisitor {
         return typeDescriptor;
     }
 
-    private MctlTypeDescriptor getTypecastResult(MctlTypeDescriptor newType, MctlTypeDescriptor previousType, String correctType, int lineNumber) {
-        MctlTypeDescriptor returnType = _symbolTable.searchType("NOTHING");
+    public MctlTypeDescriptor _getTypecastResult(MctlTypeDescriptor newType, MctlTypeDescriptor previousType, String correctType, int lineNumber) {
+        MctlTypeDescriptor returnType = new MctlNothingDescriptor();
 
-        if (newType.get_type_literal().equals(correctType)) {
-            returnType = newType;
-        } else if (previousType.get_type_literal().equals(newType.get_type_literal())) {
+        if (previousType.get_type_literal().equals(newType.get_type_literal())) {
             _problemCollection.addFormattedProblem(
                     ProblemType.WARNING_REDUNDANT_TYPECAST,
                     "Typecasting the type \"" + previousType.get_type_literal() + "\" to the type \"" + newType.get_type_literal() + "\" is redundant",
                     lineNumber
             );
+            returnType = newType;
+        } else if (newType.get_type_literal().equals(correctType)) {
             returnType = newType;
         } else {
             _problemCollection.addFormattedProblem(
@@ -400,14 +400,14 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(TypecastExpNode node) {
         MctlTypeDescriptor newType = visit(node.get_typeNode());
         MctlTypeDescriptor previousType = visit(node.get_expression_node());
-        MctlTypeDescriptor returnType = _symbolTable.searchType("NOTHING");
+        MctlTypeDescriptor returnType = new MctlNothingDescriptor();
 
         // Switch over the previous type and check whether the typecast is legal
         switch (previousType.get_type_literal()) {
             case "STRING" ->
-                    returnType = getTypecastResult(newType, previousType, "NUMBER", node.get_lineNumber());
+                    returnType = _getTypecastResult(newType, previousType, "NUMBER", node.get_lineNumber());
             case "NUMBER", "BOOLEAN" ->
-                    returnType = getTypecastResult(newType, previousType, "STRING", node.get_lineNumber());
+                    returnType = _getTypecastResult(newType, previousType, "STRING", node.get_lineNumber());
             default ->
                     _problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_CANNOT_BE_CAST,
@@ -429,8 +429,7 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(AndExpNode node) { return expectsType(node, "BOOLEAN"); }
     public MctlTypeDescriptor visit(OrExpNode node) { return expectsType(node, "BOOLEAN"); }
 
-
-    private MctlTypeDescriptor getPrimitiveType(TypeNode node, MctlTypeDescriptor type) {
+    public MctlTypeDescriptor _getPrimitiveType(TypeNode node, MctlTypeDescriptor type) {
         MctlTypeDescriptor typeDescriptor;
 
         // Check if the type is an array
@@ -445,19 +444,18 @@ public class TypeCheckingVisitor {
 
     public MctlTypeDescriptor visit(BoolTypeNode node) {
         MctlTypeDescriptor typeDescriptor = _symbolTable.searchType("BOOLEAN");
-        return getPrimitiveType(node, typeDescriptor);
+        return _getPrimitiveType(node, typeDescriptor);
     }
     public MctlTypeDescriptor visit(NumTypeNode node) {
         MctlTypeDescriptor typeDescriptor = _symbolTable.searchType("NUMBER");
-        return getPrimitiveType(node, typeDescriptor);
+        return _getPrimitiveType(node, typeDescriptor);
     }
     public MctlTypeDescriptor visit(StringTypeNode node) {
         MctlTypeDescriptor typeDescriptor = _symbolTable.searchType("STRING");
-        return getPrimitiveType(node, typeDescriptor);
+        return _getPrimitiveType(node, typeDescriptor);
     }
-    public MctlTypeDescriptor visit(NothingTypeNode node) { return _symbolTable.searchType("NOTHING"); }
 
-
+    public MctlTypeDescriptor visit(NothingTypeNode node) { return new MctlNothingDescriptor(); }
     public MctlTypeDescriptor visit(BoolExpNode node) { return _symbolTable.searchType("BOOLEAN"); }
     public MctlTypeDescriptor visit(NumExpNode node) { return _symbolTable.searchType("NUMBER"); }
     public MctlTypeDescriptor visit(StringExpNode node) { return _symbolTable.searchType("STRING"); }
@@ -470,7 +468,7 @@ public class TypeCheckingVisitor {
                     "The unary operator \"!\" can only be used on expressions of type \"BOOLEAN\" but got \"" + descriptor.get_type_literal() + "\"",
                     node.get_lineNumber()
             );
-            descriptor = _symbolTable.searchType("NOTHING");
+            descriptor = new MctlNothingDescriptor();
         } else if ((node.get_operator() == mctlParser.PLUS || node.get_operator() == mctlParser.MINUS) &&
                 !(descriptor instanceof  MctlNumberDescriptor)) {
             _problemCollection.addFormattedProblem(
@@ -478,7 +476,7 @@ public class TypeCheckingVisitor {
                     "The unary operator \"" + (node.get_operator() == mctlParser.PLUS ? "+" : "-") + "\" can only be used on expressions of type \"NUMBER\" but got \"" + descriptor.get_type_literal() + "\"",
                     node.get_lineNumber()
             );
-            descriptor = _symbolTable.searchType("NOTHING");
+            descriptor = new MctlNothingDescriptor();
         }
 
         return descriptor;
@@ -523,17 +521,17 @@ public class TypeCheckingVisitor {
                         "The provided number of parameters: " + node.get_paramExps().size() + " does not match the expected: " + funcSymbol.get_types().size() + " parameters",
                         node.get_lineNumber()
                 );
-            }
-            else {
+            } else {
                 // Check function parameters
-                checkFunctionParams(node.get_paramExps(), funcSymbol, node.get_lineNumber());
+                _checkFunctionParams(node.get_paramExps(), funcSymbol, node.get_lineNumber());
             }
 
             return funcSymbol.get_type();
         }
 
-        return _symbolTable.searchType("NOTHING");
+        return new MctlNothingDescriptor();
     }
+
     public MctlTypeDescriptor visit(VarMethodInvokeNode node) {
         Symbol symbol = _symbolTable.searchSymbol(node.get_id().get_id());
 
@@ -609,10 +607,9 @@ public class TypeCheckingVisitor {
                         "The provided number of parameters: " + node.get_paramExps().size() + " does not match the expected: " + funcSymbol.get_types().size() + " parameters",
                         node.get_lineNumber()
                 );
-            }
-            else {
+            } else {
                 // Check function parameters
-                checkFunctionParams(node.get_paramExps(), funcSymbol, node.get_lineNumber());
+                _checkFunctionParams(node.get_paramExps(), funcSymbol, node.get_lineNumber());
 
                 // Special case in-which the add function has been called on a string literal
                 if (funcSymbol.get_name().equals("add")) {
@@ -633,7 +630,7 @@ public class TypeCheckingVisitor {
                 else return funcSymbol.get_type();
             }
         }
-        return _symbolTable.searchType("NOTHING");
+        return new MctlNothingDescriptor();
     }
 
     public MctlTypeDescriptor visit(StringMethodInvokeNode node) {
@@ -663,18 +660,16 @@ public class TypeCheckingVisitor {
                         "The function \"" + node.get_id().get_id() + "\" cannot be called on type STRING",
                         node.get_lineNumber()
                 );
-            }
-            else if ((funcSymbol.get_types().size() == 0 && node.get_paramExps().size() != 0) || funcSymbol.get_types().size() != node.get_paramExps().size()) {
+            } else if ((funcSymbol.get_types().size() == 0 && node.get_paramExps().size() != 0) || funcSymbol.get_types().size() != node.get_paramExps().size()) {
                 // Number of parameters does not match
                 _problemCollection.addFormattedProblem(
                         ProblemType.ERROR_PARAMETERS_DOES_NOT_MATCH,
                         "The provided number of parameters: " + node.get_paramExps().size() + " does not match the expected: " + funcSymbol.get_types().size() + " parameters",
                         node.get_lineNumber()
                 );
-            }
-            else {
+            } else {
                 // Check function parameters
-                checkFunctionParams(node.get_paramExps(), funcSymbol, node.get_lineNumber());
+                _checkFunctionParams(node.get_paramExps(), funcSymbol, node.get_lineNumber());
 
                 // Special case in-which the add function has been called on a string literal
                 if (funcSymbol.get_name().equals("add")) {
@@ -696,7 +691,7 @@ public class TypeCheckingVisitor {
                 else return funcSymbol.get_type();
             }
         }
-        return _symbolTable.searchType("NOTHING");
+        return new MctlNothingDescriptor();
     }
 
     public MctlTypeDescriptor visit(FormalParamNode node) { return null; }
@@ -728,18 +723,18 @@ public class TypeCheckingVisitor {
         }
 
         if (!(typeChildOne.equals(typeLiteral) && typeChildTwo.equals(typeLiteral))) {
-            return _symbolTable.searchType("NOTHING");
+            return new MctlNothingDescriptor();
         }
 
         return _symbolTable.searchType(typeLiteral);
     }
 
     // Function for checking the type of parameters
-    private void checkFunctionParams (List<ExpNode> expresionNodes, FuncSymbol funcSymbol, int lineNumber) {
+    public void _checkFunctionParams(List<ExpNode> expressionNodes, FuncSymbol funcSymbol, int lineNumber) {
         int counter = 0;
 
         // Check if the parameter types match
-        for (ExpNode expressionNode : expresionNodes) {
+        for (ExpNode expressionNode : expressionNodes) {
             boolean typeMatched = false;
 
             MctlTypeDescriptor expressionType = visit(expressionNode);

@@ -7,6 +7,9 @@ public class NumTypeNode extends TypeNode {
         return "NUMBER";
     }
 
+    public NumTypeNode() {}
+    public NumTypeNode(int arrayDegree) { this.set_arrayDegree(arrayDegree); }
+
     @Override
     public void accept(INodeVisitor visitor) {
         visitor.visit(this);
