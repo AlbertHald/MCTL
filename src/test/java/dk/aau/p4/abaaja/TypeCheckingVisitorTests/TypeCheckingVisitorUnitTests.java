@@ -4,6 +4,7 @@ import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
 import dk.aau.p4.abaaja.Lib.Symbols.FuncSymbol;
+import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.*;
 import dk.aau.p4.abaaja.Lib.Visitors.TypeCheckingVisitor;
@@ -104,7 +105,7 @@ public class TypeCheckingVisitorUnitTests {
         MctlTypeDescriptor result = typeCheckingVisitor.visit(idTypeNode);
 
         softAssert.assertNull(result, "IDTypeNode Error type checking went wrong");
-        softAssert.assertEquals(problemCollection.getProblems().size(), 1, "IDTypeNode Error type checking went wrong");
+        softAssert.assertEquals(problemCollection.getProblems().size(), 1, "IDTypeNode Error error collection should be 1 big");
         softAssert.assertEquals(problemCollection.getProblems().get(0).getProblemType(), ProblemType.ERROR_UNKNOWN_TYPE, "IDTypeNode Error type checking went wrong");
         softAssert.assertAll();
     }
@@ -155,13 +156,12 @@ public class TypeCheckingVisitorUnitTests {
         int lineNumber = 0;
 
 
-        when(_symbolTable.searchType("NOTHING")).thenReturn(new MctlNothingDescriptor());
         typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, _symbolTable);
 
         MctlTypeDescriptor result = typeCheckingVisitor._getArrayType(typeDescriptor, degree, lineNumber);
 
         softAssert.assertEquals(result.getClass(), MctlNothingDescriptor.class,"_getArrayType Error type checking went wrong");
-        softAssert.assertEquals(problemCollection.getProblems().size(), 1, "_getArrayType Error type checking went wrong");
+        softAssert.assertEquals(problemCollection.getProblems().size(), 1, "_getArrayType Error error collection should be 1 big");
         softAssert.assertEquals(problemCollection.getProblems().get(0).getProblemType(), ProblemType.ERROR_TYPE_MISMATCH, "_getArrayType Error type checking went wrong");
         softAssert.assertAll();
     }
@@ -182,7 +182,7 @@ public class TypeCheckingVisitorUnitTests {
         MctlTypeDescriptor result = typeCheckingVisitor._getArrayType(typeDescriptor, degree, lineNumber);
 
         softAssert.assertEquals(result.getClass(), MctlNumberDescriptor.class,"_getArrayType Error type checking went wrong");
-        softAssert.assertEquals(problemCollection.getProblems().size(), 0, "_getArrayType Error type checking went wrong");
+        softAssert.assertEquals(problemCollection.getProblems().size(), 0, "_getArrayType Error error collection should be empty");
         softAssert.assertAll();
     }
 
@@ -207,6 +207,91 @@ public class TypeCheckingVisitorUnitTests {
         softAssert.assertAll();
     }
 
+    @Test()
+    public void ActualIDExpNode_ValidInput_ReturnsCorrectType() {
+
+        ActualIDExpNode actualIDExpNode = new ActualIDExpNode();
+        Symbol symbol = new Symbol(new MctlNumberDescriptor());
+        symbol.set_isInstantiated(true);
+
+        actualIDExpNode.set_id("test");
+
+        when(_symbolTable.searchSymbol(actualIDExpNode.get_id())).thenReturn(symbol);
+        typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, _symbolTable);
+
+        MctlTypeDescriptor result = typeCheckingVisitor.visit(actualIDExpNode);
+
+        softAssert.assertEquals(result.getClass(), MctlNumberDescriptor.class, "ActualIDExpNode ValidInput type checking went wrong");
+        softAssert.assertEquals(problemCollection.getProblems().size(), 0, "ActualIDExpNode ValidInput error collection should be empty");
+        softAssert.assertAll();
+    }
+
+    @Test()
+    public void ActualIDExpNode_Error_ReturnsCorrectType() {
+
+        ActualIDExpNode actualIDExpNode = new ActualIDExpNode();
+        Symbol symbol = new Symbol(new MctlNumberDescriptor());
+
+        actualIDExpNode.set_id("test");
+
+        when(_symbolTable.searchSymbol(actualIDExpNode.get_id())).thenReturn(symbol);
+        typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, _symbolTable);
+
+        MctlTypeDescriptor result = typeCheckingVisitor.visit(actualIDExpNode);
+
+        softAssert.assertEquals(result.getClass(), MctlNothingDescriptor.class, "ActualIDExpNode Error type checking went wrong");
+        softAssert.assertEquals(problemCollection.getProblems().size(), 0, "ActualIDExpNode Error error collection should be empty");
+        softAssert.assertAll();
+    }
+
+    @Test()
+    public void _getTypecastResult_ValidInput_ReturnsCorrectType() {
+        MctlTypeDescriptor fromType = new MctlBooleanDescriptor();
+        MctlTypeDescriptor toType = new MctlStringDescriptor();
+
+        String type = "NUMBER";
+        int lineNumber = 0;
+
+        typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, _symbolTable);
+        MctlTypeDescriptor result = typeCheckingVisitor._getTypecastResult(fromType, toType, type, lineNumber);
+
+        softAssert.assertEquals(result.getClass(), MctlNumberDescriptor.class, "_getTypecastResult ValidInput type checking went wrong");
+        softAssert.assertEquals(problemCollection.getProblems().size(), 0, "_getTypecastResult ValidInput error collection should be empty");
+    }
+
+    @Test()
+    public void _getTypecastResult_Warning_ReturnsCorrectType() {
+        MctlTypeDescriptor fromType = new MctlStringDescriptor();
+        MctlTypeDescriptor toType = new MctlStringDescriptor();
+
+        String type = "STRING";
+        int lineNumber = 0;
+
+        typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, _symbolTable);
+        MctlTypeDescriptor result = typeCheckingVisitor._getTypecastResult(fromType, toType, type, lineNumber);
+
+        softAssert.assertEquals(result.getClass(), MctlStringDescriptor.class, "_getTypecastResult warn type checking went wrong");
+        softAssert.assertEquals(problemCollection.getProblems().size(), 1, "_getTypecastResult warn error collection should be empty");
+        softAssert.assertEquals(problemCollection.getProblems().get(0).getProblemType(), ProblemType.WARNING_REDUNDANT_TYPECAST, "_getTypecastResult warn warning wrong problem type");
+        softAssert.assertAll();
+    }
+
+    @Test()
+    public void _getTypecastResult_Error_ReturnsCorrectType() {
+        MctlTypeDescriptor fromType = new MctlBooleanDescriptor();
+        MctlTypeDescriptor toType = new MctlStringDescriptor();
+
+        String type = "NOTHING";
+        int lineNumber = 0;
+
+        typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, _symbolTable);
+        MctlTypeDescriptor result = typeCheckingVisitor._getTypecastResult(fromType, toType, type, lineNumber);
+
+        softAssert.assertEquals(result.getClass(), MctlNothingDescriptor.class, "_getTypecastResult Error type checking went wrong");
+        softAssert.assertEquals(problemCollection.getProblems().size(), 1, "_getTypecastResult Error error collection should be empty");
+        softAssert.assertEquals(problemCollection.getProblems().get(0).getProblemType(), ProblemType.ERROR_TYPE_CANNOT_BE_CAST, "_getTypecastResult Error error wrong problem type");
+        softAssert.assertAll();
+    }
 }
 
 
