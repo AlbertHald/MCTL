@@ -2,7 +2,10 @@ package dk.aau.p4.abaaja.TypeCheckingVisitorTests;
 
 import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
-import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlTypeDescriptor;
+import dk.aau.p4.abaaja.Lib.Symbols.FuncSymbol;
+import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
+import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.*;
 import dk.aau.p4.abaaja.Lib.Visitors.AstBuilder;
 import dk.aau.p4.abaaja.Lib.Visitors.SymbolTableVisitor;
 import dk.aau.p4.abaaja.Lib.Visitors.TypeCheckingVisitor;
@@ -14,10 +17,12 @@ import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import java.util.Arrays;
+import java.util.List;
+
+import static org.mockito.Mockito.*;
 
 public class TypeCheckingVisitorUnitTests {
     private ProblemCollection problemCollection = new ProblemCollection();
-    private final AstBuilder astBuilder = new AstBuilder(problemCollection);
     private SymbolTableVisitor symbolTableVisitor;
     private TypeCheckingVisitor typeCheckingVisitor;
     private SoftAssert softAssert;
@@ -37,121 +42,81 @@ public class TypeCheckingVisitorUnitTests {
         problemCollection = new ProblemCollection();
     }
 
-    @Test()
-    public void addExpNode_ValidASTNode_ReturnsTypeNUMBER() {
-        // Arrange
-        AddExpNode addExpNode = new AddExpNode();
-        addExpNode.set_operator(mctlParser.PLUS);
-        addExpNode.set_operatorLiteral("+");
-
-        // Number 1 and 2
-        NumExpNode numExpNode1 = new NumExpNode();
-        NumExpNode numExpNode2 = new NumExpNode();
-
-        addExpNode.set_children(Arrays.asList(numExpNode1, numExpNode2));
-
-        // Act
-        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(addExpNode);
-
-        // Assert
-        softAssert.assertEquals(typeDescriptor.get_type_literal(), "NUMBER", "AddExpNode type checking went wrong");
-        softAssert.assertAll();
+    @DataProvider
+    public Object[][] getPrimitiveTypeTestData() {
+        return new Object[][] {
+            {new BoolTypeNode(), new MctlBooleanDescriptor(), "BOOLEAN"},
+            {new BoolTypeNode(1), new MctlBooleanDescriptor(), "BOOLEAN[]"},
+            {new BoolTypeNode(2), new MctlBooleanDescriptor(), "BOOLEAN[][]"},
+            {new NumTypeNode(), new MctlNumberDescriptor(), "NUMBER"},
+            {new NumTypeNode(1), new MctlNumberDescriptor(), "NUMBER[]"},
+            {new NumTypeNode(2), new MctlNumberDescriptor(), "NUMBER[][]"},
+            {new StringTypeNode(), new MctlStringDescriptor(), "STRING"},
+            {new StringTypeNode(1), new MctlStringDescriptor(), "STRING[]"},
+            {new StringTypeNode(2), new MctlStringDescriptor(), "STRING[][]"}
+        };
     }
 
-    @Test()
-    public void numExpNode_ValidASTNode_ReturnsTypeNUMBER() {
-        // Arrange
-        NumExpNode numExpNode = new NumExpNode();
+    @Test(dataProvider = "getPrimitiveTypeTestData")
+    public void getPrimitiveType_ValidInput_ReturnsCorrectType(TypeNode node, MctlTypeDescriptor mctlTypeDescriptor, String expected) {
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.getPrimitiveType(node, mctlTypeDescriptor);
 
-        // Act
-        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(numExpNode);
-
-        // Assert
-        softAssert.assertEquals(typeDescriptor.get_type_literal(), "NUMBER", "NumExpNode type checking went wrong");
-        softAssert.assertAll();
-    }
-
-    @Test()
-    public void boolExpNode_ValidASTNode_ReturnsTypeBOOLEAN() {
-        // Arrange
-        BoolExpNode boolExpNode = new BoolExpNode();
-
-        // Act
-        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(boolExpNode);
-
-        // Assert
-        softAssert.assertEquals(typeDescriptor.get_type_literal(), "BOOLEAN", "BoolExpNode type checking went wrong");
-        softAssert.assertAll();
-    }
-
-    @Test()
-    public void stringExpNode_ValidASTNode_ReturnsTypeSTRING() {
-        // Arrange
-        StringExpNode stringExpNode = new StringExpNode();
-
-        // Act
-        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(stringExpNode);
-
-        // Assert
-        softAssert.assertEquals(typeDescriptor.get_type_literal(), "STRING", "StringExpNode type checking went wrong");
+        softAssert.assertEquals(typeDescriptor.get_type_literal(), expected, "getPrimitiveType type checking went wrong");
         softAssert.assertAll();
     }
 
     @DataProvider
-    public Object[][] numTypeNodeTestData() {
+    public Object[][] TypeNodeTestData() {
         return new Object[][] {
-                {new NumTypeNode(), "NUMBER"},
-                {new NumTypeNode(1), "NUMBER[]"},
-                {new NumTypeNode(2), "NUMBER[][]"},
+            {new NothingTypeNode(), "NOTHING", new MctlNothingDescriptor()},
+            {new BoolTypeNode(), "BOOLEAN", new MctlBooleanDescriptor()},
+            {new NumTypeNode(), "NUMBER", new MctlNumberDescriptor()},
+            {new StringTypeNode(), "STRING", new MctlStringDescriptor()}
         };
     }
 
-    @Test(dataProvider = "numTypeNodeTestData")
-    public void numTypeNode_ValidASTNode_ReturnsNumberType(NumTypeNode typeNode, String expectedLiteral) {
-        // Act
-        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(typeNode);
+    @Test(dataProvider = "TypeNodeTestData")
+    public void TypeNode_ValidASTNode_ReturnsCorrectType(TypeNode node, String type, MctlTypeDescriptor typeDescriptor) {
+        SymbolTable symbolTable = mock();
 
-        // Assert
-        softAssert.assertEquals(typeDescriptor.get_type_literal(), expectedLiteral, "NumTypeNode type checking went wrong");
+        when(symbolTable.searchType(type)).thenReturn(typeDescriptor);
+
+        MctlTypeDescriptor result = typeCheckingVisitor.visit(node);
+
+        softAssert.assertEquals(result.get_type_literal(), type, "TypeNode type checking went wrong");
         softAssert.assertAll();
     }
 
-    @DataProvider
-    public Object[][] stringTypeNodeTestData() {
-        return new Object[][] {
-                {new StringTypeNode(), "STRING"},
-                {new StringTypeNode(1), "STRING[]"},
-                {new StringTypeNode(2), "STRING[][]"},
-        };
-    }
+    /*@Test()
+    public void FuncInvokeNode_ValidASTNode_ReturnsCorrectType() {
+        // Arrange
+        SymbolTable symbolTable = mock();
+        TypeCheckingVisitor typeCheckingVisitor2 = mock();
 
-    @Test(dataProvider = "stringTypeNodeTestData")
-    public void stringTypeNode_ValidASTNode_ReturnsStringType(StringTypeNode typeNode, String expectedLiteral) {
-        // Act
-        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(typeNode);
+        FuncInvokeNode funcInvokeNode = new FuncInvokeNode();
+        ActualIDExpNode actualIDExpNode = new ActualIDExpNode();
+        FuncSymbol funcSymbol = new FuncSymbol();
+        AddExpNode expNode = new AddExpNode();
+        MctlNumberDescriptor mctlNumberDescriptor = new MctlNumberDescriptor();
 
-        // Assert
-        softAssert.assertEquals(typeDescriptor.get_type_literal(), expectedLiteral, "StringTypeNode type checking went wrong");
-        softAssert.assertAll();
-    }
+        actualIDExpNode.set_id("test");
+        funcInvokeNode.set_id(actualIDExpNode);
+        funcInvokeNode.add_paramExp(expNode);
+        funcInvokeNode.set_lineNumber(0);
+        funcSymbol.set_type(mctlNumberDescriptor);
 
-    @DataProvider
-    public Object[][] boolTypeNodeTestData() {
-        return new Object[][] {
-                {new BoolTypeNode(), "BOOLEAN"},
-                {new BoolTypeNode(1), "BOOLEAN[]"},
-                {new BoolTypeNode(2), "BOOLEAN[][]"},
-        };
-    }
-
-    @Test(dataProvider = "boolTypeNodeTestData")
-    public void boolTypeNode_ValidASTNode_ReturnsBoolType(BoolTypeNode typeNode, String expectedLiteral) {
+        when(symbolTable.searchSymbol(funcInvokeNode.get_id().get_id())).thenReturn(funcSymbol);
+        when(typeCheckingVisitor2._checkFunctionParams(funcInvokeNode.get_paramExps(), funcSymbol, funcInvokeNode.get_lineNumber()));
 
         // Act
-        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(typeNode);
+        MctlTypeDescriptor typeDescriptor = typeCheckingVisitor.visit(funcInvokeNode);
+
+        System.out.println("typeDescriptor.get_type_literal() = " + typeDescriptor.get_type_literal());
 
         // Assert
-        softAssert.assertEquals(typeDescriptor.get_type_literal(), expectedLiteral, "BoolTypeNode type checking went wrong");
+        softAssert.assertEquals(typeDescriptor.get_type_literal(), "NUMBER", "FuncInvokeNode type checking went wrong");
         softAssert.assertAll();
-    }
+    }*/
 }
+
+

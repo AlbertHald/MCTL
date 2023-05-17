@@ -429,8 +429,7 @@ public class TypeCheckingVisitor {
     public MctlTypeDescriptor visit(AndExpNode node) { return expectsType(node, "BOOLEAN"); }
     public MctlTypeDescriptor visit(OrExpNode node) { return expectsType(node, "BOOLEAN"); }
 
-
-    private MctlTypeDescriptor getPrimitiveType(TypeNode node, MctlTypeDescriptor type) {
+    public MctlTypeDescriptor getPrimitiveType(TypeNode node, MctlTypeDescriptor type) {
         MctlTypeDescriptor typeDescriptor;
 
         // Check if the type is an array
@@ -455,9 +454,8 @@ public class TypeCheckingVisitor {
         MctlTypeDescriptor typeDescriptor = _symbolTable.searchType("STRING");
         return getPrimitiveType(node, typeDescriptor);
     }
+
     public MctlTypeDescriptor visit(NothingTypeNode node) { return _symbolTable.searchType("NOTHING"); }
-
-
     public MctlTypeDescriptor visit(BoolExpNode node) { return _symbolTable.searchType("BOOLEAN"); }
     public MctlTypeDescriptor visit(NumExpNode node) { return _symbolTable.searchType("NUMBER"); }
     public MctlTypeDescriptor visit(StringExpNode node) { return _symbolTable.searchType("STRING"); }
@@ -523,10 +521,9 @@ public class TypeCheckingVisitor {
                         "The provided number of parameters: " + node.get_paramExps().size() + " does not match the expected: " + funcSymbol.get_types().size() + " parameters",
                         node.get_lineNumber()
                 );
-            }
-            else {
+            } else {
                 // Check function parameters
-                checkFunctionParams(node.get_paramExps(), funcSymbol, node.get_lineNumber());
+                _checkFunctionParams(node.get_paramExps(), funcSymbol, node.get_lineNumber());
             }
 
             return funcSymbol.get_type();
@@ -534,6 +531,7 @@ public class TypeCheckingVisitor {
 
         return _symbolTable.searchType("NOTHING");
     }
+
     public MctlTypeDescriptor visit(VarMethodInvokeNode node) {
         Symbol symbol = _symbolTable.searchSymbol(node.get_id().get_id());
 
@@ -609,10 +607,9 @@ public class TypeCheckingVisitor {
                         "The provided number of parameters: " + node.get_paramExps().size() + " does not match the expected: " + funcSymbol.get_types().size() + " parameters",
                         node.get_lineNumber()
                 );
-            }
-            else {
+            } else {
                 // Check function parameters
-                checkFunctionParams(node.get_paramExps(), funcSymbol, node.get_lineNumber());
+                _checkFunctionParams(node.get_paramExps(), funcSymbol, node.get_lineNumber());
 
                 // Special case in-which the add function has been called on a string literal
                 if (funcSymbol.get_name().equals("add")) {
@@ -663,18 +660,16 @@ public class TypeCheckingVisitor {
                         "The function \"" + node.get_id().get_id() + "\" cannot be called on type STRING",
                         node.get_lineNumber()
                 );
-            }
-            else if ((funcSymbol.get_types().size() == 0 && node.get_paramExps().size() != 0) || funcSymbol.get_types().size() != node.get_paramExps().size()) {
+            } else if ((funcSymbol.get_types().size() == 0 && node.get_paramExps().size() != 0) || funcSymbol.get_types().size() != node.get_paramExps().size()) {
                 // Number of parameters does not match
                 _problemCollection.addFormattedProblem(
                         ProblemType.ERROR_PARAMETERS_DOES_NOT_MATCH,
                         "The provided number of parameters: " + node.get_paramExps().size() + " does not match the expected: " + funcSymbol.get_types().size() + " parameters",
                         node.get_lineNumber()
                 );
-            }
-            else {
+            } else {
                 // Check function parameters
-                checkFunctionParams(node.get_paramExps(), funcSymbol, node.get_lineNumber());
+                _checkFunctionParams(node.get_paramExps(), funcSymbol, node.get_lineNumber());
 
                 // Special case in-which the add function has been called on a string literal
                 if (funcSymbol.get_name().equals("add")) {
@@ -735,11 +730,11 @@ public class TypeCheckingVisitor {
     }
 
     // Function for checking the type of parameters
-    private void checkFunctionParams (List<ExpNode> expresionNodes, FuncSymbol funcSymbol, int lineNumber) {
+    public void _checkFunctionParams(List<ExpNode> expressionNodes, FuncSymbol funcSymbol, int lineNumber) {
         int counter = 0;
 
         // Check if the parameter types match
-        for (ExpNode expressionNode : expresionNodes) {
+        for (ExpNode expressionNode : expressionNodes) {
             boolean typeMatched = false;
 
             MctlTypeDescriptor expressionType = visit(expressionNode);
