@@ -64,6 +64,7 @@ public class InterpreterTests {
         }
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertNotNull(symbol.get_type(), "Should set a type on the symbol");
         Assert.assertEquals(symbol.get_type().get_type_literal(), type, "Should set the appropriate type on the symbol");
 
     }
@@ -102,6 +103,7 @@ public class InterpreterTests {
         Assert.assertTrue(symbol instanceof FuncSymbol, "The symbol should be a function symbol");
         FuncSymbol funcSymbol = (FuncSymbol) symbol;
         Assert.assertNotNull(funcSymbol.get_funcBlock(), "The symbol should contain a function block");
+        Assert.assertNotNull(funcSymbol.get_type(), "Should set a return type on the symbol");
         Assert.assertEquals(funcSymbol.get_type().get_type_literal(), returnType, "Should set the appropriate return type on the symbol");
         List<FormalParamNode> formalParams = funcSymbol.get_formalParams();
         for(int i = 0; i < paramNames.size(); i++){
@@ -135,6 +137,8 @@ public class InterpreterTests {
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
         Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+        Assert.assertNotNull(symbol.get_type(), "Should set a type for the symbol");
+        Assert.assertEquals(symbol.get_type().get_type_literal(), "STRING", "Should set the appropriate type on the symbol");
 
     }
 
@@ -161,6 +165,8 @@ public class InterpreterTests {
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
         Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+        Assert.assertNotNull(symbol.get_type(), "Should set a type for the symbol");
+        Assert.assertEquals(symbol.get_type().get_type_literal(), "BOOLEAN", "Should set the appropriate type on the symbol");
 
     }
 
@@ -192,6 +198,8 @@ public class InterpreterTests {
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
         Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+        Assert.assertNotNull(symbol.get_type(), "Should set a type for the symbol");
+        Assert.assertEquals(symbol.get_type().get_type_literal(), "NUMBER", "Should set the appropriate type on the symbol");
 
     }
 
@@ -219,14 +227,20 @@ public class InterpreterTests {
         }
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertNotNull(symbol.get_type(), "Should set a type for the symbol");
+        Assert.assertEquals(symbol.get_type().get_type_literal(), "S", "Should set the appropriate type on the symbol");
 
         Symbol symbol_one = symbol.get_field("o");
         Assert.assertNotNull(symbol_one, "Should create a symbol for 'o' and add it to the symbol fields");
         Assert.assertEquals(symbol_one.get_value(), value_one, "Should set the appropriate value on symbol 'o'");
+        Assert.assertNotNull(symbol_one.get_type(), "Should set a type for symbol 'o'");
+        Assert.assertEquals(symbol_one.get_type().get_type_literal(), "BOOLEAN", "Should set the appropriate type on symbol 'o'");
 
         Symbol symbol_two = symbol.get_field("t");
         Assert.assertNotNull(symbol_two, "Should create a symbol for 't' and add it to the symbol fields");
         Assert.assertEquals(symbol_two.get_value(), value_two, "Should set the appropriate value on symbol 't'");
+        Assert.assertNotNull(symbol_two.get_type(), "Should set a type for symbol 't'");
+        Assert.assertEquals(symbol_two.get_type().get_type_literal(), "BOOLEAN", "Should set the appropriate type on symbol 't'");
 
     }
 
@@ -254,20 +268,32 @@ public class InterpreterTests {
         }
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertNotNull(symbol.get_type(), "Should set a type for the symbol");
+        Assert.assertEquals(symbol.get_type().get_type_literal(), "S", "Should set the appropriate type on the symbol");
+
+        //TODO: Possibly enforce correct types on nested structs. They are not necessary for the interpreter right now, but consistency is usually good.
 
         Symbol nested_0s = symbol.get_field("s");
         Assert.assertNotNull(nested_0s, "Should create a nested symbol for 's' and add it to the symbol fields");
+        //Assert.assertNotNull(nested_0s.get_type(), "Should set a type for nested symbol 's'");
+        //Assert.assertEquals(nested_0s.get_type().get_type_literal(), "S", "Should set the appropriate type on nested symbol 's'");
 
         Symbol nested_1s = nested_0s.get_field("s");
         Assert.assertNotNull(nested_1s, "Should create a nested symbol for 's' and add it to the nested 's' symbol fields");
+        //Assert.assertNotNull(nested_1s.get_type(), "Should set a type for nested symbol 's'");
+        //Assert.assertEquals(nested_1s.get_type().get_type_literal(), "S", "Should set the appropriate type on nested symbol 's'");
 
         Symbol symbol_one = nested_1s.get_field("o");
         Assert.assertNotNull(symbol_one, "Should create a symbol for 'o' and add it to the nested 's' symbol fields");
         Assert.assertEquals(symbol_one.get_value(), value_one, "Should set the appropriate value on symbol 'o'");
+        Assert.assertNotNull(symbol_one.get_type(), "Should set a type for symbol 'o'");
+        Assert.assertEquals(symbol_one.get_type().get_type_literal(), "BOOLEAN", "Should set the appropriate type on symbol 'o'");
 
         Symbol symbol_two = nested_1s.get_field("t");
         Assert.assertNotNull(symbol_two, "Should create a symbol for 't' and add it to the nested 's' symbol fields");
         Assert.assertEquals(symbol_two.get_value(), value_two, "Should set the appropriate value on symbol 't'");
+        Assert.assertNotNull(symbol_two.get_type(), "Should set a type for symbol 't'");
+        Assert.assertEquals(symbol_two.get_type().get_type_literal(), "BOOLEAN", "Should set the appropriate type on symbol 't'");
 
     }
 
