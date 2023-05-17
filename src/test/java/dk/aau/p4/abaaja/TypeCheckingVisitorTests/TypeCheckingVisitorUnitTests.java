@@ -293,5 +293,3 @@ public class TypeCheckingVisitorUnitTests {
         softAssert.assertAll();
     }
 }
-
-
