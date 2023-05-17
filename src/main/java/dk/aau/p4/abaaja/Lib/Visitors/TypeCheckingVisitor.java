@@ -171,7 +171,7 @@ public class TypeCheckingVisitor {
         Symbol symbol = _symbolTable.searchSymbol(node.get_contained_id());
         MctlTypeDescriptor accessorArrayTypeDescriptor = new MctlNothingDescriptor();
 
-        if ((symbol != null && !symbol.get_isInstantiated()) || symbol == null) {
+        if (symbol == null || !symbol.get_isInstantiated()) {
             return accessorArrayTypeDescriptor;
         }
 
@@ -333,7 +333,7 @@ public class TypeCheckingVisitor {
         MctlTypeDescriptor type;
 
         // Return if the variable has not yet been instantiated
-        if ((symbol != null && !symbol.get_isInstantiated()) || symbol == null) {
+        if (symbol == null || !symbol.get_isInstantiated()) {
             return new MctlNothingDescriptor();
         }
 
@@ -389,7 +389,7 @@ public class TypeCheckingVisitor {
         } else {
             _problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_CANNOT_BE_CAST,
-                    "The type \"" + previousType.get_type_literal() + "\" cannot be cast to" + newType.get_type_literal(),
+                    "The type \"" + previousType.get_type_literal() + "\" cannot be cast to \"" + newType.get_type_literal() + "\"",
                     lineNumber
             );
         }

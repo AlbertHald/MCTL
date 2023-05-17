@@ -44,6 +44,11 @@ public class MCTLInterpreter {
 
             if (!problemCollection.getHasErrors()) {
                 concreteNode.accept(new Interpreter(problemCollection, new SymbolTable(), gameBridge));
+
+                // Prints interpretation errors
+                for (Problem problem : problemCollection.getProblems()) {
+                    gameBridge.print(problem.getMessage());
+                }
             }
             else {
                 // Prints interpretation errors
