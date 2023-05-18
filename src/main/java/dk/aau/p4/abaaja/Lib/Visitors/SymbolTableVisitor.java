@@ -222,29 +222,25 @@ public class SymbolTableVisitor implements INodeVisitor {
 
         IDExpNode idExpNode = node.get_assignId();
 
-        while (!(idExpNode instanceof ActualIDExpNode actualIDNode)) {
-            idExpNode = idExpNode.get_idNode();
-        }
-
         if (idTypeDescriptor == null) {
             problemCollection.addFormattedProblem(
                     ProblemType.ERROR_UNDEFINED_IDENTIFIER,
-                    "The variable \"" + actualIDNode.get_id() + "\" has not yet been declared",
+                    "The variable \"" + idExpNode.get_contained_id() + "\" has not yet been declared",
                     node.get_lineNumber()
             );
         } else if (expTypeDescriptor == null) {
             problemCollection.addFormattedProblem(
                     ProblemType.ERROR_UNDEFINED_IDENTIFIER,
-                    "The variable \"" + actualIDNode.get_id() + "\" cannot be assigned to an expression containing undeclared variables",
+                    "The variable \"" + idExpNode.get_contained_id() + "\" cannot be assigned to an expression containing undeclared variables",
                     node.get_lineNumber()
             );
         } else {
-            variable = symbolTable.searchSymbol(actualIDNode.get_id());
+            variable = symbolTable.searchSymbol(idExpNode.get_contained_id());
 
             if (variable == null) {
                 problemCollection.addFormattedProblem(
                         ProblemType.ERROR_UNDEFINED_IDENTIFIER,
-                        "The variable \"" + actualIDNode.get_id() + "\" has not yet been declared",
+                        "The variable \"" + idExpNode.get_contained_id() + "\" has not yet been declared",
                         node.get_lineNumber()
                 );
             } else {
