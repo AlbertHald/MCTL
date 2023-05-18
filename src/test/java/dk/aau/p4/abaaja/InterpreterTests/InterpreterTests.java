@@ -538,7 +538,6 @@ public class InterpreterTests {
     @DataProvider
     public Object[][] expInvalidationTestData() {
         return new Object[][] {
-                {"variable test: NUMBER; test = 0 / 0;", "øøhh"},
                 {"variable test: NUMBER; test = 0 / 0;", "======== ERROR_INTERPRETER =======\nCannot divide by 0\n---- line ----\nLine: 1\n"},
         };
     }
