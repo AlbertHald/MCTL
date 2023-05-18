@@ -390,33 +390,6 @@ public class InterpreterTests {
     }
 
     @DataProvider
-    public Object[][] expErrorTestData_number() {
-        return new Object[][] {
-                {"variable test: NUMBER; test = 0 / 0;", "øøhh"},
-        };
-    }
-    @Test(dataProvider = "expErrorTestData_number")
-    public void expError_resolvesValue_number(String code, String errorMessage) {
-        MctlNode concreteNode = parseNode(code);
-
-        ProblemCollection problemCollection = new ProblemCollection();
-        SymbolTable symbolTable = new SymbolTable();
-        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
-
-        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
-
-        Assert.assertEquals(problemCollection.getProblems().size(), 1);
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("problem oh oh: " + problem.getMessage());
-            Assert.assertEquals(errorMessage, problem.getMessage(), "Expected: " + errorMessage + ", but got: " + problem.getMessage());
-        }
-
-        Symbol symbol = symbolTable.searchSymbol("test");
-        Assert.assertNull(symbol.get_value(), "Should create a symbol but not initialize it");
-
-    }
-
-    @DataProvider
     public Object[][] expTestData_boolean() {
         return new Object[][] {
                 {"variable test: BOOLEAN; test = !false;", true},
@@ -559,6 +532,34 @@ public class InterpreterTests {
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
         Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+
+    }
+
+    @DataProvider
+    public Object[][] expInvalidationTestData() {
+        return new Object[][] {
+                {"variable test: NUMBER; test = 0 / 0;", "øøhh"},
+                {"variable test: NUMBER; test = 0 / 0;", "======== ERROR_INTERPRETER =======\nCannot divide by 0\n---- line ----\nLine: 1\n"},
+        };
+    }
+    @Test(dataProvider = "expInvalidationTestData")
+    public void exp_invalidation(String code, String errorMessage) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        Assert.assertEquals(problemCollection.getProblems().size(), 1, "Should create exactly 1 error for this issue");
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.assertEquals(problem.getMessage(), errorMessage, "The error should match the expected error");
+        }
+
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol");
+        Assert.assertNull(symbol.get_value(), "Should not initialize the symbol");
 
     }
 
@@ -1085,9 +1086,9 @@ public class InterpreterTests {
     }
 
     @DataProvider
-    public Object[][] listAddBooleanTestData() {
+    public Object[][] listAddTestData_bool() {
         return new Object[][] {
-                // TODO: Expand these tests with more cases and more types
+                // TODO: Expand these tests with more cases
                 {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; test = list.add(true);", List.of(true)},
                 {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; test = list.add(false);", List.of(false)},
                 {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = true; test = list.add(true);", List.of(true, true)},
@@ -1097,8 +1098,8 @@ public class InterpreterTests {
                 {"variable test: BOOLEAN[]; test = test.add(true);", List.of(true)},
         };
     }
-    @Test(dataProvider = "listAddBooleanTestData")
-    public void listAddBoolean_returnsValue(String code, List<Boolean> indexes) {
+    @Test(dataProvider = "listAddTestData_bool")
+    public void listAdd_returnsValue_bool(String code, List<Boolean> indexes) {
         MctlNode concreteNode = parseNode(code);
 
         ProblemCollection problemCollection = new ProblemCollection();
@@ -1124,17 +1125,17 @@ public class InterpreterTests {
     }
 
     @DataProvider
-    public Object[][] listAddStringTestData() {
+    public Object[][] listAddTestData_string() {
         return new Object[][] {
-                // TODO: Expand these tests with more cases and more types
+                // TODO: Expand these tests with more cases
                 {"variable test: STRING[]; variable list: STRING[]; test = list.add('str');", List.of("str")},
                 {"variable test: STRING[]; variable list: STRING[]; list[0] = 'str1'; test = list.add('str2');", List.of("str1", "str2")},
                 {"variable test: STRING[]; variable list: STRING[]; list[0] = 'str1'; list[1] = 'str2'; list[2] = 'str3'; test = list.add('str4');", List.of("str1", "str2", "str3", "str4")},
                 {"variable test: STRING[]; test = test.add('str');", List.of("str")},
         };
     }
-    @Test(dataProvider = "listAddStringTestData")
-    public void listAddString_returnsValue(String code, List<String> indexes) {
+    @Test(dataProvider = "listAddTestData_string")
+    public void listAdd_returnsValue_string(String code, List<String> indexes) {
         MctlNode concreteNode = parseNode(code);
 
         ProblemCollection problemCollection = new ProblemCollection();
@@ -1160,9 +1161,9 @@ public class InterpreterTests {
     }
 
     @DataProvider
-    public Object[][] listAddNumberTestData() {
+    public Object[][] listAddTestData_number() {
         return new Object[][] {
-                // TODO: Expand these tests with more cases and more types
+                // TODO: Expand these tests with more cases
                 {"variable test: NUMBER[]; variable list: NUMBER[]; test = list.add(1);", List.of(1.0)},
                 {"variable test: NUMBER[]; variable list: NUMBER[]; list[0] = 1; test = list.add(2);", List.of(1.0, 2.0)},
                 {"variable test: NUMBER[]; variable list: NUMBER[]; list[0] = 1; list[1] = 2; list[2] = 3; test = list.add(4);", List.of(1.0, 2.0, 3.0, 4.0)},
@@ -1170,8 +1171,8 @@ public class InterpreterTests {
                 {"variable test: NUMBER[]; test = test.add(1.0);", List.of(1.0)},
         };
     }
-    @Test(dataProvider = "listAddNumberTestData")
-    public void listAddNumber_returnsValue(String code, List<Number> indexes) {
+    @Test(dataProvider = "listAddTestData_number")
+    public void listAdd_returnsValue_number(String code, List<Number> indexes) {
         MctlNode concreteNode = parseNode(code);
 
         ProblemCollection problemCollection = new ProblemCollection();
@@ -1197,17 +1198,17 @@ public class InterpreterTests {
     }
 
     @DataProvider
-    public Object[][] listRemoveBooleanTestData() {
+    public Object[][] listRemoveTestData_bool() {
         return new Object[][] {
-                // TODO: Expand these tests with more cases and more types
+                // TODO: Expand these tests with more cases
                 {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = false; list[1] = true; list[2] = true; test = list.remove();", List.of(false, true)},
                 {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = false; list[1] = false; list[2] = false; test = list.remove();", List.of(false, false)},
                 {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = true; test = list.remove();", List.of()},
                 {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = false; test = list.remove();", List.of()},
         };
     }
-    @Test(dataProvider = "listRemoveBooleanTestData")
-    public void listRemoveBoolean_returnsValue(String code, List<Boolean> indexes) {
+    @Test(dataProvider = "listRemoveTestData_bool")
+    public void listRemove_returnsValue_bool(String code, List<Boolean> indexes) {
         MctlNode concreteNode = parseNode(code);
 
         ProblemCollection problemCollection = new ProblemCollection();
@@ -1233,15 +1234,15 @@ public class InterpreterTests {
     }
 
     @DataProvider
-    public Object[][] listRemoveStringTestData() {
+    public Object[][] listRemoveTestData_string() {
         return new Object[][] {
-                // TODO: Expand these tests with more cases and more types
+                // TODO: Expand these tests with more cases
                 {"variable test: STRING[]; variable list: STRING[]; list[0] = 'str1'; list[1] = 'str2'; list[2] = 'str3'; test = list.remove();", List.of("str1", "str2")},
                 {"variable test: STRING[]; variable list: STRING[]; list[0] = 'str1'; test = list.remove();", List.of()},
         };
     }
-    @Test(dataProvider = "listRemoveStringTestData")
-    public void listRemoveString_returnsValue(String code, List<String> indexes) {
+    @Test(dataProvider = "listRemoveTestData_string")
+    public void listRemove_returnsValue_string(String code, List<String> indexes) {
         MctlNode concreteNode = parseNode(code);
 
         ProblemCollection problemCollection = new ProblemCollection();
@@ -1267,15 +1268,15 @@ public class InterpreterTests {
     }
 
     @DataProvider
-    public Object[][] listRemoveNumberTestData() {
+    public Object[][] listRemoveTestData_number() {
         return new Object[][] {
-                // TODO: Expand these tests with more cases and more types
+                // TODO: Expand these tests with more cases
                 {"variable test: NUMBER[]; variable list: NUMBER[]; list[0] = 1; list[1] = 2; list[2] = 3; test = list.remove();", List.of(1.0, 2.0)},
                 {"variable test: NUMBER[]; variable list: NUMBER[]; list[0] = 1; test = list.remove();", List.of()},
         };
     }
-    @Test(dataProvider = "listRemoveNumberTestData")
-    public void listRemoveNumber_returnsValue(String code, List<Number> indexes) {
+    @Test(dataProvider = "listRemoveTestData_number")
+    public void listRemove_returnsValue_number(String code, List<Number> indexes) {
         MctlNode concreteNode = parseNode(code);
 
         ProblemCollection problemCollection = new ProblemCollection();
@@ -1303,7 +1304,7 @@ public class InterpreterTests {
     @DataProvider
     public Object[][] listSublistTestData_bool() {
         return new Object[][] {
-                // TODO: Expand these tests with more cases and more types
+                // TODO: Expand these tests with more cases
                 {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = false; l[2] = true; test = l.sublist(0, 0);", List.of(true)},
                 {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = false; l[2] = true; test = l.sublist(1, 1);", List.of(false)},
                 {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = false; l[2] = true; test = l.sublist(2, 2);", List.of(true)},
@@ -1342,7 +1343,7 @@ public class InterpreterTests {
     @DataProvider
     public Object[][] listSublistTestData_number() {
         return new Object[][] {
-                // TODO: Expand these tests with more cases and more types
+                // TODO: Expand these tests with more cases
                 {"variable test: NUMBER[]; variable l: NUMBER[]; l[0] = 1; l[1] = 2; l[2] = 3; test = l.sublist(0, 0);", List.of(1.0)},
                 {"variable test: NUMBER[]; variable l: NUMBER[]; l[0] = 1; l[1] = 2; l[2] = 3; test = l.sublist(1, 1);", List.of(2.0)},
                 {"variable test: NUMBER[]; variable l: NUMBER[]; l[0] = 1; l[1] = 2; l[2] = 3; test = l.sublist(2, 2);", List.of(3.0)},
@@ -1381,7 +1382,7 @@ public class InterpreterTests {
     @DataProvider
     public Object[][] listSublistTestData_string() {
         return new Object[][] {
-                // TODO: Expand these tests with more cases and more types
+                // TODO: Expand these tests with more cases
                 {"variable test: STRING[]; variable l: STRING[]; l[0] = 'str1'; l[1] = 'str2'; l[2] = 'str3'; test = l.sublist(0, 0);", List.of("str1")},
                 {"variable test: STRING[]; variable l: STRING[]; l[0] = 'str1'; l[1] = 'str2'; l[2] = 'str3'; test = l.sublist(1, 1);", List.of("str2")},
                 {"variable test: STRING[]; variable l: STRING[]; l[0] = 'str1'; l[1] = 'str2'; l[2] = 'str3'; test = l.sublist(2, 2);", List.of("str3")},
