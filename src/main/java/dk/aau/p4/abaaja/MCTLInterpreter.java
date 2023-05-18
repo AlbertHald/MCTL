@@ -19,6 +19,8 @@ import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.Listeners.LexerProblemListener;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.Listeners.ParserProblemListener;
 
+import java.util.ListIterator;
+
 public class MCTLInterpreter {
 
     IGameBridge gameBridge;
@@ -45,8 +47,9 @@ public class MCTLInterpreter {
         }
 
         // Prints Errors and Warnings
-        for (Problem problem : problemCollection.getProblems()) {
-            gameBridge.print(problem.getMessage());
+        ListIterator<Problem> problemIterator = problemCollection.getProblems().listIterator(problemCollection.getProblems().size());
+        while (problemIterator.hasPrevious()) {
+            gameBridge.print(problemIterator.previous().getMessage());
         }
 
         gameBridge.internal_terminate();
