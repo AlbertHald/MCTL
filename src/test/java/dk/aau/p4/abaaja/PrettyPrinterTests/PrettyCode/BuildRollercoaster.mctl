@@ -1,0 +1,54 @@
+variable up: NUMBER;
+print("How high should each peak go?");
+up = (NUMBER) read();
+
+variable down: NUMBER;
+print("How far down should each peak go?");
+down = (NUMBER) read();
+
+variable peaks: NUMBER;
+print("How many peaks should there be?");
+peaks = (NUMBER) read();
+
+variable material: STRING;
+material = "oak_planks";
+
+buildStraight(4, "redstone_block", "powered_rail");
+repeat(peaks){
+  buildUp(up);
+  buildDown(down);
+  buildStraight(2, material, "rail");
+}
+buildStraight(2, material, "rail");
+
+to buildUp (times: NUMBER): NOTHING {
+  repeat(times){
+    placeUnder("minecraft:redstone_block");
+    moveUp();
+    placeUnder("minecraft:powered_rail");
+    moveForward();
+  }
+}
+
+to buildDown (times: NUMBER): NOTHING {
+  repeat(times){
+    moveDown();
+    moveDown();
+    placeUnder("minecraft:".add(material));
+    moveUp();
+    placeUnder("minecraft:rail");
+    moveForward();
+  }
+}
+
+to buildStraight (times: NUMBER, block: STRING, rail: STRING): NOTHING {
+  block = "minecraft:".add(block);
+  rail = "minecraft:".add(rail);
+  repeat(times){
+    moveDown();
+    placeUnder(block);
+    moveUp();
+    placeUnder(rail);
+    moveForward();
+  }
+}

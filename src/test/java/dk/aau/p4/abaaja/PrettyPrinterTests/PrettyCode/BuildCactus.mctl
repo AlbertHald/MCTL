@@ -1,0 +1,318 @@
+
+to getBlock (): STRING {
+  variable blocks: STRING[];
+  blocks[0] = "minecraft:lime_wool";
+  blocks[1] = "minecraft:lime_concrete";
+
+  #{ We intentionally choose the first block much more often because it looks nice }
+  return blocks[floor(random(0, 1.2))];
+}
+
+struct CACTUS {
+  variable height: NUMBER,
+  variable width: NUMBER,
+  variable sproutingInterval: NUMBER,
+  variable sproutLength: NUMBER,
+  variable sproutHeight: NUMBER,
+  variable sproutWidth: NUMBER,
+  variable builtSprouts: BOOLEAN[],
+};
+
+setDelay(0);
+findBase();
+
+variable height: NUMBER;
+print("How tall should the cactus be?");
+height = (NUMBER) read();
+
+buildCactus(height);
+
+#{ Will move down until it hits something }
+to findBase (): NOTHING {
+  variable moved: BOOLEAN;
+  moved = true;
+  repeat(moved){
+    moved = moveDown();
+  }
+}
+
+to buildCactus (height: NUMBER): NOTHING {
+  variable size: CACTUS;
+  size = tailorNewCactus(height);
+
+  buildTrunk(size);
+
+  if(size.sproutLength > 2){
+    buildSprouts(size);
+  }
+}
+
+to tailorNewCactus (height: NUMBER): CACTUS {
+  height = floor(height);
+  variable cactus: CACTUS;
+
+  variable sproutingIntervalRandomizer: NUMBER;
+  sproutingIntervalRandomizer = random(0.7, 1.2);
+
+  cactus.height = height;
+  cactus.width = tailorTrunk(height);
+  cactus.sproutingInterval = floor((height / 7) * sproutingIntervalRandomizer);
+  cactus.sproutLength = floor(height / 5);
+  cactus.sproutHeight = floor((height / 2.5) * random(sproutingIntervalRandomizer, 1.3));
+  cactus.sproutWidth = tailorTrunk(cactus.sproutHeight);
+
+  variable sideIndex: NUMBER;
+  sideIndex = 0;
+  repeat(4){
+    sideIndex++;
+    cactus.builtSprouts[sideIndex] = false;
+  }
+
+  return cactus;
+}
+
+to tailorTrunk (height: NUMBER): NUMBER {
+  variable width: NUMBER;
+  width = 1;
+  repeat(height > 9){
+    height = height / 2;
+    width++;
+  }
+  return width;
+}
+
+to buildTrunk (cactus: CACTUS): NOTHING {
+  moveForward();
+  if(cactus.width > 1){
+    variable totalProgress: NUMBER;
+    totalProgress = 4;
+    moveForward();
+    repeat(4){
+      variable sideProgress: NUMBER;
+      sideProgress = cactus.width - 1;
+      repeat(cactus.width - 1){
+        up(cactus.height);
+        if(sideProgress == 1){
+          turnLeft();
+        }
+        if((sideProgress == 1) and (totalProgress == 1)){
+          buildTrunkEnd(cactus);
+          moveBackward();
+        }else{
+          moveForward();
+        }
+        down(cactus.height);
+
+        sideProgress--;
+      }
+      totalProgress--;
+    }
+  }else{
+    up(cactus.height);
+    moveBackward();
+    down(cactus.height);
+  }
+
+  to up (length: NUMBER): NOTHING {
+    repeat(length){
+      moveUp();
+      placeUnder(getBlock());
+    }
+  }
+  to down (length: NUMBER): NOTHING {
+    repeat(length){
+      moveDown();
+    }
+  }
+}
+
+to buildTrunkEnd (cactus: CACTUS): NOTHING {
+  variable endLength: NUMBER;
+  endLength = cactus.width - 2;
+  repeat(endLength){
+    moveForward();
+    turnLeft();
+    repeat(endLength){
+      moveForward();
+      placeUnder(getBlock());
+    }
+    repeat(endLength){
+      moveBackward();
+    }
+    turnRight();
+  }
+  repeat(endLength){
+    moveBackward();
+  }
+}
+
+to buildSprouts (cactus: CACTUS): NOTHING {
+  variable currentSideIndex: NUMBER;
+  currentSideIndex = 1;
+  variable progress: NUMBER;
+  progress = 4;
+  repeat(4){
+    repeat(cactus.sproutingInterval){
+      moveUp();
+    }
+    currentSideIndex = moveToUnbuiltSprout(cactus, currentSideIndex);
+    buildSprout(cactus);
+    cactus.builtSprouts[currentSideIndex] = true;
+    repeat(cactus.sproutLength + cactus.width){
+      moveForward();
+    }
+    currentSideIndex++;
+    if(progress == 1){
+      moveForward();
+      repeat((cactus.sproutingInterval + cactus.sproutWidth) * 4){
+        moveDown();
+      }
+      moveBackward();
+      #{ Move back to the original side, to ensure the recursive script works on parent cactus }
+      repeat((5 - currentSideIndex) % 4){
+        moveForward();
+        turnLeft();
+        repeat(cactus.width){
+          moveForward();
+        }
+      }
+    }
+    turnLeft();
+    progress--;
+  }
+}
+
+to moveToUnbuiltSprout (cactus: CACTUS, currentSideIndex: NUMBER): NUMBER {
+  variable randomOffset: NUMBER;
+  randomOffset = floor(random(0, 4));
+
+  #{ Find a random offset where a sprout hasn't already been built }
+  repeat(cactus.builtSprouts[getOffsetSideIndex(currentSideIndex, randomOffset)] == true){
+    randomOffset++;
+    randomOffset = randomOffset % 4;
+  }
+
+  moveToOffsetSide(cactus, randomOffset);
+  return getOffsetSideIndex(currentSideIndex, randomOffset);
+
+  to getOffsetSideIndex (currentSideIndex: NUMBER, offset: NUMBER): NUMBER {
+    variable index: NUMBER;
+    index = currentSideIndex + offset;
+    if(index > 4){
+      index = index - 4;
+    }
+    return index;
+  }
+
+  to moveToOffsetSide (cactus: CACTUS, offset: NUMBER): NOTHING {
+    variable progress: NUMBER;
+    progress = offset;
+    repeat(offset){
+      if(progress == offset){
+        turnRight();
+      }
+      moveForward();
+      turnLeft();
+      repeat(cactus.width){
+        moveForward();
+      }
+      if(progress == 1){
+        turnLeft();
+      }
+      progress--;
+    }
+  }
+}
+
+to buildSprout (cactus: CACTUS): NOTHING {
+  if(cactus.sproutWidth > 1){
+    variable totalProgress: NUMBER;
+    totalProgress = 4;
+    moveUp();
+    repeat(4){
+      variable sideProgress: NUMBER;
+      sideProgress = cactus.sproutWidth - 1;
+      repeat(cactus.sproutWidth - 1){
+        back(cactus.sproutLength);
+        if(sideProgress == 1){
+          totalProgress--;
+        }
+        moveLateral(totalProgress);
+        if(totalProgress > 0){
+          forward(cactus.sproutLength);
+        }else{
+          buildSproutEnd(cactus);
+        }
+        sideProgress--;
+      }
+    }
+    repeat(cactus.sproutWidth){
+      moveUp();
+    }
+  }else{
+    back(cactus.sproutLength);
+    moveUp();
+  }
+  buildCactus(cactus.sproutHeight);
+  turnRight();
+  moveForward();
+  turnLeft();
+
+  to moveLateral (progress: NUMBER): NOTHING {
+    if(progress == 4){
+      moveUp();
+    }else if(progress == 3){
+      turnLeft();
+      moveForward();
+      turnRight();
+    }else if(progress == 2){
+      moveDown();
+    }else if(progress == 1){
+      turnRight();
+      moveForward();
+      turnLeft();
+    }
+  }
+  to back (length: NUMBER): NOTHING {
+    repeat(length){
+      moveBackward();
+      placeFront(getBlock());
+    }
+  }
+  to forward (length: NUMBER): NOTHING {
+    repeat(length){
+      moveForward();
+    }
+  }
+}
+
+to buildSproutEnd (cactus: CACTUS): NOTHING {
+  variable endLength: NUMBER;
+  endLength = cactus.sproutWidth - 2;
+  turnLeft();
+  repeat(endLength){
+    moveUp();
+    repeat(endLength){
+      moveForward();
+      turnRight();
+      placeFront(getBlock());
+      turnLeft();
+    }
+    repeat(endLength){
+      moveBackward();
+    }
+  }
+  turnRight();
+  repeat(endLength){
+    moveDown();
+  }
+}
+
+to floor (float: NUMBER): NUMBER {
+  variable int: NUMBER;
+  int = 0;
+  repeat(float){
+    int++;
+  }
+  return int;
+}
