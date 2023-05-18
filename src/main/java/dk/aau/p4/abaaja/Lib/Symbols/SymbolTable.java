@@ -39,7 +39,8 @@ public class SymbolTable {
             new PredefinedFunction("placeUnder", Arrays.asList(Arrays.asList(new MctlStringDescriptor())), new MctlNothingDescriptor(), false, false, new MctlNothingDescriptor()),
             new PredefinedFunction("blockFront", new ArrayList<>(), new MctlStringDescriptor(), false, false, new MctlNothingDescriptor()),
             new PredefinedFunction("blockAbove", new ArrayList<>(), new MctlStringDescriptor(), false, false, new MctlNothingDescriptor()),
-            new PredefinedFunction("blockUnder", new ArrayList<>(), new MctlStringDescriptor(), false, false, new MctlNothingDescriptor())
+            new PredefinedFunction("blockUnder", new ArrayList<>(), new MctlStringDescriptor(), false, false, new MctlNothingDescriptor()),
+            new PredefinedFunction("random", Arrays.asList(Arrays.asList(new MctlNumberDescriptor()), Arrays.asList(new MctlNumberDescriptor())), new MctlNumberDescriptor(), false, false, new MctlNothingDescriptor())
     );
 
     // Predefined types of the programming language
