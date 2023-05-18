@@ -376,7 +376,7 @@ public class Interpreter implements INodeVisitor {
         Symbol subject = resolve(node.get_varId());
 
         // If string, convert to a string invoke and call that instead.
-        if (subject.get_type() instanceof MctlStringDescriptor && subject.get_indexes().size() == 0) {
+        if (subject.get_type() instanceof MctlStringDescriptor) {
             StringMethodInvokeNode stringNode = new StringMethodInvokeNode();
             stringNode.set_lineNumber(node.get_lineNumber());
             stringNode.set_lineEndNumber(node.get_lineEndNumber());
@@ -543,7 +543,7 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
     public Symbol resolve(BoolTypeNode node) {
-        MctlTypeDescriptor type = new MctlBooleanDescriptor();
+        MctlTypeDescriptor type = wrapArrayType(node, new MctlBooleanDescriptor());
         return new Symbol(type);
     }
 
@@ -551,7 +551,7 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
     public Symbol resolve(NumTypeNode node) {
-        MctlTypeDescriptor type = new MctlNumberDescriptor();
+        MctlTypeDescriptor type = wrapArrayType(node, new MctlNumberDescriptor());
         return new Symbol(type);
     }
 
@@ -559,7 +559,7 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
     public Symbol resolve(StringTypeNode node) {
-        MctlTypeDescriptor type = new MctlStringDescriptor();
+        MctlTypeDescriptor type = wrapArrayType(node, new MctlStringDescriptor());
         return new Symbol(type);
     }
 
@@ -568,7 +568,7 @@ public class Interpreter implements INodeVisitor {
 
     }
     public Symbol resolve(NothingTypeNode node) {
-        MctlTypeDescriptor type = new MctlNothingDescriptor();
+        MctlTypeDescriptor type = wrapArrayType(node, new MctlNothingDescriptor());
         return new Symbol(type);
     }
 
@@ -576,8 +576,16 @@ public class Interpreter implements INodeVisitor {
         problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
     public Symbol resolve(IDTypeNode node) {
-        MctlTypeDescriptor type = new MctlStructDescriptor(node.get_type());
+        MctlTypeDescriptor type = wrapArrayType(node, new MctlStructDescriptor(node.get_type()));
         return new Symbol(type);
+    }
+
+    private MctlTypeDescriptor wrapArrayType(TypeNode node, MctlTypeDescriptor primitive){
+        if(node.get_arrayDegree() > 0){
+           return new MctlArrayTypeDescriptor(primitive, node.get_arrayDegree());
+        }else{
+            return primitive;
+        }
     }
 
     public void visit(ExpNode node) {
