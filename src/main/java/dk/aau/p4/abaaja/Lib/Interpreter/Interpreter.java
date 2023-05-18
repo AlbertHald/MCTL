@@ -731,7 +731,12 @@ public class Interpreter implements INodeVisitor {
                 return leftSymbol;
             }
             case "/" -> {
-                leftSymbol.set_value(leftInit / rightInit);
+                if(rightInit == 0.0) {
+                    problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Cannot divide by 0", node.get_lineNumber());
+                    leftSymbol.set_value(null);
+                }else{
+                    leftSymbol.set_value(leftInit / rightInit);
+                }
                 return leftSymbol;
             }
             case "%" -> {
