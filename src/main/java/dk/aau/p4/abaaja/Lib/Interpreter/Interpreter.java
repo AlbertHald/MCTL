@@ -451,6 +451,7 @@ public class Interpreter implements INodeVisitor {
     public Symbol resolve(StringMethodInvokeNode node) {
         String methodName = resolve(node.get_id()).get_name();
         String subject = (String) resolve(node.get_string()).get_value();
+        if(subject == null) subject = "";
         Symbol result = new Symbol(new MctlNothingDescriptor(), null);
         switch(methodName){
             case "length" -> {
