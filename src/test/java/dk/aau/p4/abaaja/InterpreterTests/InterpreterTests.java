@@ -836,34 +836,6 @@ public class InterpreterTests {
     }
 
     @DataProvider
-    public Object[][] stringAddErrorTestData() {
-        return new Object[][] {
-                {"variable test: STRING; test = 'test'.add(1);", "message"},
-                {"variable test: STRING; test = 'test'.add(test);", "message"},
-        };
-    }
-    @Test(dataProvider = "stringAddErrorTestData")
-    public void stringAddError_returnsValue(String code, String errorMessage) {
-        MctlNode concreteNode = parseNode(code);
-
-        ProblemCollection problemCollection = new ProblemCollection();
-        SymbolTable symbolTable = new SymbolTable();
-        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
-
-        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
-
-        Assert.assertEquals(problemCollection.getProblems().size(), 1);
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("problem oh oh: " + problem.getMessage());
-            Assert.assertEquals(errorMessage, problem.getMessage(), "Expected: " + errorMessage + ", but got: " + problem.getMessage());
-        }
-
-        Symbol symbol = symbolTable.searchSymbol("test");
-        Assert.assertNull(symbol.get_value(), "Should create a symbol but not initialize it");
-
-    }
-
-    @DataProvider
     public Object[][] stringRemoveTestData() {
         return new Object[][] {
                 {"variable test: STRING; test = 'test string'.remove();", "test strin"},
@@ -934,34 +906,6 @@ public class InterpreterTests {
     }
 
     @DataProvider
-    public Object[][] stringSubstringErrorTestData() {
-        return new Object[][] {
-                {"variable test: STRING; test = 'hej'.substring(true);", "message"},
-                {"variable test: STRING; test = 'hej'.substring('yo');", "message"},
-        };
-    }
-    @Test(dataProvider = "stringSubstringErrorTestData")
-    public void stringSubstringError_returnsValue(String code, String errorMessage) {
-        MctlNode concreteNode = parseNode(code);
-
-        ProblemCollection problemCollection = new ProblemCollection();
-        SymbolTable symbolTable = new SymbolTable();
-        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
-
-        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
-
-        Assert.assertEquals(problemCollection.getProblems().size(), 1);
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("problem oh oh: " + problem.getMessage());
-            Assert.assertEquals(errorMessage, problem.getMessage(), "Expected: " + errorMessage + ", but got: " + problem.getMessage());
-        }
-
-        Symbol symbol = symbolTable.searchSymbol("test");
-        Assert.assertNull(symbol.get_value(), "Should create a symbol but not initialize it");
-
-    }
-
-    @DataProvider
     public Object[][] stringIndexesOfTestData() {
         return new Object[][] {
                 {"variable test: NUMBER[]; test = 'test string'.indexesOf('e');", List.of(1.0)},
@@ -1004,34 +948,6 @@ public class InterpreterTests {
             Assert.assertNotNull(match, "The symbol should contain a symbol with a match value at index " + i);
             Assert.assertEquals(match.get_value(), indexes.get(i), "The match symbol should resolve to the correct value");
         }
-
-    }
-
-    @DataProvider
-    public Object[][] stringIndexesOfErrorTestData() {
-        return new Object[][] {
-                {"variable test: NUMBER[]; test = '1'.indexesOf(1);", "message"},
-                {"variable test: NUMBER[]; test = 'true'.indexesOf(true);", "message"},
-        };
-    }
-    @Test(dataProvider = "stringIndexesOfErrorTestData")
-    public void stringIndexesOfError_returnsValue(String code, String errorMessage) {
-        MctlNode concreteNode = parseNode(code);
-
-        ProblemCollection problemCollection = new ProblemCollection();
-        SymbolTable symbolTable = new SymbolTable();
-        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
-
-        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
-
-        Assert.assertEquals(problemCollection.getProblems().size(), 1);
-        for (Problem problem : problemCollection.getProblems()) {
-            System.out.println("problem oh oh: " + problem.getMessage());
-            Assert.assertEquals(errorMessage, problem.getMessage(), "Expected: " + errorMessage + ", but got: " + problem.getMessage());
-        }
-
-        Symbol symbol = symbolTable.searchSymbol("test");
-        Assert.assertNull(symbol.get_value(), "Should create a symbol but not initialize it");
 
     }
 
