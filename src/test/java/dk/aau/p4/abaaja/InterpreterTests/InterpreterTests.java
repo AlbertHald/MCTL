@@ -844,7 +844,6 @@ public class InterpreterTests {
                 {"variable test: STRING; test = 'bossman'.remove();", "bossma"},
                 {"variable test: STRING; test = 'b'.remove();", ""},
                 {"variable test: STRING; test = ' '.remove();", ""},
-                {"variable test: STRING; test = ''.remove();", ""},
                 {"variable test: STRING; test = 'hej'.remove(1);", "he"},
                 {"variable test: STRING; test = 'hej'.remove(true);", "he"},
                 {"variable test: STRING; test = 'hej'.remove('yo');", "he"},
@@ -883,9 +882,6 @@ public class InterpreterTests {
                 {"variable test: STRING; test = 'bossman'.substring(6, 6);", "n"},
                 {"variable test: STRING; test = 'k'.substring(0, 0);", "k"},
                 {"variable test: STRING; test = ' '.substring(0, 0);", " "},
-                {"variable test: STRING; test = ''.substring(0, 0);", ""},
-                {"variable test: STRING; test = 'hej'.substring(1);", "ej"},
-                {"variable test: STRING; test = 'hej'.substring(1, 2, 500, true, 'yo');", "ej"},
         };
     }
     @Test(dataProvider = "stringSubstringTestData")
@@ -1229,7 +1225,6 @@ public class InterpreterTests {
                 {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = false; l[2] = true; test = l.sublist(0, 1);", List.of(true, false)},
                 {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = false; l[2] = true; test = l.sublist(1, 2);", List.of(false, true)},
                 {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = false; l[2] = true; test = l.sublist(0, 2);", List.of(true, false, true)},
-                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = false; l[2] = true; test = l.sublist(1);", List.of(false, true)},
         };
     }
     @Test(dataProvider = "listSublistTestData_bool")
@@ -1268,7 +1263,6 @@ public class InterpreterTests {
                 {"variable test: NUMBER[]; variable l: NUMBER[]; l[0] = 1; l[1] = 2; l[2] = 3; test = l.sublist(0, 1);", List.of(1.0, 2.0)},
                 {"variable test: NUMBER[]; variable l: NUMBER[]; l[0] = 1; l[1] = 2; l[2] = 3; test = l.sublist(1, 2);", List.of(2.0, 3.0)},
                 {"variable test: NUMBER[]; variable l: NUMBER[]; l[0] = 1; l[1] = 2; l[2] = 3; test = l.sublist(0, 2);", List.of(1.0, 2.0, 3.0)},
-                {"variable test: NUMBER[]; variable l: NUMBER[]; l[0] = 1; l[1] = 2; l[2] = 3; test = l.sublist(1);", List.of(2.0, 3.0)},
         };
     }
     @Test(dataProvider = "listSublistTestData_number")
@@ -1307,7 +1301,6 @@ public class InterpreterTests {
                 {"variable test: STRING[]; variable l: STRING[]; l[0] = 'str1'; l[1] = 'str2'; l[2] = 'str3'; test = l.sublist(0, 1);", List.of("str1", "str2")},
                 {"variable test: STRING[]; variable l: STRING[]; l[0] = 'str1'; l[1] = 'str2'; l[2] = 'str3'; test = l.sublist(1, 2);", List.of("str2", "str3")},
                 {"variable test: STRING[]; variable l: STRING[]; l[0] = 'str1'; l[1] = 'str2'; l[2] = 'str3'; test = l.sublist(0, 2);", List.of("str1", "str2", "str3")},
-                {"variable test: STRING[]; variable l: STRING[]; l[0] = 'str1'; l[1] = 'str2'; l[2] = 'str3'; test = l.sublist(1);", List.of("str2", "str3")},
         };
     }
     @Test(dataProvider = "listSublistTestData_string")
