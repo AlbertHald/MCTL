@@ -47,11 +47,11 @@ public class InterpreterTests {
                 {"variable test: STRING;", "STRING"},
                 {"variable test: BOOLEAN;", "BOOLEAN"},
                 {"variable test: NUMBER;", "NUMBER"},
-                {"variable test: NUMBER[];", "NUMBER"},
-                {"variable test: NUMBER[][];", "NUMBER"},
+                {"variable test: NUMBER[];", "NUMBER[]"},
+                {"variable test: NUMBER[][];", "NUMBER[][]"},
                 {"struct STRUCTURE { variable x: NUMBER }; variable test: STRUCTURE;", "STRUCTURE"},
-                {"struct STRUCTURE { variable x: NUMBER }; variable test: STRUCTURE[];", "STRUCTURE"},
-                {"struct STRUCTURE { variable x: NUMBER }; variable test: STRUCTURE[][];", "STRUCTURE"},
+                {"struct STRUCTURE { variable x: NUMBER }; variable test: STRUCTURE[];", "STRUCTURE[]"},
+                {"struct STRUCTURE { variable x: NUMBER }; variable test: STRUCTURE[][];", "STRUCTURE[][]"},
         };
     }
     @Test(dataProvider = "varDecTestData")
@@ -87,7 +87,7 @@ public class InterpreterTests {
                 {"to test(left: NUMBER, right: NUMBER): NUMBER {}", List.of("left", "right"), List.of("NUMBER", "NUMBER"), "NUMBER"},
                 {"to test(left: NUMBER, right: NUMBER): BOOLEAN {}", List.of("left", "right"), List.of("NUMBER", "NUMBER"), "BOOLEAN"},
                 {"to test(name: STRING, surname: STRING, age: NUMBER, address: STRING, bossman: BOOLEAN): STRING {}", List.of("name", "surname", "age", "address", "bossman"), List.of("STRING", "STRING", "NUMBER", "STRING", "BOOLEAN"), "STRING"},
-                {"to test(input: NUMBER[]): NUMBER[] {}", List.of("input"), List.of("NUMBER"), "NUMBER"},
+                {"to test(input: NUMBER[]): NUMBER[] {}", List.of("input"), List.of("NUMBER"), "NUMBER[]"},
                 {"struct STRUCTURE { variable x: NUMBER }; to test(input: STRUCTURE): STRUCTURE {}", List.of("input"), List.of("STRUCTURE"), "STRUCTURE"},
         };
     }
