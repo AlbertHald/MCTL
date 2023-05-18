@@ -897,6 +897,16 @@ public class InterpreterTests {
                 {"variable test: NUMBER; variable list: BOOLEAN[]; list[4] = true; test = list.length();", 5.0},
                 {"variable test: NUMBER; variable list: BOOLEAN[]; list[4] = false; test = list.length();", 5.0},
                 {"variable test: NUMBER; variable list: BOOLEAN[]; test = list.length();", 0.0},
+                {"variable test: NUMBER; variable list: STRING[]; list[0] = 'man'; test = list.length();", 1.0},
+                {"variable test: NUMBER; variable list: STRING[]; list[0] = ''; test = list.length();", 1.0},
+                {"variable test: NUMBER; variable list: STRING[]; list[4] = 'man'; test = list.length();", 5.0},
+                {"variable test: NUMBER; variable list: STRING[]; list[4] = ''; test = list.length();", 5.0},
+                {"variable test: NUMBER; variable list: STRING[]; test = list.length();", 0.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 6; test = list.length();", 1.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 0; test = list.length();", 1.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[4] = 6; test = list.length();", 5.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[4] = 0; test = list.length();", 5.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; test = list.length();", 0.0},
         };
     }
     @Test(dataProvider = "listLengthTestData")
@@ -1103,10 +1113,12 @@ public class InterpreterTests {
     }
 
     @DataProvider
-    public Object[][] listUseTestData() {
+    public Object[][] listUseTestData_bool() {
         return new Object[][] {
                 {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[0] = true; test = list[0];", true},
                 {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[7] = true; test = list[7];", true},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[]; list = list.add(true); test = list[0];", true},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[7] = true; list = list.add(true); test = list[8];", true},
                 {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[6] = false; list[7] = true; list[8] = false; test = list[7];", true},
                 {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[6] = false; list[7] = true; list[8] = false; test = list[7];", true},
                 {"variable test: BOOLEAN; variable list: BOOLEAN[][][]; list[0][0][0] = true; test = list[0][0][0];", true},
@@ -1116,8 +1128,78 @@ public class InterpreterTests {
                 {"variable test: BOOLEAN; variable list: BOOLEAN[][][]; list[4][4][17] = false; list[5][4][17] = true; list[6][4][17] = false; test = list[5][4][17];", true},
         };
     }
-    @Test(dataProvider = "listUseTestData")
-    public void listUse_setsValue(String code, boolean value) {
+    @Test(dataProvider = "listUseTestData_bool")
+    public void listUse_setsValue_bool(String code, boolean value) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+
+    }
+
+    @DataProvider
+    public Object[][] listUseTestData_string() {
+        return new Object[][] {
+                {"variable test: STRING; variable list: STRING[]; list[0] = 'man'; test = list[0];", "man"},
+                {"variable test: STRING; variable list: STRING[]; list = list.add('man'); test = list[0];", "man"},
+                {"variable test: STRING; variable list: STRING[]; list[7] = 'man'; test = list[7];", "man"},
+                {"variable test: STRING; variable list: STRING[]; list[7] = 'man'; list = list.add('man'); test = list[8];", "man"},
+                {"variable test: STRING; variable list: STRING[]; list[6] = ''; list[7] = 'man'; list[8] = ''; test = list[7];", "man"},
+                {"variable test: STRING; variable list: STRING[]; list[6] = ''; list[7] = 'man'; list[8] = ''; test = list[7];", "man"},
+                {"variable test: STRING; variable list: STRING[][][]; list[0][0][0] = 'man'; test = list[0][0][0];", "man"},
+                {"variable test: STRING; variable list: STRING[][][]; list[5][4][17] = 'man'; test = list[5][4][17];", "man"},
+                {"variable test: STRING; variable list: STRING[][][]; list[5][4][18] = ''; list[5][4][17] = 'man'; list[5][4][18] = ''; test = list[5][4][17];", "man"},
+                {"variable test: STRING; variable list: STRING[][][]; list[5][3][17] = ''; list[5][4][17] = 'man'; list[5][5][17] = ''; test = list[5][4][17];", "man"},
+                {"variable test: STRING; variable list: STRING[][][]; list[4][4][17] = ''; list[5][4][17] = 'man'; list[6][4][17] = ''; test = list[5][4][17];", "man"},
+        };
+    }
+    @Test(dataProvider = "listUseTestData_string")
+    public void listUse_setsValue_string(String code, String value) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+
+    }
+
+    @DataProvider
+    public Object[][] listUseTestData_number() {
+        return new Object[][] {
+                {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[0] = 3; test = list[0];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[7] = 3; test = list[7];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[]; list = list.add(3); test = list[0];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[7] = 3; list = list.add(3); test = list[8];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[6] = 0; list[7] = 3; list[8] = 0; test = list[7];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[6] = 0; list[7] = 3; list[8] = 0; test = list[7];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[][][]; list[0][0][0] = 3; test = list[0][0][0];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[][][]; list[5][4][17] = 3; test = list[5][4][17];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[][][]; list[5][4][18] = 0; list[5][4][17] = 3; list[5][4][18] = 0; test = list[5][4][17];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[][][]; list[5][3][17] = 0; list[5][4][17] = 3; list[5][5][17] = 0; test = list[5][4][17];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[][][]; list[4][4][17] = 0; list[5][4][17] = 3; list[6][4][17] = 0; test = list[5][4][17];", 3.0},
+        };
+    }
+    @Test(dataProvider = "listUseTestData_number")
+    public void listUse_setsValue_number(String code, Number value) {
         MctlNode concreteNode = parseNode(code);
 
         ProblemCollection problemCollection = new ProblemCollection();
