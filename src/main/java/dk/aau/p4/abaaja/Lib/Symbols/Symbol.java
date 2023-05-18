@@ -1,10 +1,8 @@
 package dk.aau.p4.abaaja.Lib.Symbols;
 
-import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlArrayTypeDescriptor;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlTypeDescriptor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -150,7 +148,11 @@ public class Symbol<T> {
         clone.set_isInstantiated(this.get_isInstantiated());
 
         for(Symbol index : this._list){
-            clone.add_index(index.clone());
+            if(index == null){
+                clone.add_index(null);
+            }else{
+                clone.add_index(index.clone());
+            }
         }
         for(Symbol field : this._fields){
             clone.set_field(field.clone());

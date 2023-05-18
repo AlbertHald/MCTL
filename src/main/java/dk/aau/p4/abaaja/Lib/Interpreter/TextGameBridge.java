@@ -1,13 +1,30 @@
 package dk.aau.p4.abaaja.Lib.Interpreter;
 
+import dk.aau.p4.abaaja.Lib.TextSinks.ConsoleSink;
+import dk.aau.p4.abaaja.Lib.TextSinks.ITextSink;
+
 /**
  * This is used for easy testing of the Interpreter.
  * It will pretend to be the game bridge, but will simply print the commands to the console.
  */
 public class TextGameBridge implements IGameBridge {
 
+    /**
+     * Can output to different sinks depending on what is passed to `set_sink()`.
+     * Can output to console by passing `System.out`, can output to String by passing `StringSink`.
+     */
+    private final ITextSink _sink;
+
+    public TextGameBridge(){
+        this._sink = new ConsoleSink();
+    }
+    public TextGameBridge(ITextSink sink){
+        this._sink = sink;
+    }
+
     private void printFunc(String functionDescription, String outputs){
-        System.out.println(functionDescription + " [->" + outputs + "]");
+        _sink.print(functionDescription + " [->" + outputs + "]");
+        _sink.println();
     }
     private void printFunc(String functionDescription){
         printFunc(functionDescription, "NOTHING");
@@ -22,6 +39,11 @@ public class TextGameBridge implements IGameBridge {
     public String read() {
         printFunc("Read", "\"Dummy read string\"");
         return "Dummy read string";
+    }
+
+    @Override
+    public void setDelay(int delay){
+        printFunc("Set turtle delay to: " + delay + " milliseconds");
     }
 
     @Override
@@ -75,17 +97,17 @@ public class TextGameBridge implements IGameBridge {
 
     @Override
     public void placeFront(String blockId) {
-        printFunc("Place block in front of:" + blockId);
+        printFunc("Place block in front of: " + blockId);
     }
 
     @Override
     public void placeAbove(String blockId) {
-        printFunc("Place block above:" + blockId);
+        printFunc("Place block above: " + blockId);
     }
 
     @Override
     public void placeUnder(String blockId) {
-        printFunc("Place block under:" + blockId);
+        printFunc("Place block under: " + blockId);
     }
 
     @Override

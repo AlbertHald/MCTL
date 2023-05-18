@@ -69,6 +69,7 @@ public class InterpreterTests {
         }
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertNotNull(symbol.get_type(), "Should set a type on the symbol");
         Assert.assertEquals(symbol.get_type().get_type_literal(), type, "Should set the appropriate type on the symbol");
 
     }
@@ -109,6 +110,7 @@ public class InterpreterTests {
         Assert.assertTrue(symbol instanceof FuncSymbol, "The symbol should be a function symbol");
         FuncSymbol funcSymbol = (FuncSymbol) symbol;
         Assert.assertNotNull(funcSymbol.get_funcBlock(), "The symbol should contain a function block");
+        Assert.assertNotNull(funcSymbol.get_type(), "Should set a return type on the symbol");
         Assert.assertEquals(funcSymbol.get_type().get_type_literal(), returnType, "Should set the appropriate return type on the symbol");
         List<FormalParamNode> formalParams = funcSymbol.get_formalParams();
         for(int i = 0; i < paramNames.size(); i++){
@@ -145,6 +147,8 @@ public class InterpreterTests {
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
         Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+        Assert.assertNotNull(symbol.get_type(), "Should set a type for the symbol");
+        Assert.assertEquals(symbol.get_type().get_type_literal(), "STRING", "Should set the appropriate type on the symbol");
 
     }
 
@@ -171,6 +175,8 @@ public class InterpreterTests {
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
         Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+        Assert.assertNotNull(symbol.get_type(), "Should set a type for the symbol");
+        Assert.assertEquals(symbol.get_type().get_type_literal(), "BOOLEAN", "Should set the appropriate type on the symbol");
 
     }
 
@@ -204,6 +210,8 @@ public class InterpreterTests {
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
         Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+        Assert.assertNotNull(symbol.get_type(), "Should set a type for the symbol");
+        Assert.assertEquals(symbol.get_type().get_type_literal(), "NUMBER", "Should set the appropriate type on the symbol");
 
     }
 
@@ -231,14 +239,20 @@ public class InterpreterTests {
         }
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertNotNull(symbol.get_type(), "Should set a type for the symbol");
+        Assert.assertEquals(symbol.get_type().get_type_literal(), "S", "Should set the appropriate type on the symbol");
 
         Symbol symbol_one = symbol.get_field("o");
         Assert.assertNotNull(symbol_one, "Should create a symbol for 'o' and add it to the symbol fields");
         Assert.assertEquals(symbol_one.get_value(), value_one, "Should set the appropriate value on symbol 'o'");
+        Assert.assertNotNull(symbol_one.get_type(), "Should set a type for symbol 'o'");
+        Assert.assertEquals(symbol_one.get_type().get_type_literal(), "BOOLEAN", "Should set the appropriate type on symbol 'o'");
 
         Symbol symbol_two = symbol.get_field("t");
         Assert.assertNotNull(symbol_two, "Should create a symbol for 't' and add it to the symbol fields");
         Assert.assertEquals(symbol_two.get_value(), value_two, "Should set the appropriate value on symbol 't'");
+        Assert.assertNotNull(symbol_two.get_type(), "Should set a type for symbol 't'");
+        Assert.assertEquals(symbol_two.get_type().get_type_literal(), "BOOLEAN", "Should set the appropriate type on symbol 't'");
 
     }
 
@@ -266,20 +280,32 @@ public class InterpreterTests {
         }
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertNotNull(symbol.get_type(), "Should set a type for the symbol");
+        Assert.assertEquals(symbol.get_type().get_type_literal(), "S", "Should set the appropriate type on the symbol");
+
+        //TODO: Possibly enforce correct types on nested structs. They are not necessary for the interpreter right now, but consistency is usually good.
 
         Symbol nested_0s = symbol.get_field("s");
         Assert.assertNotNull(nested_0s, "Should create a nested symbol for 's' and add it to the symbol fields");
+        //Assert.assertNotNull(nested_0s.get_type(), "Should set a type for nested symbol 's'");
+        //Assert.assertEquals(nested_0s.get_type().get_type_literal(), "S", "Should set the appropriate type on nested symbol 's'");
 
         Symbol nested_1s = nested_0s.get_field("s");
         Assert.assertNotNull(nested_1s, "Should create a nested symbol for 's' and add it to the nested 's' symbol fields");
+        //Assert.assertNotNull(nested_1s.get_type(), "Should set a type for nested symbol 's'");
+        //Assert.assertEquals(nested_1s.get_type().get_type_literal(), "S", "Should set the appropriate type on nested symbol 's'");
 
         Symbol symbol_one = nested_1s.get_field("o");
         Assert.assertNotNull(symbol_one, "Should create a symbol for 'o' and add it to the nested 's' symbol fields");
         Assert.assertEquals(symbol_one.get_value(), value_one, "Should set the appropriate value on symbol 'o'");
+        Assert.assertNotNull(symbol_one.get_type(), "Should set a type for symbol 'o'");
+        Assert.assertEquals(symbol_one.get_type().get_type_literal(), "BOOLEAN", "Should set the appropriate type on symbol 'o'");
 
         Symbol symbol_two = nested_1s.get_field("t");
         Assert.assertNotNull(symbol_two, "Should create a symbol for 't' and add it to the nested 's' symbol fields");
         Assert.assertEquals(symbol_two.get_value(), value_two, "Should set the appropriate value on symbol 't'");
+        Assert.assertNotNull(symbol_two.get_type(), "Should set a type for symbol 't'");
+        Assert.assertEquals(symbol_two.get_type().get_type_literal(), "BOOLEAN", "Should set the appropriate type on symbol 't'");
 
     }
 
@@ -537,19 +563,121 @@ public class InterpreterTests {
     }
 
     @DataProvider
-    public Object[][] invokeTestData() {
+    public Object[][] invokeTestData_bool() {
         return new Object[][] {
                 {"variable test: BOOLEAN; to run(): BOOLEAN { return true; } test = run();", true},
                 {"variable test: BOOLEAN; to run(): BOOLEAN { return false; } test = run();", false},
+                {"variable test: BOOLEAN; test = run(); to run(): BOOLEAN { return true; }", true},
+                {"variable test: BOOLEAN; test = run(); to run(): BOOLEAN { return false; }", false},
+                {"variable test: BOOLEAN; struct ON { variable isOn: BOOLEAN }; variable on: ON; variable res: ON; on.isOn = true; to run(): ON { return on; } res = run(); test = res.isOn;", true},
+                {"variable test: BOOLEAN; struct ON { variable isOn: BOOLEAN }; variable on: ON; variable res: ON; on.isOn = false; to run(): ON { return on; } res = run(); test = res.isOn;", false},
+                {"variable test: BOOLEAN; variable ons: BOOLEAN[]; variable res: BOOLEAN[]; ons[3] = true; to run(): BOOLEAN[] { return ons; } res = run(); test = res[3];", true},
+                {"variable test: BOOLEAN; variable ons: BOOLEAN[]; variable res: BOOLEAN[]; ons[3] = false; to run(): BOOLEAN[] { return ons; } res = run(); test = res[3];", false},
                 {"variable test: BOOLEAN; to run(condition: BOOLEAN): BOOLEAN { return condition; } test = run(true);", true},
                 {"variable test: BOOLEAN; to run(condition: BOOLEAN): BOOLEAN { return condition; } test = run(false);", false},
+                {"variable test: BOOLEAN; test = run(true); to run(condition: BOOLEAN): BOOLEAN { return condition; }", true},
+                {"variable test: BOOLEAN; test = run(false); to run(condition: BOOLEAN): BOOLEAN { return condition; }", false},
+                {"variable test: BOOLEAN; struct ON { variable isOn: BOOLEAN }; variable on: ON; variable res: ON; on.isOn = true; to run(condition: ON): ON { return condition; } res = run(on); test = res.isOn;", true},
+                {"variable test: BOOLEAN; struct ON { variable isOn: BOOLEAN }; variable on: ON; variable res: ON; on.isOn = false; to run(condition: ON): ON { return condition; } res = run(on); test = res.isOn;", false},
+                {"variable test: BOOLEAN; variable ons: BOOLEAN[]; variable res: BOOLEAN[]; ons[3] = true; to run(condition: BOOLEAN[]): BOOLEAN[] { return condition; } res = run(ons); test = res[3];", true},
+                {"variable test: BOOLEAN; variable ons: BOOLEAN[]; variable res: BOOLEAN[]; ons[3] = false; to run(condition: BOOLEAN[]): BOOLEAN[] { return condition; } res = run(ons); test = res[3];", false},
+                {"variable test: BOOLEAN; variable start: BOOLEAN; start = true; test = run(start); to run(condition: BOOLEAN): BOOLEAN { return condition; }", true},
+                {"variable test: BOOLEAN; variable start: BOOLEAN; start = false; test = run(start); to run(condition: BOOLEAN): BOOLEAN { return condition; }", false},
                 {"variable test: BOOLEAN; to run(left: BOOLEAN, right: BOOLEAN): BOOLEAN { return left and right; } test = run(true, true);", true},
                 {"variable test: BOOLEAN; to run(left: BOOLEAN, right: BOOLEAN): BOOLEAN { return left and right; } test = run(true, false);", false},
                 {"variable test: BOOLEAN; to run(left: BOOLEAN, right: BOOLEAN): BOOLEAN { return left and right; } test = run(false, true);", false},
+                {"variable test: BOOLEAN; to run(condition: BOOLEAN): BOOLEAN { variable local: BOOLEAN; local = condition; return local; } test = run(true);", true},
+                {"variable test: BOOLEAN; to run(condition: BOOLEAN): BOOLEAN { variable local: BOOLEAN; local = condition; return local; } test = run(false);", false},
+                {"variable test: BOOLEAN; struct ON { variable isOn: BOOLEAN }; variable on: ON; variable res: ON; on.isOn = true; to run(condition: ON): ON { variable local: ON; local = condition; return local; } res = run(on); test = res.isOn;", true},
+                {"variable test: BOOLEAN; struct ON { variable isOn: BOOLEAN }; variable on: ON; variable res: ON; on.isOn = false; to run(condition: ON): ON { variable local: ON; local = condition; return local; } res = run(on); test = res.isOn;", false},
+                {"variable test: BOOLEAN; variable ons: BOOLEAN[]; variable res: BOOLEAN[]; ons[3] = true; to run(condition: BOOLEAN[]): BOOLEAN[] { variable local: BOOLEAN[]; local = condition; return local; } res = run(ons); test = res[3];", true},
+                {"variable test: BOOLEAN; variable ons: BOOLEAN[]; variable res: BOOLEAN[]; ons[3] = false; to run(condition: BOOLEAN[]): BOOLEAN[] { variable local: BOOLEAN[]; local = condition; return local; } res = run(ons); test = res[3];", false},
         };
     }
-    @Test(dataProvider = "invokeTestData")
-    public void invoke_returnsValue(String code, boolean value) {
+    @Test(dataProvider = "invokeTestData_bool")
+    public void invoke_returnsValue_bool(String code, boolean value) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+
+    }
+
+    @DataProvider
+    public Object[][] invokeTestData_string() {
+        return new Object[][] {
+                // TODO: Also make these for numbers
+                {"variable test: STRING; to run(): STRING{ return 'data'; } test = run();", "data"},
+                {"variable test: STRING; to run(): STRING{ return ''; } test = run();", ""},
+                {"variable test: STRING; test = run(); to run(): STRING { return 'data'; }", "data"},
+                {"variable test: STRING; test = run(); to run(): STRING { return ''; }", ""},
+                {"variable test: STRING; struct ON { variable isOn: STRING }; variable on: ON; variable res: ON; on.isOn = 'data'; to run(): ON { return on; } res = run(); test = res.isOn;", "data"},
+                {"variable test: STRING; struct ON { variable isOn: STRING }; variable on: ON; variable res: ON; on.isOn = ''; to run(): ON { return on; } res = run(); test = res.isOn;", ""},
+                {"variable test: STRING; variable ons: STRING[]; variable res: STRING[]; ons[3] = 'data'; to run(): STRING[] { return ons; } res = run(); test = res[3];", "data"},
+                {"variable test: STRING; variable ons: STRING[]; variable res: STRING[]; ons[3] = ''; to run(): STRING[] { return ons; } res = run(); test = res[3];", ""},
+                {"variable test: STRING; to run(condition: STRING): STRING { return condition; } test = run('data');", "data"},
+                {"variable test: STRING; to run(condition: STRING): STRING { return condition; } test = run('');", ""},
+                {"variable test: STRING; test = run('data'); to run(condition: STRING): STRING { return condition; }", "data"},
+                {"variable test: STRING; test = run(''); to run(condition: STRING): STRING { return condition; }", ""},
+                {"variable test: STRING; struct ON { variable isOn: STRING }; variable on: ON; variable res: ON; on.isOn = 'data'; to run(condition: ON): ON { return condition; } res = run(on); test = res.isOn;", "data"},
+                {"variable test: STRING; struct ON { variable isOn: STRING }; variable on: ON; variable res: ON; on.isOn = ''; to run(condition: ON): ON { return condition; } res = run(on); test = res.isOn;", ""},
+                {"variable test: STRING; variable ons: STRING[]; variable res: STRING[]; ons[3] = 'data'; to run(condition: STRING[]): STRING[] { return condition; } res = run(ons); test = res[3];", "data"},
+                {"variable test: STRING; variable ons: STRING[]; variable res: STRING[]; ons[3] = ''; to run(condition: STRING[]): STRING[] { return condition; } res = run(ons); test = res[3];", ""},
+                {"variable test: STRING; variable start: STRING; start = 'data'; test = run(start); to run(condition: STRING): STRING { return condition; }", "data"},
+                {"variable test: STRING; variable start: STRING; start = ''; test = run(start); to run(condition: STRING): STRING { return condition; }", ""},
+                {"variable test: STRING; to run(left: STRING, right: STRING): STRING { return left.add(right); } test = run('data', 'data');", "datadata"},
+                {"variable test: STRING; to run(left: STRING, right: STRING): STRING { return left.add(right); } test = run('data', '');", "data"},
+                {"variable test: STRING; to run(left: STRING, right: STRING): STRING { return left.add(right); } test = run('', 'data');", "data"},
+                {"variable test: STRING; to run(condition: STRING): STRING { variable local: STRING; local = condition; return local; } test = run('data');", "data"},
+                {"variable test: STRING; to run(condition: STRING): STRING { variable local: STRING; local = condition; return local; } test = run('');", ""},
+                {"variable test: STRING; struct ON { variable isOn: STRING }; variable on: ON; variable res: ON; on.isOn = 'data'; to run(condition: ON): ON { variable local: ON; local = condition; return local; } res = run(on); test = res.isOn;", "data"},
+                {"variable test: STRING; struct ON { variable isOn: STRING }; variable on: ON; variable res: ON; on.isOn = ''; to run(condition: ON): ON { variable local: ON; local = condition; return local; } res = run(on); test = res.isOn;", ""},
+                {"variable test: STRING; variable ons: STRING[]; variable res: STRING[]; ons[3] = 'data'; to run(condition: STRING[]): STRING[] { variable local: STRING[]; local = condition; return local; } res = run(ons); test = res[3];", "data"},
+                {"variable test: STRING; variable ons: STRING[]; variable res: STRING[]; ons[3] = ''; to run(condition: STRING[]): STRING[] { variable local: STRING[]; local = condition; return local; } res = run(ons); test = res[3];", ""},
+        };
+    }
+    @Test(dataProvider = "invokeTestData_string")
+    public void invoke_returnsValue_string(String code, String value) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+
+    }
+
+    @DataProvider
+    public Object[][] invokeParamShadowingTestData() {
+        return new Object[][] {
+                {"variable test: BOOLEAN; variable shadow: BOOLEAN; to run(shadow: BOOLEAN): BOOLEAN { return shadow; } test = run(true);", true},
+                {"variable test: BOOLEAN; variable shadow: BOOLEAN; to run(shadow: BOOLEAN): BOOLEAN { return shadow; } test = run(false);", false},
+                {"variable test: BOOLEAN; variable shadow: BOOLEAN; to run(shadow: BOOLEAN): BOOLEAN { return shadow; } shadow = false; test = run(true);", true},
+                {"variable test: BOOLEAN; variable shadow: BOOLEAN; to run(shadow: BOOLEAN): BOOLEAN { return shadow; } shadow = true; test = run(false);", false},
+                {"variable test: BOOLEAN; variable shadow: BOOLEAN; shadow = false; to run(shadow: BOOLEAN): BOOLEAN { return shadow; } test = run(true);", true},
+                {"variable test: BOOLEAN; variable shadow: BOOLEAN; shadow = true; to run(shadow: BOOLEAN): BOOLEAN { return shadow; } test = run(false);", false},
+        };
+    }
+    @Test(dataProvider = "invokeParamShadowingTestData")
+    public void invokeParameterShadowing_returnsValue(String code, boolean value) {
         MctlNode concreteNode = parseNode(code);
 
         ProblemCollection problemCollection = new ProblemCollection();
@@ -917,13 +1045,23 @@ public class InterpreterTests {
                 {"variable test: NUMBER; variable list: BOOLEAN[]; test = list.length();", 0.0},
                 {"variable test: NUMBER; variable list: BOOLEAN[][]; list[0][8] = true; test = list.length();", 1.0},
                 {"variable test: NUMBER; variable list: BOOLEAN[][]; list[0][8] = true; test = list[0].length();", 9.0},
-                {"variable test: NUMBER; variable list: STRING[]; list[0] = 'string'; test = list.length();", 1.0},
                 {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 1; test = list.length();", 1.0},
-                {"variable test: NUMBER; struct STRUCTURE { variable x: NUMBER }; variable list: STRUCTURE[]; list[0].x = 1; test = list.length();", 1.0},
                 {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 1; test = list.length(100);", 1.0},
                 {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 1; test = list.length('yes');", 1.0},
                 {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 1; test = list.length(true);", 1.0},
                 {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 1; test = list.length(false);", 1.0},
+                {"variable test: NUMBER; variable list: STRING[]; list[0] = 'string'; test = list.length();", 1.0},
+                {"variable test: NUMBER; variable list: STRING[]; list[0] = 'man'; test = list.length();", 1.0},
+                {"variable test: NUMBER; variable list: STRING[]; list[0] = ''; test = list.length();", 1.0},
+                {"variable test: NUMBER; variable list: STRING[]; list[4] = 'man'; test = list.length();", 5.0},
+                {"variable test: NUMBER; variable list: STRING[]; list[4] = ''; test = list.length();", 5.0},
+                {"variable test: NUMBER; variable list: STRING[]; test = list.length();", 0.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 6; test = list.length();", 1.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 0; test = list.length();", 1.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[4] = 6; test = list.length();", 5.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[4] = 0; test = list.length();", 5.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; test = list.length();", 0.0},
+                {"variable test: NUMBER; struct STRUCTURE { variable x: NUMBER }; variable list: STRUCTURE[]; list[0].x = 1; test = list.length();", 1.0},
         };
     }
     @Test(dataProvider = "listLengthTestData")
@@ -1351,10 +1489,12 @@ public class InterpreterTests {
     }
 
     @DataProvider
-    public Object[][] listUseTestData() {
+    public Object[][] listUseTestData_bool() {
         return new Object[][] {
                 {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[0] = true; test = list[0];", true},
                 {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[7] = true; test = list[7];", true},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[]; list = list.add(true); test = list[0];", true},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[7] = true; list = list.add(true); test = list[8];", true},
                 {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[6] = false; list[7] = true; list[8] = false; test = list[7];", true},
                 {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[6] = false; list[7] = true; list[8] = false; test = list[7];", true},
                 {"variable test: BOOLEAN; variable list: BOOLEAN[][][]; list[0][0][0] = true; test = list[0][0][0];", true},
@@ -1364,8 +1504,78 @@ public class InterpreterTests {
                 {"variable test: BOOLEAN; variable list: BOOLEAN[][][]; list[4][4][17] = false; list[5][4][17] = true; list[6][4][17] = false; test = list[5][4][17];", true},
         };
     }
-    @Test(dataProvider = "listUseTestData")
-    public void listUse_setsValue(String code, boolean value) {
+    @Test(dataProvider = "listUseTestData_bool")
+    public void listUse_setsValue_bool(String code, boolean value) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+
+    }
+
+    @DataProvider
+    public Object[][] listUseTestData_string() {
+        return new Object[][] {
+                {"variable test: STRING; variable list: STRING[]; list[0] = 'man'; test = list[0];", "man"},
+                {"variable test: STRING; variable list: STRING[]; list = list.add('man'); test = list[0];", "man"},
+                {"variable test: STRING; variable list: STRING[]; list[7] = 'man'; test = list[7];", "man"},
+                {"variable test: STRING; variable list: STRING[]; list[7] = 'man'; list = list.add('man'); test = list[8];", "man"},
+                {"variable test: STRING; variable list: STRING[]; list[6] = ''; list[7] = 'man'; list[8] = ''; test = list[7];", "man"},
+                {"variable test: STRING; variable list: STRING[]; list[6] = ''; list[7] = 'man'; list[8] = ''; test = list[7];", "man"},
+                {"variable test: STRING; variable list: STRING[][][]; list[0][0][0] = 'man'; test = list[0][0][0];", "man"},
+                {"variable test: STRING; variable list: STRING[][][]; list[5][4][17] = 'man'; test = list[5][4][17];", "man"},
+                {"variable test: STRING; variable list: STRING[][][]; list[5][4][18] = ''; list[5][4][17] = 'man'; list[5][4][18] = ''; test = list[5][4][17];", "man"},
+                {"variable test: STRING; variable list: STRING[][][]; list[5][3][17] = ''; list[5][4][17] = 'man'; list[5][5][17] = ''; test = list[5][4][17];", "man"},
+                {"variable test: STRING; variable list: STRING[][][]; list[4][4][17] = ''; list[5][4][17] = 'man'; list[6][4][17] = ''; test = list[5][4][17];", "man"},
+        };
+    }
+    @Test(dataProvider = "listUseTestData_string")
+    public void listUse_setsValue_string(String code, String value) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+
+    }
+
+    @DataProvider
+    public Object[][] listUseTestData_number() {
+        return new Object[][] {
+                {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[0] = 3; test = list[0];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[7] = 3; test = list[7];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[]; list = list.add(3); test = list[0];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[7] = 3; list = list.add(3); test = list[8];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[6] = 0; list[7] = 3; list[8] = 0; test = list[7];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[]; list[6] = 0; list[7] = 3; list[8] = 0; test = list[7];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[][][]; list[0][0][0] = 3; test = list[0][0][0];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[][][]; list[5][4][17] = 3; test = list[5][4][17];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[][][]; list[5][4][18] = 0; list[5][4][17] = 3; list[5][4][18] = 0; test = list[5][4][17];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[][][]; list[5][3][17] = 0; list[5][4][17] = 3; list[5][5][17] = 0; test = list[5][4][17];", 3.0},
+                {"variable test: BOOLEAN; variable list: BOOLEAN[][][]; list[4][4][17] = 0; list[5][4][17] = 3; list[6][4][17] = 0; test = list[5][4][17];", 3.0},
+        };
+    }
+    @Test(dataProvider = "listUseTestData_number")
+    public void listUse_setsValue_number(String code, Number value) {
         MctlNode concreteNode = parseNode(code);
 
         ProblemCollection problemCollection = new ProblemCollection();
@@ -1421,7 +1631,7 @@ public class InterpreterTests {
                 {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streams: VALVE[] }; variable valves: VALVE[]; valves[0].on = false; valves[1].on = true; valves[2].on = false; test = valves[1].on;", true},
                 {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streamInception: VALVE[][], variable stream: VALVE }; variable valve: VALVE; valve.stream.stream.streamInception[3][2].on = true; test = valve.stream.stream.streamInception[3][2].on;", true},
                 {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streamInception: VALVE[][], variable stream: VALVE }; variable valve: VALVE; valve.streamInception[3][2].stream.streamInception[0][0].stream.stream.on = true; test = valve.streamInception[3][2].stream.streamInception[0][0].stream.stream.on;", true},
-                {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streamInception: VALVE[][], variable stream: VALVE }; variable valveInception: VALVE[][][]; valveInception[8][2][0].stream.streamInception[8][1] = true; test = valveInception[8][2][0].stream.streamInception[8][1];", true},
+                {"variable test: BOOLEAN; struct VALVE { variable on: BOOLEAN, variable streamInception: VALVE[][], variable stream: VALVE }; variable valveInception: VALVE[][][]; valveInception[8][2][0].stream.streamInception[8][1].on = true; test = valveInception[8][2][0].stream.streamInception[8][1].on;", true},
         };
     }
     @Test(dataProvider = "structAndListUseTestData")
@@ -1440,7 +1650,193 @@ public class InterpreterTests {
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
         Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+    }
 
+    @DataProvider
+    public Object[][] variableScopeTestData() {
+        return new Object[][] {
+                {"variable test : NUMBER; variable x: NUMBER; x = 10; to f(): NUMBER { return x; } to g(x: NUMBER): NUMBER { return f(); } test = g(20);", 10.0},
+                {"variable test : NUMBER; variable x: NUMBER; x = 10; to f(x: NUMBER): NUMBER { return x; } to g(x: NUMBER): NUMBER { return f(x); } test = g(20);", 20.0},
+        };
+    }
+    @Test(dataProvider = "variableScopeTestData")
+    public void variableScopeTest_usesStaticScoping_returnsCorrectValue(String code, Number expectedValue) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertEquals(symbol.get_value(), expectedValue, "Should set the appropriate value on the symbol");
+    }
+
+    @DataProvider
+    public Object[][] lateAssignNoAssignTestData_number() {
+        return new Object[][] {
+                {"variable test: NUMBER; variable other: NUMBER; other = 4; test = other; other = 2;", 4.0},
+                {"variable test: NUMBER; test = 4; to run(other: NUMBER): NOTHING { other++; } run(test);", 4.0},
+        };
+    }
+    @Test(dataProvider = "lateAssignNoAssignTestData_number")
+    public void lateVarAssign_doesNotAssign_number(String code, Number expectedValue) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertEquals(symbol.get_value(), expectedValue, "Should not change the value after assignment");
+    }
+
+    @DataProvider
+    public Object[][] expNoAssignTestData_number() {
+        return new Object[][] {
+                {"variable test: NUMBER; variable sink: NUMBER; test = -4; sink = +test;", -4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = -test;", 4.0},
+                {"variable test: NUMBER; variable sink: STRING; test = 4; sink = (STRING) test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test + 6;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = 6 + test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test + test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test - 3;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = 3 - test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test - test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test / 2;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = 2 / test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test / test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test * 7;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = 7 * test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test * test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test % 2;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = 2 % test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 4; sink = test % test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test < 1;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = 1 < test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test < test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test > 1;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = 1 > test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test > test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test <= 1;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = 1 <= test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test <= test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test >= 1;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = 1 >= test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test >= test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test == 1;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = 1 == test;", 4.0},
+                {"variable test: NUMBER; variable sink: BOOLEAN; test = 4; sink = test == test;", 4.0},
+                {"variable test: NUMBER; variable sink: NUMBER; test = 1; sink = test * 2 / (test + test) + 4;", 1.0},
+                {"variable test: NUMBER; test = 10; if(test * 2 < 8){}", 10.0},
+                {"variable test: NUMBER; test = 8; repeat(test / 2){}", 8.0},
+                {"variable test: NUMBER; variable list: STRING[]; list[2] = 1; test = 1; list[test+1] = list[test+1];", 1.0},
+                {"variable test: NUMBER; to noop(n: NUMBER):NOTHING{} test = 9; noop(test - 3);", 9.0},
+        };
+    }
+    @Test(dataProvider = "expNoAssignTestData_number")
+    public void exp_doesNotAssign_number(String code, Number expectedValue) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertEquals(symbol.get_value(), expectedValue, "Should not change the value after using it in an expression");
+    }
+
+    @DataProvider
+    public Object[][] expNoAssignTestData_bool() {
+        return new Object[][] {
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = !test;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = !test;", false},
+                {"variable test: BOOLEAN; variable sink: STRING; test = true; sink = (STRING) test;", true},
+                {"variable test: BOOLEAN; variable sink: STRING; test = false; sink = (STRING) test;", false},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = test == false;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = false == test;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = test == false;", false},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = false == test;", false},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = test != false;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = false != test;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = test != false;", false},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = false != test;", false},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = test or false;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = false or test;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = test or false;", false},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = false or test;", false},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = test and false;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = true; sink = false and test;", true},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = test and false;", false},
+                {"variable test: BOOLEAN; variable sink: BOOLEAN; test = false; sink = false and test;", false},
+        };
+    }
+    @Test(dataProvider = "expNoAssignTestData_bool")
+    public void exp_doesNotAssign_bool(String code, boolean expectedValue) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertEquals(symbol.get_value(), expectedValue, "Should not change the value after using it in an expression");
+    }
+
+    @DataProvider
+    public Object[][] expNoAssignTestData_string() {
+        return new Object[][] {
+                // TODO: Also make these tests for lists
+                {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = test.add('man');", "boss"},
+                {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = 'man'.add(test);", "boss"},
+                {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = test.add(test);", "boss"},
+                {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = test.remove();", "boss"},
+                {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = test.substring(0, 2);", "boss"},
+                {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = test.substring(2, 2);", "boss"},
+                {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = test.substring(0, 3);", "boss"},
+                {"variable test: STRING; variable sink: STRING; test = 'boss'; sink = test.substring(0, 0);", "boss"},
+                {"variable test: STRING; variable sink: NUMBER; test = 'boss'; sink = test.length();", "boss"},
+        };
+    }
+    @Test(dataProvider = "expNoAssignTestData_string")
+    public void exp_doesNotAssign_string(String code, String expectedValue) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+        Assert.assertEquals(symbol.get_value(), expectedValue, "Should not change the value after using it in an expression");
     }
 
 }

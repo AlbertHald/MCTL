@@ -1,9 +1,7 @@
 package dk.aau.p4.abaaja.Lib.ProblemHandling.Listeners;
 
 // Antlr imports
-import org.antlr.v4.runtime.BaseErrorListener;
-import org.antlr.v4.runtime.RecognitionException;
-import org.antlr.v4.runtime.Recognizer;
+import org.antlr.v4.runtime.*;
 
 // Problem collection imports
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
@@ -24,8 +22,30 @@ public class LexerProblemListener extends BaseErrorListener {
                             String msg,
                             RecognitionException e) {
 
-        // TODO: Implement proper error messages
-        problemCollection.addProblem(ProblemType.ERROR_LEXER, msg, line);
+        CharStream charStream = (CharStream) recognizer.getInputStream();
 
+        // Get input stream and split at newline character
+        String totalTokenStream = charStream.toString();
+        String[] lines = totalTokenStream.split("\n");
+
+        // Get problematic line
+        String problematicLine = lines[line - 1];
+
+        // Create line with highlighted error and problem title
+        String highlightedLine = ProblemCollection.createHighlightedLine(problematicLine, charPositionInLine, charPositionInLine + 1);
+        String title = ProblemCollection.createProblemTitle(ProblemType.ERROR_LEXER.toString(), ProblemCollection.totalCharacters);
+
+        String problemString = String.format(
+                "%s\nUnrecognizable token at Line %d, Character %d:\n%s\n%s\n%s\n%s",
+                title,
+                line,
+                charPositionInLine,
+                ProblemCollection.codeDelim,
+                highlightedLine,
+                ProblemCollection.errorDelim,
+                msg
+        );
+
+        problemCollection.addProblem(ProblemType.ERROR_LEXER, problemString, line);
     }
 }

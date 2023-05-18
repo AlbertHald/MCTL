@@ -6,8 +6,10 @@ import org.antlr.v4.runtime.CharStreams;
 
 public class Main {
     public static void main(String[] args) {
-        new MCTLInterpreter(new TextGameBridge())
-                .run(CharStreams.fromString("print(\"bang\");"));
+        String program = "print(\"bang\");";
+
+        System.out.println(new MCTLFormatter(new TextGameBridge()).run(CharStreams.fromString(program)));
+        new MCTLInterpreter(new TextGameBridge()).run(CharStreams.fromString(program));
     }
 
 }

@@ -46,20 +46,19 @@ public class AstBuilderUnitTests {
     @DataProvider
     public Object[][] createParseTreeTestData() {
         return new Object[][] {
-                {"a = \"a\";"},
-                {"a = \"a\"; a = \"a\";"},
-                {"a = \"a\"; a = \"a\"; a = \"a\";"},
+                {"a = \"a\";", 2},
+                {"a = \"a\"; a = \"a\";", 3},
+                {"a = \"a\"; a = \"a\"; a = \"a\";", 4},
         };
     }
 
-    // TODO: Condition 'parseTree != null' is always 'true'
     @Test(dataProvider = "createParseTreeTestData")
-    public void createParseTree_ValidInput_CreatesParseTree(String code) {
+    public void createParseTree_ValidInput_CreatesParseTree(String code, int expectedNodes) {
         // Arrange
         ParseTree parseTree = createParseTree(code);
 
         // Assert
-        softAssert.assertTrue(parseTree != null);
+        softAssert.assertEquals(parseTree.getChildCount(), expectedNodes, "Encountered an error when creating parse tree");
         softAssert.assertAll();
     }
 

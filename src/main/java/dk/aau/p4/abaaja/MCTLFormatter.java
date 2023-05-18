@@ -1,11 +1,17 @@
 package dk.aau.p4.abaaja;
 
 // Antlr imports
+
 import dk.aau.p4.abaaja.Lib.Interpreter.IGameBridge;
 import dk.aau.p4.abaaja.Lib.Interpreter.Interpreter;
 import dk.aau.p4.abaaja.Lib.Nodes.MctlNode;
+import dk.aau.p4.abaaja.Lib.ProblemHandling.Listeners.LexerProblemListener;
+import dk.aau.p4.abaaja.Lib.ProblemHandling.Listeners.ParserProblemListener;
+import dk.aau.p4.abaaja.Lib.ProblemHandling.Problem;
+import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
-import dk.aau.p4.abaaja.Lib.TextSinks.*;
+import dk.aau.p4.abaaja.Lib.TextSinks.ConsoleSink;
+import dk.aau.p4.abaaja.Lib.TextSinks.StringSink;
 import dk.aau.p4.abaaja.Lib.Visitors.AstBuilder;
 import dk.aau.p4.abaaja.Lib.Visitors.PrettyPrintVisitor;
 import dk.aau.p4.abaaja.Lib.Visitors.SymbolTableVisitor;
@@ -13,55 +19,36 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-// Error handling imports
-import dk.aau.p4.abaaja.Lib.ProblemHandling.Problem;
-import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
-import dk.aau.p4.abaaja.Lib.ProblemHandling.Listeners.LexerProblemListener;
-import dk.aau.p4.abaaja.Lib.ProblemHandling.Listeners.ParserProblemListener;
-
-public class MCTLInterpreter {
+public class MCTLFormatter {
 
     IGameBridge gameBridge;
-    public MCTLInterpreter(IGameBridge _gameBridge){
+    public MCTLFormatter(IGameBridge _gameBridge){
         gameBridge = _gameBridge;
     }
 
 
-    public void run(CharStream inputStream){
+    public String run(CharStream inputStream){
         // Initialize the problem collection
         ProblemCollection problemCollection = new ProblemCollection();
 
         // Parse test CharStream
         ParseTree tree = syntaxPhase(inputStream, problemCollection);
 
+        StringSink stringSink = new StringSink();
+
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here
             MctlNode concreteNode = (MctlNode) tree.accept(new AstBuilder(problemCollection));
 
-            concreteNode.accept(new SymbolTableVisitor(problemCollection));
+            concreteNode.accept(new PrettyPrintVisitor(stringSink));
 
-            if (!problemCollection.getHasErrors()) {
-                concreteNode.accept(new Interpreter(problemCollection, new SymbolTable(), gameBridge));
-
-                // Prints interpretation errors
-                for (Problem problem : problemCollection.getProblems()) {
-                    gameBridge.print(problem.getMessage());
-                }
-            }
-            else {
-                // Prints interpretation errors
-                for (Problem problem : problemCollection.getProblems()) {
-                    gameBridge.print(problem.getMessage());
-                }
-            }
-        }
-        else {
             // Prints parse errors
             for (Problem problem : problemCollection.getProblems()) {
                 gameBridge.print(problem.getMessage());
             }
         }
         gameBridge.internal_terminate();
+        return stringSink.get_result();
     }
 
     /**

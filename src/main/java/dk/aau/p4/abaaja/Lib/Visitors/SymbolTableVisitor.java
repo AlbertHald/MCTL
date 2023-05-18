@@ -4,13 +4,13 @@ import dk.aau.p4.abaaja.Lib.Nodes.*;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.Problem;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemCollection;
 import dk.aau.p4.abaaja.Lib.ProblemHandling.ProblemType;
-import dk.aau.p4.abaaja.Lib.Symbols.FuncSymbol;
 import dk.aau.p4.abaaja.Lib.Symbols.Scope;
-import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlArrayTypeDescriptor;
-import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlStructDescriptor;
-import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 import dk.aau.p4.abaaja.Lib.Symbols.SymbolTable;
+import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
+import dk.aau.p4.abaaja.Lib.Symbols.FuncSymbol;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlTypeDescriptor;
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlStructDescriptor;
+import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.MctlArrayTypeDescriptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,13 +40,15 @@ public class SymbolTableVisitor implements INodeVisitor {
 
     private void initialScopeVisit(List<BaseNode> nodes) {
         // Checking struct declarations in code block
+        InitialStructVisitor initialStructVisitor = new InitialStructVisitor(problemCollection, symbolTable);
         for (BaseNode child : nodes) {
-            child.accept(new InitialStructVisitor(problemCollection, symbolTable));
+            child.accept(initialStructVisitor);
         }
 
         // Checking function declarations in code block
+        InitialFuncVisitor initialFuncVisitor = new InitialFuncVisitor(problemCollection, symbolTable);
         for (BaseNode child : nodes) {
-            child.accept(new InitialFuncVisitor(problemCollection, symbolTable));
+            child.accept(initialFuncVisitor);
         }
 
         // Finalize struct type declarations
@@ -124,6 +126,10 @@ public class SymbolTableVisitor implements INodeVisitor {
             typeDescriptor = typeCheckingVisitor.visit(node.get_varDecType());
             if (typeDescriptor != null) {
                 Symbol symbol = new Symbol(node.get_id(), typeDescriptor);
+
+                if (typeDescriptor instanceof MctlArrayTypeDescriptor || typeDescriptor instanceof MctlStructDescriptor) {
+                    symbol.set_isInstantiated(true);
+                }
                 this.symbolTable.insertSymbol(symbol);
             } else {
                 problemCollection.addFormattedProblem(ProblemType.ERROR_UNKNOWN_TYPE, "The type \"" + node.get_varDecType().get_type() + "\" does not exist", node.get_lineNumber());
@@ -185,6 +191,11 @@ public class SymbolTableVisitor implements INodeVisitor {
                 );
             }
         }
+
+        // Type check the individual blocks
+        for (BlockNode block : node.get_blockChildrenNode()) {
+            visit(block);
+        }
     }
 
     public void visit(RepeatStateNode node) {
@@ -211,29 +222,25 @@ public class SymbolTableVisitor implements INodeVisitor {
 
         IDExpNode idExpNode = node.get_assignId();
 
-        while (!(idExpNode instanceof ActualIDExpNode actualIDNode)) {
-            idExpNode = idExpNode.get_idNode();
-        }
-
         if (idTypeDescriptor == null) {
             problemCollection.addFormattedProblem(
                     ProblemType.ERROR_UNDEFINED_IDENTIFIER,
-                    "The variable \"" + actualIDNode.get_id() + "\" has not yet been declared",
+                    "The variable \"" + idExpNode.get_contained_id() + "\" has not yet been declared",
                     node.get_lineNumber()
             );
         } else if (expTypeDescriptor == null) {
             problemCollection.addFormattedProblem(
                     ProblemType.ERROR_UNDEFINED_IDENTIFIER,
-                    "The variable \"" + actualIDNode.get_id() + "\" cannot be assigned to an expression containing undeclared variables",
+                    "The variable \"" + idExpNode.get_contained_id() + "\" cannot be assigned to an expression containing undeclared variables",
                     node.get_lineNumber()
             );
         } else {
-            variable = symbolTable.searchSymbol(actualIDNode.get_id());
+            variable = symbolTable.searchSymbol(idExpNode.get_contained_id());
 
             if (variable == null) {
                 problemCollection.addFormattedProblem(
                         ProblemType.ERROR_UNDEFINED_IDENTIFIER,
-                        "The variable \"" + actualIDNode.get_id() + "\" has not yet been declared",
+                        "The variable \"" + idExpNode.get_contained_id() + "\" has not yet been declared",
                         node.get_lineNumber()
                 );
             } else {

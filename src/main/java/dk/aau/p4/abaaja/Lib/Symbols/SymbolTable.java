@@ -1,6 +1,5 @@
 package dk.aau.p4.abaaja.Lib.Symbols;
 
-import dk.aau.p4.abaaja.Lib.Nodes.NothingTypeNode;
 import dk.aau.p4.abaaja.Lib.PredefinedFunction;
 import dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors.*;
 
@@ -16,14 +15,16 @@ public class SymbolTable {
     // Predefined functions of the programming language
     private List<PredefinedFunction> predefinedFunctions = Arrays.asList(
             new PredefinedFunction("add", Arrays.asList(Arrays.asList(new MctlTypeDescriptor())), new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0), true, true, new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0)),
-            new PredefinedFunction("remove", new ArrayList<>(), new MctlNothingDescriptor(), true, false, new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0)),
+            new PredefinedFunction("remove", new ArrayList<>(), new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0), true, true, new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0)),
             new PredefinedFunction("length", new ArrayList<>(), new MctlNumberDescriptor(), true, true, new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0)),
             new PredefinedFunction("indexesOf",
                     Arrays.asList(Arrays.asList(new MctlStringDescriptor(), new MctlBooleanDescriptor(), new MctlNumberDescriptor(), new MctlNothingDescriptor())),
                     new MctlArrayTypeDescriptor(new MctlNumberDescriptor(), 1), true, true, new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0)),
             new PredefinedFunction("substring", Arrays.asList(Arrays.asList(new MctlNumberDescriptor()), Arrays.asList(new MctlNumberDescriptor())), new MctlStringDescriptor(), true, true, new MctlStringDescriptor()),
+            new PredefinedFunction("sublist", Arrays.asList(Arrays.asList(new MctlNumberDescriptor()), Arrays.asList(new MctlNumberDescriptor())), new MctlArrayTypeDescriptor(new MctlTypeDescriptor(), 0), true, false, new MctlArrayTypeDescriptor(new MctlTypeDescriptor(),0)),
             new PredefinedFunction("read", new ArrayList<>(), new MctlStringDescriptor(), false, false, new MctlNothingDescriptor()),
             new PredefinedFunction("print", Arrays.asList(Arrays.asList(new MctlStringDescriptor())), new MctlNothingDescriptor(), false, false, new MctlNothingDescriptor()),
+            new PredefinedFunction("setDelay", Arrays.asList(Arrays.asList(new MctlNumberDescriptor())), new MctlNothingDescriptor(), false, false, new MctlNothingDescriptor()),
             new PredefinedFunction("moveForward", new ArrayList<>(), new MctlBooleanDescriptor(), false, false, new MctlNothingDescriptor()),
             new PredefinedFunction("moveUp", new ArrayList<>(), new MctlBooleanDescriptor(), false, false, new MctlNothingDescriptor()),
             new PredefinedFunction("moveDown", new ArrayList<>(), new MctlBooleanDescriptor(), false, false, new MctlNothingDescriptor()),
@@ -38,7 +39,8 @@ public class SymbolTable {
             new PredefinedFunction("placeUnder", Arrays.asList(Arrays.asList(new MctlStringDescriptor())), new MctlNothingDescriptor(), false, false, new MctlNothingDescriptor()),
             new PredefinedFunction("blockFront", new ArrayList<>(), new MctlStringDescriptor(), false, false, new MctlNothingDescriptor()),
             new PredefinedFunction("blockAbove", new ArrayList<>(), new MctlStringDescriptor(), false, false, new MctlNothingDescriptor()),
-            new PredefinedFunction("blockUnder", new ArrayList<>(), new MctlStringDescriptor(), false, false, new MctlNothingDescriptor())
+            new PredefinedFunction("blockUnder", new ArrayList<>(), new MctlStringDescriptor(), false, false, new MctlNothingDescriptor()),
+            new PredefinedFunction("random", Arrays.asList(Arrays.asList(new MctlNumberDescriptor()), Arrays.asList(new MctlNumberDescriptor())), new MctlNumberDescriptor(), false, false, new MctlNothingDescriptor())
     );
 
     // Predefined types of the programming language
@@ -97,6 +99,9 @@ public class SymbolTable {
         }
     }
 
+    public void set_currentScope(Scope scope) {
+        this._currentScope = scope;
+    }
     public Scope get_currentScope() {
         return _currentScope;
     }

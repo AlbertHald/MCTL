@@ -1,7 +1,6 @@
 package dk.aau.p4.abaaja.Lib.Symbols.TypeDescriptors;
 
 import dk.aau.p4.abaaja.Lib.Nodes.StructDecNode;
-import dk.aau.p4.abaaja.Lib.Symbols.Symbol;
 
 import java.util.HashMap;
 
@@ -31,7 +30,6 @@ public class MctlStructDescriptor extends MctlTypeDescriptor {
         _structVariables.put(id, entry);
     }
 
-    // TODO: Return null if entry does not exist
     public MctlTypeDescriptor get_structsymbol(String key) {
         return _structVariables.get(key);
     }
