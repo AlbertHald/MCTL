@@ -10,6 +10,7 @@ import dk.aau.p4.abaaja.Lib.Visitors.INodeVisitor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class Interpreter implements INodeVisitor {
     public Interpreter(ProblemCollection problemCollection, SymbolTable symbolTable, IGameBridge gameBridge) {
@@ -314,6 +315,19 @@ public class Interpreter implements INodeVisitor {
                 String bridgeResult = gameBridge.blockUnder();
                 result.set_type(new MctlStringDescriptor());
                 result.set_value(bridgeResult);
+                return result;
+            }
+            case "random" -> {
+                double from = ((Number) resolve(node.get_paramExps().get(0)).get_value()).doubleValue();
+                double to = ((Number) resolve(node.get_paramExps().get(1)).get_value()).doubleValue();
+                result.set_type(new MctlNumberDescriptor());
+                if(to <= from) {
+                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "The maximum number in the random function must be larger than the minimum. Requested minimum: " + from + ", requested maximum: " + to, node.get_lineNumber());
+                    result.set_value(from);
+                }else{
+                    Random random = new Random();
+                    result.set_value(random.nextDouble(from, to));
+                }
                 return result;
             }
             default -> {
