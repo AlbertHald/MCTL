@@ -813,6 +813,9 @@ public class InterpreterTests {
                 {"variable test: STRING; test = ''.add(' ');", " "},
                 {"variable test: STRING; test = ' '.add(' ');", "  "},
                 {"variable test: STRING; test = ''.add('');", ""},
+                {"variable test: STRING; test = test.add('bossman');", "bossman"},
+                {"variable test: STRING; test = test.add(' ');", " "},
+                {"variable test: STRING; test = test.add('');", ""},
         };
     }
     @Test(dataProvider = "stringAddTestData")
