@@ -37,30 +37,18 @@ public class MCTLInterpreter {
         if (!problemCollection.getHasErrors()) {
             // Continue parsing here
             MctlNode concreteNode = (MctlNode) tree.accept(new AstBuilder(problemCollection));
-
             concreteNode.accept(new SymbolTableVisitor(problemCollection));
 
             if (!problemCollection.getHasErrors()) {
                 concreteNode.accept(new Interpreter(problemCollection, new SymbolTable(), gameBridge));
+            }
+        }
 
-                // Prints interpretation errors
-                for (Problem problem : problemCollection.getProblems()) {
-                    gameBridge.print(problem.getMessage());
-                }
-            }
-            else {
-                // Prints interpretation errors
-                for (Problem problem : problemCollection.getProblems()) {
-                    gameBridge.print(problem.getMessage());
-                }
-            }
+        // Prints Errors and Warnings
+        for (Problem problem : problemCollection.getProblems()) {
+            gameBridge.print(problem.getMessage());
         }
-        else {
-            // Prints parse errors
-            for (Problem problem : problemCollection.getProblems()) {
-                gameBridge.print(problem.getMessage());
-            }
-        }
+
         gameBridge.internal_terminate();
     }
 

@@ -31,19 +31,19 @@ public class ProblemCollection {
     public void addProblem(Problem problem) {
         problems.add(problem);
 
-        if (problem.getProblemType().getProblemString().startsWith("E") && !hasErrors) hasErrors = true;
+        if (!hasErrors && problem.getProblemType().getProblemString().startsWith("E")) hasErrors = true;
     }
 
     public void addProblem(ProblemType type, String message, int line) {
         problems.add(new Problem(type, message, line, 0, 0));
 
-        if (type.getProblemString().startsWith("E") && !hasErrors) hasErrors = true;
+        if (!hasErrors && type.getProblemString().startsWith("E")) hasErrors = true;
     }
 
     public void addProblem(ProblemType type, String message, int line, int charStartIndex, int charStopIndex) {
         problems.add(new Problem(type, message, line, charStartIndex, charStopIndex));
 
-        if (type.getProblemString().startsWith("E") && !hasErrors) hasErrors = true;
+        if (!hasErrors && type.getProblemString().startsWith("E")) hasErrors = true;
     }
 
     /*
@@ -58,7 +58,7 @@ public class ProblemCollection {
 
         problems.add(new Problem(type, problemMessage, line, 0, 0));
 
-        if (type.getProblemString().startsWith("E") && !hasErrors) hasErrors = true;
+        if (!hasErrors && type.getProblemString().startsWith("E")) hasErrors = true;
     }
 
     public static String createProblemTitle(String title, int totalCharacters) {
