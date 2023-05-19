@@ -1,0 +1,52 @@
+--CODE--
+print("How big should the beautiful flower garden be <3?");
+variable size: NUMBER;
+size = (NUMBER) "3"; #{read()}
+
+setDelay(20);
+moveUp();
+moveAndPlace(1);
+repeat(size / 2){
+  moveAndPlace(size - 1);
+  turnLeft();
+  moveAndPlace(1);
+  turnLeft();
+  moveAndPlace(size - 1);
+  turnRight();
+  moveAndPlace(1);
+  turnRight();
+}
+moveForward();
+placeUnder("minecraft:cornflower");
+
+to moveAndPlace (times: NUMBER): NOTHING {
+  repeat(times){
+    moveForward();
+    placeUnder("minecraft:poppy");
+  }
+}
+
+--OUTPUT--
+Print: "How big should the beautiful flower garden be <3?" [->NOTHING]
+Set turtle delay to: 20 milliseconds [->NOTHING]
+Move 1 up [->true]
+Move 1 forward [->true]
+Place block under: minecraft:poppy [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:poppy [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:poppy [->NOTHING]
+Turn 90 deg left [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:poppy [->NOTHING]
+Turn 90 deg left [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:poppy [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:poppy [->NOTHING]
+Turn 90 deg right [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:poppy [->NOTHING]
+Turn 90 deg right [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:cornflower [->NOTHING]
