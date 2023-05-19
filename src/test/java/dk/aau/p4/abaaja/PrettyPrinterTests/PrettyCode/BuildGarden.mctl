@@ -1,0 +1,26 @@
+print("How big should the beautiful flower garden be <3?");
+variable size: NUMBER;
+size = (NUMBER) read();
+
+setDelay(20);
+moveUp();
+moveAndPlace(1);
+repeat(size / 2){
+  moveAndPlace(size - 1);
+  turnLeft();
+  moveAndPlace(1);
+  turnLeft();
+  moveAndPlace(size - 1);
+  turnRight();
+  moveAndPlace(1);
+  turnRight();
+}
+moveForward();
+placeUnder("minecraft:cornflower");
+
+to moveAndPlace (times: NUMBER): NOTHING {
+  repeat(times){
+    moveForward();
+    placeUnder("minecraft:poppy");
+  }
+}
