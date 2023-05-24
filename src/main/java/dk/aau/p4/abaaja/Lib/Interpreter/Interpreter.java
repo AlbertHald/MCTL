@@ -420,7 +420,7 @@ public class Interpreter implements INodeVisitor {
                     problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Trying to access end of list at index " + end + " when only index " + start + "-" + (subject.get_listLength()-1) + " is valid.", node.get_lineNumber());
                 }else{
                     for(int i = start; i <= end; i++){
-                        result.add_index(subject.get_index(start));
+                        result.add_index(subject.get_index(i));
                     }
                 }
             }
@@ -451,6 +451,7 @@ public class Interpreter implements INodeVisitor {
     public Symbol resolve(StringMethodInvokeNode node) {
         String methodName = resolve(node.get_id()).get_name();
         String subject = (String) resolve(node.get_string()).get_value();
+        if(subject == null) subject = "";
         Symbol result = new Symbol(new MctlNothingDescriptor(), null);
         switch(methodName){
             case "length" -> {
@@ -731,7 +732,12 @@ public class Interpreter implements INodeVisitor {
                 return leftSymbol;
             }
             case "/" -> {
-                leftSymbol.set_value(leftInit / rightInit);
+                if(rightInit == 0.0) {
+                    problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Cannot divide by 0", node.get_lineNumber());
+                    leftSymbol.set_value(null);
+                }else{
+                    leftSymbol.set_value(leftInit / rightInit);
+                }
                 return leftSymbol;
             }
             case "%" -> {
