@@ -85,11 +85,11 @@ public class Interpreter implements INodeVisitor {
     }
 
     public void visit(DecNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown declaration node", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown declaration node", node.get_lineNumber());
     }
 
     public void visit(StateNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown control structure", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown control structure", node.get_lineNumber());
     }
 
     public void visit(VarDecNode node) {
@@ -129,7 +129,7 @@ public class Interpreter implements INodeVisitor {
             testExp: if(numExps > i){
                 Symbol expSymbol = resolve(expList.get(i));
                 if(expSymbol == null || expSymbol.get_value() == null){
-                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Ignoring if statement with no expression", node.get_lineNumber());
+                    problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Ignoring if statement with no expression", node.get_lineNumber());
                     break testExp;
                 }
                 if(!((boolean) expSymbol.get_value())){
@@ -147,7 +147,7 @@ public class Interpreter implements INodeVisitor {
     public BaseNode visitStoppable(RepeatStateNode node) {
         Symbol symbol = resolve(node.get_repeatExp());
         if(symbol == null || symbol.get_value() == null){
-            problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Ignoring repeat with no sentinel expression", node.get_lineNumber());
+            problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Ignoring repeat with no sentinel expression", node.get_lineNumber());
             return null;
         }
         BaseNode stopper = null;
@@ -159,7 +159,7 @@ public class Interpreter implements INodeVisitor {
                 stopper = visitStoppable(node.get_expBlock());
                 iterations++;
                 if(iterations > MAX_REPEAT_ITERATIONS){
-                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Stopping infinite repeat", node.get_lineNumber());
+                    problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Stopping infinite repeat", node.get_lineNumber());
                     return null;
                 }
             }
@@ -178,7 +178,7 @@ public class Interpreter implements INodeVisitor {
                 stopper = visitStoppable(node.get_expBlock());
             }
         }else{
-            problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unsupported repeat expression type: " + symbol.get_type().get_type_literal(), node.get_lineNumber());
+            problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unsupported repeat expression type: " + symbol.get_type().get_type_literal(), node.get_lineNumber());
             return null;
         }
 
@@ -192,7 +192,7 @@ public class Interpreter implements INodeVisitor {
     public void visit(AssStateNode node) {
         Symbol symbol = resolve(node.get_assignId());
         if(symbol == null){
-            problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered assignment to uninitialized variable", node.get_lineNumber());
+            problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered assignment to uninitialized variable", node.get_lineNumber());
             return;
         }
 
@@ -212,7 +212,7 @@ public class Interpreter implements INodeVisitor {
         }else if(node instanceof StringMethodInvokeNode){
             visit((StringMethodInvokeNode) node);
         }else{
-            problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown invocation structure", node.get_lineNumber());
+            problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown invocation structure", node.get_lineNumber());
         }
     }
     public Symbol resolve(InvokeNode node) {
@@ -223,7 +223,7 @@ public class Interpreter implements INodeVisitor {
         }else if(node instanceof StringMethodInvokeNode){
             return resolve((StringMethodInvokeNode) node);
         }
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown invocation structure", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown invocation structure", node.get_lineNumber());
         return new Symbol(new MctlNothingDescriptor(), null);
     }
 
@@ -322,7 +322,7 @@ public class Interpreter implements INodeVisitor {
                 double to = ((Number) resolve(node.get_paramExps().get(1)).get_value()).doubleValue();
                 result.set_type(new MctlNumberDescriptor());
                 if(to <= from) {
-                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "The maximum number in the random function must be larger than the minimum. Requested minimum: " + from + ", requested maximum: " + to, node.get_lineNumber());
+                    problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "The maximum number in the random function must be larger than the minimum. Requested minimum: " + from + ", requested maximum: " + to, node.get_lineNumber());
                     result.set_value(from);
                 }else{
                     Random random = new Random();
@@ -413,11 +413,11 @@ public class Interpreter implements INodeVisitor {
                 int start = ((Number) resolve(node.get_paramExps().get(0)).get_value()).intValue();
                 int end = ((Number) resolve(node.get_paramExps().get(1)).get_value()).intValue();
                 if(subject.get_listLength() == 0){
-                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to call sublist on an empty list.", node.get_lineNumber());
+                    problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Trying to call sublist on an empty list.", node.get_lineNumber());
                 }else if(start < 0 || subject.get_listLength() <= start){
-                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access list at index " + start + " when only index 0-" + (subject.get_listLength()-1) + " is valid.", node.get_lineNumber());
+                    problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Trying to access list at index " + start + " when only index 0-" + (subject.get_listLength()-1) + " is valid.", node.get_lineNumber());
                 }else if(end < start || subject.get_listLength() <= end){
-                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access end of list at index " + end + " when only index " + start + "-" + (subject.get_listLength()-1) + " is valid.", node.get_lineNumber());
+                    problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Trying to access end of list at index " + end + " when only index " + start + "-" + (subject.get_listLength()-1) + " is valid.", node.get_lineNumber());
                 }else{
                     for(int i = start; i <= end; i++){
                         result.add_index(subject.get_index(i));
@@ -439,14 +439,14 @@ public class Interpreter implements INodeVisitor {
                 }
             }
             default -> {
-                problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unsupported method invocation on " + subject.get_type().get_type_literal() + ": " + methodName, node.get_lineNumber());
+                problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unsupported method invocation on " + subject.get_type().get_type_literal() + ": " + methodName, node.get_lineNumber());
             }
         }
         return result;
     }
 
     public void visit(StringMethodInvokeNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected method invocation on STRING", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected method invocation on STRING", node.get_lineNumber());
     }
     public Symbol resolve(StringMethodInvokeNode node) {
         String methodName = resolve(node.get_id()).get_name();
@@ -472,13 +472,13 @@ public class Interpreter implements INodeVisitor {
                 int start = ((Number) resolve(node.get_paramExps().get(0)).get_value()).intValue();
                 int end = ((Number) resolve(node.get_paramExps().get(1)).get_value()).intValue();
                 if(subject.length() == 0){
-                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to call substring on an empty STRING.", node.get_lineNumber());
+                    problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Trying to call substring on an empty STRING.", node.get_lineNumber());
                     result.set_value("");
                 }else if(start < 0 || subject.length() <= start){
-                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access STRING at index " + start + " when only index 0-" + (subject.length()-1) + " is valid.", node.get_lineNumber());
+                    problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Trying to access STRING at index " + start + " when only index 0-" + (subject.length()-1) + " is valid.", node.get_lineNumber());
                     result.set_value("");
                 }else if(end < start || subject.length() <= end){
-                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Trying to access end of STRING at index " + end + " when only index " + start + "-" + (subject.length()-1) + " is valid.", node.get_lineNumber());
+                    problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Trying to access end of STRING at index " + end + " when only index " + start + "-" + (subject.length()-1) + " is valid.", node.get_lineNumber());
                     result.set_value("");
                 }else{
                     result.set_value(subject.substring(start, end+1));
@@ -498,31 +498,31 @@ public class Interpreter implements INodeVisitor {
                 }
             }
             default -> {
-                problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unsupported method invocation on STRING: " + methodName, node.get_lineNumber());
+                problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unsupported method invocation on STRING: " + methodName, node.get_lineNumber());
             }
         }
         return result;
     }
 
     public void visit(ReturnNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered return outside of returnable structure", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered return outside of returnable structure", node.get_lineNumber());
     }
     public BaseNode visitStoppable(ReturnNode node) {
         return node;
     }
 
     public void visit(FormalParamNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected formal parameter: " + node.get_id(), node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected formal parameter: " + node.get_id(), node.get_lineNumber());
     }
     public void visit(StopNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered stop outside of stoppable structure", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered stop outside of stoppable structure", node.get_lineNumber());
     }
     public BaseNode visitStoppable(StopNode node){
         return node;
     }
 
     public void visit(TypeNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
     public Symbol resolve(TypeNode node){
         if(node instanceof BoolTypeNode){
@@ -536,12 +536,12 @@ public class Interpreter implements INodeVisitor {
         }else if(node instanceof IDTypeNode){
             return resolve((IDTypeNode) node);
         }
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unsupported type definition: " + node.get_type(), node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unsupported type definition: " + node.get_type(), node.get_lineNumber());
         return null;
     }
 
     public void visit(BoolTypeNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
     public Symbol resolve(BoolTypeNode node) {
         MctlTypeDescriptor type = wrapArrayType(node, new MctlBooleanDescriptor());
@@ -549,7 +549,7 @@ public class Interpreter implements INodeVisitor {
     }
 
     public void visit(NumTypeNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
     public Symbol resolve(NumTypeNode node) {
         MctlTypeDescriptor type = wrapArrayType(node, new MctlNumberDescriptor());
@@ -557,7 +557,7 @@ public class Interpreter implements INodeVisitor {
     }
 
     public void visit(StringTypeNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
     public Symbol resolve(StringTypeNode node) {
         MctlTypeDescriptor type = wrapArrayType(node, new MctlStringDescriptor());
@@ -565,7 +565,7 @@ public class Interpreter implements INodeVisitor {
     }
 
     public void visit(NothingTypeNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
 
     }
     public Symbol resolve(NothingTypeNode node) {
@@ -574,7 +574,7 @@ public class Interpreter implements INodeVisitor {
     }
 
     public void visit(IDTypeNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected type definition: " + node.get_type(), node.get_lineNumber());
     }
     public Symbol resolve(IDTypeNode node) {
         MctlTypeDescriptor type = wrapArrayType(node, new MctlStructDescriptor(node.get_type()));
@@ -590,7 +590,7 @@ public class Interpreter implements INodeVisitor {
     }
 
     public void visit(ExpNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected expression", node.get_lineNumber());
     }
     public Symbol resolve(ExpNode node){
         if(node instanceof InvokeExpNode) {
@@ -611,20 +611,20 @@ public class Interpreter implements INodeVisitor {
             return resolve((StringExpNode) node);
         }
 
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown expression", node.get_lineNumber());
         return null;
     }
 
     @Override
     public void visit(InvokeExpNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected invocation expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected invocation expression", node.get_lineNumber());
     }
     public Symbol resolve(InvokeExpNode node) {
         return resolve(node.getInvokeNode());
     }
 
     public void visit(UnaryExpNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected unary expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected unary expression", node.get_lineNumber());
     }
     public Symbol resolve(UnaryExpNode node) {
         Symbol result = resolve(node.get_unaryExp()).clone();
@@ -641,14 +641,14 @@ public class Interpreter implements INodeVisitor {
                 result.set_value(initial >= 0 ? -initial : initial);
             }
             default -> {
-                problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown unary expression", node.get_lineNumber());
+                problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown unary expression", node.get_lineNumber());
             }
         }
         return result;
     }
 
     public void visit(TypecastExpNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected typecast expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected typecast expression", node.get_lineNumber());
     }
     public Symbol resolve(TypecastExpNode node) {
         Symbol original = resolve(node.get_expression_node()).clone();
@@ -686,19 +686,19 @@ public class Interpreter implements INodeVisitor {
                     cast.set_value(Double.parseDouble((String) original.get_value()));
                     cast.set_type(new MctlNumberDescriptor());
                 } catch (Exception exception) {
-                    problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Unable to cast STRING \"" + original.get_value() + "\" to NUMBER", node.get_lineNumber());
+                    problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Unable to cast STRING \"" + original.get_value() + "\" to NUMBER", node.get_lineNumber());
                     cast.set_value(null);
                 }
             }
         }else{
-            problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Illegal cast from type " + originalType.get_type_literal() + " to " + castType.get_type_literal(), node.get_lineNumber());
+            problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Illegal cast from type " + originalType.get_type_literal() + " to " + castType.get_type_literal(), node.get_lineNumber());
         }
 
         return cast;
     }
 
     public void visit(BinaryExpNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected binary expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected binary expression", node.get_lineNumber());
     }
     public Symbol resolve(BinaryExpNode node) {
         if(node instanceof MulExpNode){
@@ -714,12 +714,12 @@ public class Interpreter implements INodeVisitor {
         }else if(node instanceof EqualExpNode){
             return resolve((EqualExpNode) node);
         }
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown binary expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown binary expression", node.get_lineNumber());
         return null;
     }
 
     public void visit(MulExpNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected arithmetic expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected arithmetic expression", node.get_lineNumber());
     }
     public Symbol resolve(MulExpNode node) {
         Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0)).clone();
@@ -745,14 +745,14 @@ public class Interpreter implements INodeVisitor {
                 return leftSymbol;
             }
             default -> {
-                problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown arithmetic expression", node.get_lineNumber());
+                problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown arithmetic expression", node.get_lineNumber());
             }
         }
         return null;
     }
 
     public void visit(AddExpNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected arithmetic expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected arithmetic expression", node.get_lineNumber());
     }
     public Symbol resolve(AddExpNode node) {
         Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0)).clone();
@@ -769,14 +769,14 @@ public class Interpreter implements INodeVisitor {
                 return leftSymbol;
             }
             default -> {
-                problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown arithmetic expression", node.get_lineNumber());
+                problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown arithmetic expression", node.get_lineNumber());
             }
         }
         return null;
     }
 
     public void visit(AndExpNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected logical expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected logical expression", node.get_lineNumber());
     }
     public Symbol resolve(AndExpNode node) {
         Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0)).clone();
@@ -788,7 +788,7 @@ public class Interpreter implements INodeVisitor {
     }
 
     public void visit(OrExpNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected logical expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected logical expression", node.get_lineNumber());
     }
     public Symbol resolve(OrExpNode node) {
         Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0)).clone();
@@ -800,7 +800,7 @@ public class Interpreter implements INodeVisitor {
     }
 
     public void visit(CompExpNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected comparison expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected comparison expression", node.get_lineNumber());
     }
     public Symbol resolve(CompExpNode node) {
         Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0)).clone();
@@ -826,14 +826,14 @@ public class Interpreter implements INodeVisitor {
                 return resultSymbol;
             }
             default -> {
-                problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown comparison expression", node.get_lineNumber());
+                problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown comparison expression", node.get_lineNumber());
             }
         }
         return null;
     }
 
     public void visit(EqualExpNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected comparison expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected comparison expression", node.get_lineNumber());
     }
     public Symbol resolve(EqualExpNode node) {
         Symbol leftSymbol = resolve((ExpNode) node.get_children().get(0)).clone();
@@ -850,14 +850,14 @@ public class Interpreter implements INodeVisitor {
                 return resultSymbol;
             }
             default -> {
-                problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown comparison expression", node.get_lineNumber());
+                problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown comparison expression", node.get_lineNumber());
             }
         }
         return null;
     }
 
     public void visit(IDExpNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected variable expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected variable expression", node.get_lineNumber());
     }
     public Symbol resolve(IDExpNode node) {
         if(node instanceof ActualIDExpNode){
@@ -871,7 +871,7 @@ public class Interpreter implements INodeVisitor {
     }
 
     public void visit(ActualIDExpNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected variable expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected variable expression", node.get_lineNumber());
     }
     public Symbol resolve(ActualIDExpNode node) {
         Symbol symbol = symbolTable.searchSymbol(node.get_id());
@@ -882,7 +882,7 @@ public class Interpreter implements INodeVisitor {
     }
 
     public void visit(IDArrayExpNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected variable expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected variable expression", node.get_lineNumber());
     }
     public Symbol resolve(IDArrayExpNode node) {
         Symbol base = resolve(node.get_idNode());
@@ -899,7 +899,7 @@ public class Interpreter implements INodeVisitor {
     }
 
     public void visit(IDStructNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected variable expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected variable expression", node.get_lineNumber());
     }
     public Symbol resolve(IDStructNode node) {
         Symbol base = resolve(node.get_idNode());
@@ -916,14 +916,14 @@ public class Interpreter implements INodeVisitor {
     }
 
     public void visit(BoolExpNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected boolean literal expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected boolean literal expression", node.get_lineNumber());
     }
     public Symbol resolve(BoolExpNode node) {
         return new Symbol(new MctlBooleanDescriptor(), node.get_result());
     }
 
     public void visit(NumExpNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected numerical literal expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected numerical literal expression", node.get_lineNumber());
     }
     public Symbol resolve(NumExpNode node) {
         // The cast to double ensures that all values are floats.
@@ -932,14 +932,14 @@ public class Interpreter implements INodeVisitor {
     }
 
     public void visit(StringExpNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected string literal expression", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unexpected string literal expression", node.get_lineNumber());
     }
     public Symbol resolve(StringExpNode node) {
         return new Symbol(new MctlStringDescriptor(), node.get_result());
     }
 
     public Symbol resolve(BaseNode node) {
-        problemCollection.addProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown node", node.get_lineNumber());
+        problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Encountered unknown node", node.get_lineNumber());
         //System.out.println(node);
         return new Symbol(new MctlNothingDescriptor(), null);
     }
