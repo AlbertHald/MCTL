@@ -19,6 +19,8 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.util.ListIterator;
+
 public class MCTLFormatter {
 
     IGameBridge gameBridge;
@@ -43,8 +45,9 @@ public class MCTLFormatter {
             concreteNode.accept(new PrettyPrintVisitor(stringSink));
 
             // Prints parse errors
-            for (Problem problem : problemCollection.getProblems()) {
-                gameBridge.print(problem.getMessage());
+            ListIterator<Problem> problemIterator = problemCollection.getProblems().listIterator(problemCollection.getProblems().size());
+            while (problemIterator.hasPrevious()) {
+                gameBridge.print(problemIterator.previous().getMessage());
             }
         }
         gameBridge.internal_terminate();

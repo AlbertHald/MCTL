@@ -47,6 +47,11 @@ public class InterpreterTests {
                 {"variable test: STRING;", "STRING"},
                 {"variable test: BOOLEAN;", "BOOLEAN"},
                 {"variable test: NUMBER;", "NUMBER"},
+                {"variable test: NUMBER[];", "NUMBER[]"},
+                {"variable test: NUMBER[][];", "NUMBER[][]"},
+                {"struct STRUCTURE { variable x: NUMBER }; variable test: STRUCTURE;", "STRUCTURE"},
+                {"struct STRUCTURE { variable x: NUMBER }; variable test: STRUCTURE[];", "STRUCTURE[]"},
+                {"struct STRUCTURE { variable x: NUMBER }; variable test: STRUCTURE[][];", "STRUCTURE[][]"},
         };
     }
     @Test(dataProvider = "varDecTestData")
@@ -82,6 +87,8 @@ public class InterpreterTests {
                 {"to test(left: NUMBER, right: NUMBER): NUMBER {}", List.of("left", "right"), List.of("NUMBER", "NUMBER"), "NUMBER"},
                 {"to test(left: NUMBER, right: NUMBER): BOOLEAN {}", List.of("left", "right"), List.of("NUMBER", "NUMBER"), "BOOLEAN"},
                 {"to test(name: STRING, surname: STRING, age: NUMBER, address: STRING, bossman: BOOLEAN): STRING {}", List.of("name", "surname", "age", "address", "bossman"), List.of("STRING", "STRING", "NUMBER", "STRING", "BOOLEAN"), "STRING"},
+                {"to test(input: NUMBER[]): NUMBER[] {}", List.of("input"), List.of("NUMBER"), "NUMBER[]"},
+                {"struct STRUCTURE { variable x: NUMBER }; to test(input: STRUCTURE): STRUCTURE {}", List.of("input"), List.of("STRUCTURE"), "STRUCTURE"},
         };
     }
     @Test(dataProvider = "funcDecTestData")
@@ -119,6 +126,9 @@ public class InterpreterTests {
                 {"variable test: STRING; test = 'test string';", "test string"},
                 {"variable test: STRING; test = ' ';", " "},
                 {"variable test: STRING; test = '';", ""},
+                {"variable test: STRING; test = '\"';", "\""},
+                {"variable test: STRING; test = '1';", "1"},
+                {"variable test: STRING; test = 'true';", "true"},
         };
     }
     @Test(dataProvider = "varAssTestData_string")
@@ -176,8 +186,10 @@ public class InterpreterTests {
                 {"variable test: NUMBER; test = 1;", 1.0},
                 {"variable test: NUMBER; test = 10.5;", 10.5},
                 {"variable test: NUMBER; test = 1.3789;", 1.3789},
-                {"variable test: NUMBER; test = 0;", 0.0},
                 {"variable test: NUMBER; test = 9435;", 9435.0},
+                {"variable test: NUMBER; test = 0;", 0.0},
+                {"variable test: NUMBER; test = -0;", -0.0},
+                {"variable test: NUMBER; test = -8;", -8.0},
                 //TODO: When we have better int handling, ensure that test cases like the following works:
                 //{"variable test: NUMBER; test = 1045390435;", 1045390435},
         };
@@ -317,6 +329,8 @@ public class InterpreterTests {
                 {"variable test: NUMBER; test = 1; test--;", 0.0},
                 {"variable test: NUMBER; test = 5; test--;", 4.0},
                 {"variable test: NUMBER; test = 7; test--; test--;", 5.0},
+                {"variable test: NUMBER; test = -4; test++;", -3.0},
+                {"variable test: NUMBER; test = -5; test--;", -6.0},
                 {"variable test: NUMBER; test = 1 + 1;", 2.0},
                 {"variable test: NUMBER; test = 37 + 46;", 83.0},
                 {"variable test: NUMBER; test = 0 + 0;", 0.0},
@@ -324,6 +338,7 @@ public class InterpreterTests {
                 {"variable test: NUMBER; test = 0 + 1;", 1.0},
                 {"variable test: NUMBER; test = 0.5 + 0.5;", 1.0},
                 {"variable test: NUMBER; test = 0.3 + 1.7;", 2.0},
+                {"variable test: NUMBER; test = -5 + -20;", -25.0},
                 {"variable test: NUMBER; test = 2 - 1;", 1.0},
                 {"variable test: NUMBER; test = 46 - 37;", 9.0},
                 {"variable test: NUMBER; test = 1 - 1;", 0.0},
@@ -331,22 +346,28 @@ public class InterpreterTests {
                 {"variable test: NUMBER; test = 0 - 1;", -1.0},
                 {"variable test: NUMBER; test = 0.5 - 0.5;", 0.0},
                 {"variable test: NUMBER; test = 0.3 - 1.7;", -1.4},
+                {"variable test: NUMBER; test = -8 - -9;", 1.0},
                 {"variable test: NUMBER; test = 2 / 2;", 1.0},
                 {"variable test: NUMBER; test = 0 / 1;", 0.0},
                 {"variable test: NUMBER; test = 1 / 1;", 1.0},
                 {"variable test: NUMBER; test = 48 / 12;", 4.0},
+                {"variable test: NUMBER; test = -50 / -10;", 5.0},
                 {"variable test: NUMBER; test = 1 * 1;", 1.0},
                 {"variable test: NUMBER; test = 34 * 27;", 918.0},
                 {"variable test: NUMBER; test = 1 * 0;", 0.0},
                 {"variable test: NUMBER; test = 0 * 1;", 0.0},
                 {"variable test: NUMBER; test = 0 * 0;", 0.0},
+                {"variable test: NUMBER; test = -5 * -6;", 30.0},
                 {"variable test: NUMBER; test = 4 % 3;", 1.0},
                 {"variable test: NUMBER; test = 4 % 4;", 0.0},
                 {"variable test: NUMBER; test = 4 % 1;", 0.0},
                 {"variable test: NUMBER; test = 0 % 1;", 0.0},
                 {"variable test: NUMBER; test = 0 % 5;", 0.0},
                 {"variable test: NUMBER; test = 34 % 27;", 7.0},
+                {"variable test: NUMBER; test = 34.0 % 27.0;", 7.0},
                 {"variable test: NUMBER; test = 27 % 34;", 27.0},
+                {"variable test: NUMBER; test = -100 % -9;", -1.0},
+                {"variable test: NUMBER; test = -100 % 9;", -1.0},
         };
     }
     @Test(dataProvider = "expTestData_number")
@@ -431,6 +452,8 @@ public class InterpreterTests {
                 {"variable test: BOOLEAN; test = 'string' != 'bossman';", true},
                 {"variable test: BOOLEAN; test = 'bossman' != '';", true},
                 {"variable test: BOOLEAN; test = '' != 'bossman';", true},
+                {"variable test: BOOLEAN; test = 1 == true;", false},
+                {"variable test: BOOLEAN; test = 0 == false;", false},
                 {"variable test: BOOLEAN; test = 5 == 5;", true},
                 {"variable test: BOOLEAN; test = 420 == 420;", true},
                 {"variable test: BOOLEAN; test = 1.378 == 1.378;", true},
@@ -445,6 +468,7 @@ public class InterpreterTests {
                 {"variable test: BOOLEAN; test = 0.0 == 0.0;", true},
                 {"variable test: BOOLEAN; test = 0 == 0.0;", true},
                 {"variable test: BOOLEAN; test = 0.0 == 0;", true},
+                {"variable test: BOOLEAN; test = -0.0 == 0.0;", false},
                 {"variable test: BOOLEAN; test = 5 != 5;", false},
                 {"variable test: BOOLEAN; test = 420 != 420;", false},
                 {"variable test: BOOLEAN; test = 1.378 != 1.378;", false},
@@ -488,6 +512,8 @@ public class InterpreterTests {
                 {"variable test: STRING; test = (STRING) 1;", "1"},
                 {"variable test: STRING; test = (STRING) 0;", "0"},
                 {"variable test: STRING; test = (STRING) 1.345;", "1.345"},
+                {"variable test: STRING; test = (STRING) 1.345;", "1.345"},
+                {"variable test: STRING; test = (STRING) 'ooga booga';", "ooga booga"},
         };
     }
     @Test(dataProvider = "expTestData_string")
@@ -506,6 +532,33 @@ public class InterpreterTests {
         Symbol symbol = symbolTable.searchSymbol("test");
         Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
         Assert.assertEquals(symbol.get_value(), value, "Should set the appropriate value on the symbol");
+
+    }
+
+    @DataProvider
+    public Object[][] expInvalidationTestData() {
+        return new Object[][] {
+                {"variable test: NUMBER; test = 0 / 0;", "======== ERROR_INTERPRETER =======\nCannot divide by 0\n---- line ----\nLine: 1\n"},
+        };
+    }
+    @Test(dataProvider = "expInvalidationTestData")
+    public void exp_invalidation(String code, String errorMessage) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        Assert.assertEquals(problemCollection.getProblems().size(), 1, "Should create exactly 1 error for this issue");
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.assertEquals(problem.getMessage(), errorMessage, "The error should match the expected error");
+        }
+
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol");
+        Assert.assertNull(symbol.get_value(), "Should not initialize the symbol");
 
     }
 
@@ -725,6 +778,7 @@ public class InterpreterTests {
                 {"variable test: NUMBER; test = 'bossman'.length();", 7.0},
                 {"variable test: NUMBER; test = ' '.length();", 1.0},
                 {"variable test: NUMBER; test = ''.length();", 0.0},
+                {"variable test: NUMBER; test = '\"string\"inside\"string\"'.length();", 22.0},
         };
     }
     @Test(dataProvider = "stringLengthTestData")
@@ -750,6 +804,7 @@ public class InterpreterTests {
     public Object[][] stringAddTestData() {
         return new Object[][] {
                 {"variable test: STRING; test = 'test'.add(' string');", "test string"},
+                {"variable test: STRING; test = 'test'; test = test.add(test);", "testtest"},
                 {"variable test: STRING; test = 'boss'.add('man');", "bossman"},
                 {"variable test: STRING; test = 'bb'.add('bb');", "bbbb"},
                 {"variable test: STRING; test = ''.add('k');", "k"},
@@ -758,6 +813,9 @@ public class InterpreterTests {
                 {"variable test: STRING; test = ''.add(' ');", " "},
                 {"variable test: STRING; test = ' '.add(' ');", "  "},
                 {"variable test: STRING; test = ''.add('');", ""},
+                {"variable test: STRING; test = test.add('bossman');", "bossman"},
+                {"variable test: STRING; test = test.add(' ');", " "},
+                {"variable test: STRING; test = test.add('');", ""},
         };
     }
     @Test(dataProvider = "stringAddTestData")
@@ -897,6 +955,14 @@ public class InterpreterTests {
                 {"variable test: NUMBER; variable list: BOOLEAN[]; list[4] = true; test = list.length();", 5.0},
                 {"variable test: NUMBER; variable list: BOOLEAN[]; list[4] = false; test = list.length();", 5.0},
                 {"variable test: NUMBER; variable list: BOOLEAN[]; test = list.length();", 0.0},
+                {"variable test: NUMBER; variable list: BOOLEAN[][]; list[0][8] = true; test = list.length();", 1.0},
+                {"variable test: NUMBER; variable list: BOOLEAN[][]; list[0][8] = true; test = list[0].length();", 9.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 1; test = list.length();", 1.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 1; test = list.length(100);", 1.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 1; test = list.length('yes');", 1.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 1; test = list.length(true);", 1.0},
+                {"variable test: NUMBER; variable list: NUMBER[]; list[0] = 1; test = list.length(false);", 1.0},
+                {"variable test: NUMBER; variable list: STRING[]; list[0] = 'string'; test = list.length();", 1.0},
                 {"variable test: NUMBER; variable list: STRING[]; list[0] = 'man'; test = list.length();", 1.0},
                 {"variable test: NUMBER; variable list: STRING[]; list[0] = ''; test = list.length();", 1.0},
                 {"variable test: NUMBER; variable list: STRING[]; list[4] = 'man'; test = list.length();", 5.0},
@@ -907,6 +973,7 @@ public class InterpreterTests {
                 {"variable test: NUMBER; variable list: NUMBER[]; list[4] = 6; test = list.length();", 5.0},
                 {"variable test: NUMBER; variable list: NUMBER[]; list[4] = 0; test = list.length();", 5.0},
                 {"variable test: NUMBER; variable list: NUMBER[]; test = list.length();", 0.0},
+                {"variable test: NUMBER; struct STRUCTURE { variable x: NUMBER }; variable list: STRUCTURE[]; list[0].x = 1; test = list.length();", 1.0},
         };
     }
     @Test(dataProvider = "listLengthTestData")
@@ -930,19 +997,20 @@ public class InterpreterTests {
     }
 
     @DataProvider
-    public Object[][] listAddTestData() {
+    public Object[][] listAddTestData_bool() {
         return new Object[][] {
-                // TODO: Expand these tests with more cases and more types
+                // TODO: Expand these tests with more cases
                 {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; test = list.add(true);", List.of(true)},
                 {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; test = list.add(false);", List.of(false)},
                 {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = true; test = list.add(true);", List.of(true, true)},
                 {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = false; test = list.add(false);", List.of(false, false)},
                 {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = false; list[1] = true; list[2] = true; test = list.add(false);", List.of(false, true, true, false)},
                 {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = false; list[1] = false; list[2] = false; test = list.add(true);", List.of(false, false, false, true)},
+                {"variable test: BOOLEAN[]; test = test.add(true);", List.of(true)},
         };
     }
-    @Test(dataProvider = "listAddTestData")
-    public void listAdd_returnsValue(String code, List<Boolean> indexes) {
+    @Test(dataProvider = "listAddTestData_bool")
+    public void listAdd_returnsValue_bool(String code, List<Boolean> indexes) {
         MctlNode concreteNode = parseNode(code);
 
         ProblemCollection problemCollection = new ProblemCollection();
@@ -968,17 +1036,158 @@ public class InterpreterTests {
     }
 
     @DataProvider
-    public Object[][] listRemoveTestData() {
+    public Object[][] listAddTestData_string() {
         return new Object[][] {
-                // TODO: Expand these tests with more cases and more types
+                // TODO: Expand these tests with more cases
+                {"variable test: STRING[]; variable list: STRING[]; test = list.add('str');", List.of("str")},
+                {"variable test: STRING[]; variable list: STRING[]; list[0] = 'str1'; test = list.add('str2');", List.of("str1", "str2")},
+                {"variable test: STRING[]; variable list: STRING[]; list[0] = 'str1'; list[1] = 'str2'; list[2] = 'str3'; test = list.add('str4');", List.of("str1", "str2", "str3", "str4")},
+                {"variable test: STRING[]; test = test.add('str');", List.of("str")},
+        };
+    }
+    @Test(dataProvider = "listAddTestData_string")
+    public void listAdd_returnsValue_string(String code, List<String> indexes) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+
+        Assert.assertEquals(symbol.get_listLength(), ((Number) indexes.size()).doubleValue(), "The list should be the correct length");
+
+        for (int i = 0; i < indexes.size(); i++) {
+            Symbol match = symbol.get_index(i);
+            Assert.assertNotNull(match, "The symbol should contain a symbol with a value at index " + i);
+            Assert.assertEquals(match.get_value(), indexes.get(i), "The index symbol should resolve to the correct value");
+        }
+
+    }
+
+    @DataProvider
+    public Object[][] listAddTestData_number() {
+        return new Object[][] {
+                // TODO: Expand these tests with more cases
+                {"variable test: NUMBER[]; variable list: NUMBER[]; test = list.add(1);", List.of(1.0)},
+                {"variable test: NUMBER[]; variable list: NUMBER[]; list[0] = 1; test = list.add(2);", List.of(1.0, 2.0)},
+                {"variable test: NUMBER[]; variable list: NUMBER[]; list[0] = 1; list[1] = 2; list[2] = 3; test = list.add(4);", List.of(1.0, 2.0, 3.0, 4.0)},
+                {"variable test: NUMBER[]; test = test.add(1);", List.of(1.0)},
+                {"variable test: NUMBER[]; test = test.add(1.0);", List.of(1.0)},
+        };
+    }
+    @Test(dataProvider = "listAddTestData_number")
+    public void listAdd_returnsValue_number(String code, List<Number> indexes) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+
+        Assert.assertEquals(symbol.get_listLength(), ((Number) indexes.size()).doubleValue(), "The list should be the correct length");
+
+        for (int i = 0; i < indexes.size(); i++) {
+            Symbol match = symbol.get_index(i);
+            Assert.assertNotNull(match, "The symbol should contain a symbol with a value at index " + i);
+            Assert.assertEquals(match.get_value(), indexes.get(i), "The index symbol should resolve to the correct value");
+        }
+
+    }
+
+    @DataProvider
+    public Object[][] listRemoveTestData_bool() {
+        return new Object[][] {
+                // TODO: Expand these tests with more cases
                 {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = false; list[1] = true; list[2] = true; test = list.remove();", List.of(false, true)},
                 {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = false; list[1] = false; list[2] = false; test = list.remove();", List.of(false, false)},
                 {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = true; test = list.remove();", List.of()},
                 {"variable test: BOOLEAN[]; variable list: BOOLEAN[]; list[0] = false; test = list.remove();", List.of()},
         };
     }
-    @Test(dataProvider = "listRemoveTestData")
-    public void listRemove_returnsValue(String code, List<Boolean> indexes) {
+    @Test(dataProvider = "listRemoveTestData_bool")
+    public void listRemove_returnsValue_bool(String code, List<Boolean> indexes) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+
+        Assert.assertEquals(symbol.get_listLength(), ((Number) indexes.size()).doubleValue(), "The list should be the correct length");
+
+        for(int i = 0; i < indexes.size(); i++){
+            Symbol match = symbol.get_index(i);
+            Assert.assertNotNull(match, "The symbol should contain a symbol with a value at index " + i);
+            Assert.assertEquals(match.get_value(), indexes.get(i), "The index symbol should resolve to the correct value");
+        }
+
+    }
+
+    @DataProvider
+    public Object[][] listRemoveTestData_string() {
+        return new Object[][] {
+                // TODO: Expand these tests with more cases
+                {"variable test: STRING[]; variable list: STRING[]; list[0] = 'str1'; list[1] = 'str2'; list[2] = 'str3'; test = list.remove();", List.of("str1", "str2")},
+                {"variable test: STRING[]; variable list: STRING[]; list[0] = 'str1'; test = list.remove();", List.of()},
+        };
+    }
+    @Test(dataProvider = "listRemoveTestData_string")
+    public void listRemove_returnsValue_string(String code, List<String> indexes) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+
+        Assert.assertEquals(symbol.get_listLength(), ((Number) indexes.size()).doubleValue(), "The list should be the correct length");
+
+        for(int i = 0; i < indexes.size(); i++){
+            Symbol match = symbol.get_index(i);
+            Assert.assertNotNull(match, "The symbol should contain a symbol with a value at index " + i);
+            Assert.assertEquals(match.get_value(), indexes.get(i), "The index symbol should resolve to the correct value");
+        }
+
+    }
+
+    @DataProvider
+    public Object[][] listRemoveTestData_number() {
+        return new Object[][] {
+                // TODO: Expand these tests with more cases
+                {"variable test: NUMBER[]; variable list: NUMBER[]; list[0] = 1; list[1] = 2; list[2] = 3; test = list.remove();", List.of(1.0, 2.0)},
+                {"variable test: NUMBER[]; variable list: NUMBER[]; list[0] = 1; test = list.remove();", List.of()},
+        };
+    }
+    @Test(dataProvider = "listRemoveTestData_number")
+    public void listRemove_returnsValue_number(String code, List<Number> indexes) {
         MctlNode concreteNode = parseNode(code);
 
         ProblemCollection problemCollection = new ProblemCollection();
@@ -1006,17 +1215,93 @@ public class InterpreterTests {
     @DataProvider
     public Object[][] listSublistTestData_bool() {
         return new Object[][] {
-                // TODO: Expand these tests with more cases and more types
-                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = true; l[2] = true; test = l.sublist(0, 0);", List.of(true)},
-                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = true; l[2] = true; test = l.sublist(1, 1);", List.of(true)},
-                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = true; l[2] = true; test = l.sublist(2, 2);", List.of(true)},
-                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = true; l[2] = true; test = l.sublist(0, 1);", List.of(true, true)},
-                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = true; l[2] = true; test = l.sublist(1, 2);", List.of(true, true)},
-                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = true; l[2] = true; test = l.sublist(0, 2);", List.of(true, true, true)},
+                // TODO: Expand these tests with more cases
+                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = false; l[2] = true; test = l.sublist(0, 0);", List.of(true)},
+                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = false; l[2] = true; test = l.sublist(1, 1);", List.of(false)},
+                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = false; l[2] = true; test = l.sublist(2, 2);", List.of(true)},
+                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = false; l[2] = true; test = l.sublist(0, 1);", List.of(true, false)},
+                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = false; l[2] = true; test = l.sublist(1, 2);", List.of(false, true)},
+                {"variable test: BOOLEAN[]; variable l: BOOLEAN[]; l[0] = true; l[1] = false; l[2] = true; test = l.sublist(0, 2);", List.of(true, false, true)},
         };
     }
     @Test(dataProvider = "listSublistTestData_bool")
-    public void listSublist_returnsValue_bool(String code, List<Number> indexes) {
+    public void listSublist_returnsValue_bool(String code, List<Boolean> indexes) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+
+        Assert.assertEquals(symbol.get_listLength(), ((Number) indexes.size()).doubleValue(), "There should be exactly " + indexes.size() + " matches");
+
+        for(int i = 0; i < indexes.size(); i++){
+            Symbol match = symbol.get_index(i);
+            Assert.assertNotNull(match, "The symbol should contain a symbol with a match value at index " + i);
+            Assert.assertEquals(match.get_value(), indexes.get(i), "The match symbol should resolve to the correct value");
+        }
+
+    }
+
+    @DataProvider
+    public Object[][] listSublistTestData_number() {
+        return new Object[][] {
+                // TODO: Expand these tests with more cases
+                {"variable test: NUMBER[]; variable l: NUMBER[]; l[0] = 1; l[1] = 2; l[2] = 3; test = l.sublist(0, 0);", List.of(1.0)},
+                {"variable test: NUMBER[]; variable l: NUMBER[]; l[0] = 1; l[1] = 2; l[2] = 3; test = l.sublist(1, 1);", List.of(2.0)},
+                {"variable test: NUMBER[]; variable l: NUMBER[]; l[0] = 1; l[1] = 2; l[2] = 3; test = l.sublist(2, 2);", List.of(3.0)},
+                {"variable test: NUMBER[]; variable l: NUMBER[]; l[0] = 1; l[1] = 2; l[2] = 3; test = l.sublist(0, 1);", List.of(1.0, 2.0)},
+                {"variable test: NUMBER[]; variable l: NUMBER[]; l[0] = 1; l[1] = 2; l[2] = 3; test = l.sublist(1, 2);", List.of(2.0, 3.0)},
+                {"variable test: NUMBER[]; variable l: NUMBER[]; l[0] = 1; l[1] = 2; l[2] = 3; test = l.sublist(0, 2);", List.of(1.0, 2.0, 3.0)},
+        };
+    }
+    @Test(dataProvider = "listSublistTestData_number")
+    public void listSublist_returnsValue_number(String code, List<Number> indexes) {
+        MctlNode concreteNode = parseNode(code);
+
+        ProblemCollection problemCollection = new ProblemCollection();
+        SymbolTable symbolTable = new SymbolTable();
+        IGameBridge bridgeMock = Mockito.mock(IGameBridge.class);
+
+        concreteNode.accept(new Interpreter(problemCollection, symbolTable, bridgeMock));
+
+        for (Problem problem : problemCollection.getProblems()) {
+            Assert.fail("Should not fail with message: " + problem.getMessage());
+        }
+        Symbol symbol = symbolTable.searchSymbol("test");
+        Assert.assertNotNull(symbol, "Should create a symbol and add it to the symbol table");
+
+        Assert.assertEquals(symbol.get_listLength(), ((Number) indexes.size()).doubleValue(), "There should be exactly " + indexes.size() + " matches");
+
+        for(int i = 0; i < indexes.size(); i++){
+            Symbol match = symbol.get_index(i);
+            Assert.assertNotNull(match, "The symbol should contain a symbol with a match value at index " + i);
+            Assert.assertEquals(match.get_value(), indexes.get(i), "The match symbol should resolve to the correct value");
+        }
+
+    }
+
+    @DataProvider
+    public Object[][] listSublistTestData_string() {
+        return new Object[][] {
+                // TODO: Expand these tests with more cases
+                {"variable test: STRING[]; variable l: STRING[]; l[0] = 'str1'; l[1] = 'str2'; l[2] = 'str3'; test = l.sublist(0, 0);", List.of("str1")},
+                {"variable test: STRING[]; variable l: STRING[]; l[0] = 'str1'; l[1] = 'str2'; l[2] = 'str3'; test = l.sublist(1, 1);", List.of("str2")},
+                {"variable test: STRING[]; variable l: STRING[]; l[0] = 'str1'; l[1] = 'str2'; l[2] = 'str3'; test = l.sublist(2, 2);", List.of("str3")},
+                {"variable test: STRING[]; variable l: STRING[]; l[0] = 'str1'; l[1] = 'str2'; l[2] = 'str3'; test = l.sublist(0, 1);", List.of("str1", "str2")},
+                {"variable test: STRING[]; variable l: STRING[]; l[0] = 'str1'; l[1] = 'str2'; l[2] = 'str3'; test = l.sublist(1, 2);", List.of("str2", "str3")},
+                {"variable test: STRING[]; variable l: STRING[]; l[0] = 'str1'; l[1] = 'str2'; l[2] = 'str3'; test = l.sublist(0, 2);", List.of("str1", "str2", "str3")},
+        };
+    }
+    @Test(dataProvider = "listSublistTestData_string")
+    public void listSublist_returnsValue_string(String code, List<String> indexes) {
         MctlNode concreteNode = parseNode(code);
 
         ProblemCollection problemCollection = new ProblemCollection();
