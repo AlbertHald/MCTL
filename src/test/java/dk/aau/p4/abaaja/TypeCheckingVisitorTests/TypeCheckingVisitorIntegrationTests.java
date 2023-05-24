@@ -588,7 +588,13 @@ public class TypeCheckingVisitorIntegrationTests {
                 {"struct STRUCTURE { variable x: NUMBER }; variable var: STRUCTURE; variable test: NUMBER; var.x = 1; test = (NUMBER) var;", 4}, // STRUCT TO NUMBER
                 {"struct STRUCTURE { variable x: NUMBER }; variable var: STRUCTURE; variable test: STRING; var.x = 1; test = (STRING) var;", 4}, // STRUCT TO STRING
                 {"struct STRUCTURE { variable x: NUMBER }; variable var: STRUCTURE; variable test: BOOLEAN; var.x = 1; test = (BOOLEAN) var;", 4}, // STRUCT TO BOOLEAN
-                {"struct STRUCTURE { variable x: NUMBER }; variable var: STRUCTURE; variable test: STRUCTURE; var.x = 1; test = (STRUCTURE) var;", 4} // STRUCT TO STRUCT
+                {"struct STRUCTURE { variable x: NUMBER }; variable var: STRUCTURE; variable test: STRUCTURE; var.x = 1; test = (STRUCTURE) var;", 4}, // STRUCT TO STRUCT
+                {"variable test: NUMBER[]; variable var: NUMBER[]; var = (NUMBER[]) test;", 2}, // NUMBER[] TO NUMBER[]
+                {"variable test: NUMBER[]; variable var: STRING; var = (STRING) test;", 2}, // NUMBER[] TO STRING
+                {"variable test: NUMBER[]; variable var: NUMBER; var = (NUMBER) test;", 2}, // NUMBER[] TO NUMBER
+                {"variable test: NUMBER[]; variable var: BOOLEAN; var = (BOOLEAN) test;", 2}, // NUMBER[] TO BOOLEAN
+                {"variable test: NUMBER[]; variable var: STRING; var = (STRING) test;", 2}, // NUMBER[] TO STRING
+
         };
     }
 
