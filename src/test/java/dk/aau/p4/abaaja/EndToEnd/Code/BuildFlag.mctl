@@ -1,0 +1,183 @@
+--CODE--
+repeat(15){
+  moveUp();
+  placeUnder("minecraft:white_wool");
+}
+turnRight();
+moveForward();
+repeat(4){
+  moveDown();
+}
+MoveAndPlace(2, "minecraft:red_wool");
+MoveAndPlace(1, "minecraft:white_wool");
+MoveAndPlace(3, "minecraft:red_wool");
+moveUp();
+MoveBack(6);
+MoveAndPlace(2, "minecraft:red_wool");
+MoveAndPlace(1, "minecraft:white_wool");
+MoveAndPlace(3, "minecraft:red_wool");
+moveUp();
+MoveBack(6);
+MoveAndPlace(6, "minecraft:white_wool");
+moveUp();
+MoveBack(6);
+MoveAndPlace(2, "minecraft:red_wool");
+MoveAndPlace(1, "minecraft:white_wool");
+MoveAndPlace(3, "minecraft:red_wool");
+moveUp();
+MoveBack(6);
+MoveAndPlace(2, "minecraft:red_wool");
+MoveAndPlace(1, "minecraft:white_wool");
+MoveAndPlace(3, "minecraft:red_wool");
+moveUp();
+MoveBack(7);
+placeUnder("minecraft:gold_block");
+
+
+to MoveAndPlace (amount: NUMBER, color: STRING): NOTHING {
+  repeat(amount){
+    placeUnder(color);
+    moveForward();
+  }
+}
+
+to MoveBack (amount: NUMBER): NOTHING {
+  repeat(amount){
+    moveBackward();
+  }
+}
+
+--OUTPUT--
+Move 1 up [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 up [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 up [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 up [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 up [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 up [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 up [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 up [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 up [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 up [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 up [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 up [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 up [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 up [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 up [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Turn 90 deg right [->NOTHING]
+Move 1 forward [->true]
+Move 1 down [->true]
+Move 1 down [->true]
+Move 1 down [->true]
+Move 1 down [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Move 1 up [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Move 1 up [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 forward [->true]
+Move 1 up [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Move 1 up [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:white_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Place block under: minecraft:red_wool [->NOTHING]
+Move 1 forward [->true]
+Move 1 up [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Move 1 back [->true]
+Place block under: minecraft:gold_block [->NOTHING]

@@ -1,0 +1,47 @@
+repeat(15){
+  moveUp();
+  placeUnder("minecraft:white_wool");
+}
+turnRight();
+moveForward();
+repeat(4){
+  moveDown();
+}
+MoveAndPlace(2, "minecraft:red_wool");
+MoveAndPlace(1, "minecraft:white_wool");
+MoveAndPlace(3, "minecraft:red_wool");
+moveUp();
+MoveBack(6);
+MoveAndPlace(2, "minecraft:red_wool");
+MoveAndPlace(1, "minecraft:white_wool");
+MoveAndPlace(3, "minecraft:red_wool");
+moveUp();
+MoveBack(6);
+MoveAndPlace(6, "minecraft:white_wool");
+moveUp();
+MoveBack(6);
+MoveAndPlace(2, "minecraft:red_wool");
+MoveAndPlace(1, "minecraft:white_wool");
+MoveAndPlace(3, "minecraft:red_wool");
+moveUp();
+MoveBack(6);
+MoveAndPlace(2, "minecraft:red_wool");
+MoveAndPlace(1, "minecraft:white_wool");
+MoveAndPlace(3, "minecraft:red_wool");
+moveUp();
+MoveBack(7);
+placeUnder("minecraft:gold_block");
+
+
+to MoveAndPlace (amount: NUMBER, color: STRING): NOTHING {
+  repeat(amount){
+    placeUnder(color);
+    moveForward();
+  }
+}
+
+to MoveBack (amount: NUMBER): NOTHING {
+  repeat(amount){
+    moveBackward();
+  }
+}
