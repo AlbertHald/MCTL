@@ -17,7 +17,7 @@ public class Problem {
     private String message;
     private int line;
     private int charStopIndex;
-    private int getCharStopIndex;
+    private int charStartIndex;
 
     /*
      * Getter / Setters for the private variables
@@ -34,6 +34,6 @@ public class Problem {
     public int getCharStopIndex() { return charStopIndex; }
     public void setCharStopIndex(int charStopIndex) { this.charStopIndex = charStopIndex; }
 
-    public int getGetCharStopIndex() { return getCharStopIndex; }
-    public void setGetCharStopIndex(int getCharStopIndex) { this.getCharStopIndex = getCharStopIndex; }
+    public int getCharStartIndex() { return charStartIndex; }
+    public void setCharStartIndex(int charStartIndex) { this.charStartIndex = charStartIndex; }
 }

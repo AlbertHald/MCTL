@@ -8,6 +8,7 @@ public class ProblemCollection {
     public static final String errorDelim = "---- error ----";
     public static final String lineDelim = "---- line ----";
 
+    public boolean ignoreProblems = false;
 
     /*
      * Get / Set methods for the problem collection variables
@@ -29,18 +30,24 @@ public class ProblemCollection {
      * Add method for adding problems to the collection
      */
     public void addProblem(Problem problem) {
+        if (ignoreProblems) return;
+
         problems.add(problem);
 
         if (!hasErrors && problem.getProblemType().getProblemString().startsWith("E")) hasErrors = true;
     }
 
     public void addProblem(ProblemType type, String message, int line) {
+        if (ignoreProblems) return;
+
         problems.add(new Problem(type, message, line, 0, 0));
 
         if (!hasErrors && type.getProblemString().startsWith("E")) hasErrors = true;
     }
 
     public void addProblem(ProblemType type, String message, int line, int charStartIndex, int charStopIndex) {
+        if (ignoreProblems) return;
+
         problems.add(new Problem(type, message, line, charStartIndex, charStopIndex));
 
         if (!hasErrors && type.getProblemString().startsWith("E")) hasErrors = true;
@@ -53,6 +60,8 @@ public class ProblemCollection {
     public static final String startDelimChar = "=";
 
     public void addFormattedProblem(ProblemType type, String message, int line) {
+        if (ignoreProblems) return;
+
         // Format message string
         String problemMessage = String.format("%s\n%s\n%s\nLine: %d\n", createProblemTitle(type.toString(), totalCharacters), message, lineDelim, line);
 

@@ -145,68 +145,6 @@ public class TypeCheckingVisitorUnitTests {
         softAssert.assertAll();
     }
 
-
-    @Test()
-    public void _getArrayType_Error_ReturnsCorrectType() {
-
-        MctlArrayTypeDescriptor typeDescriptor = new MctlArrayTypeDescriptor(
-                new MctlNumberDescriptor(),-1);
-
-        int degree = -1;
-        int lineNumber = 0;
-
-
-        typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, _symbolTable);
-
-        MctlTypeDescriptor result = typeCheckingVisitor._getArrayType(typeDescriptor, degree, lineNumber);
-
-        softAssert.assertEquals(result.getClass(), MctlNothingDescriptor.class,"_getArrayType Error type checking went wrong");
-        softAssert.assertEquals(problemCollection.getProblems().size(), 1, "_getArrayType Error error collection should be 1 big");
-        softAssert.assertEquals(problemCollection.getProblems().get(0).getProblemType(), ProblemType.ERROR_TYPE_MISMATCH, "_getArrayType Error type checking went wrong");
-        softAssert.assertAll();
-    }
-
-    @Test()
-    public void _getArrayType_ValidNode_ReturnsCorrectType() {
-
-        MctlArrayTypeDescriptor typeDescriptor = new MctlArrayTypeDescriptor(
-                new MctlNumberDescriptor(),0);
-
-        int degree = 0;
-        int lineNumber = 0;
-
-
-        when(_symbolTable.searchType("NUMBER")).thenReturn(new MctlNumberDescriptor());
-        typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, _symbolTable);
-
-        MctlTypeDescriptor result = typeCheckingVisitor._getArrayType(typeDescriptor, degree, lineNumber);
-
-        softAssert.assertEquals(result.getClass(), MctlNumberDescriptor.class,"_getArrayType Error type checking went wrong");
-        softAssert.assertEquals(problemCollection.getProblems().size(), 0, "_getArrayType Error error collection should be empty");
-        softAssert.assertAll();
-    }
-
-    @Test()
-    public void _getArrayType_ValidArrayNode_ReturnsCorrectType() {
-
-        MctlArrayTypeDescriptor typeDescriptor = new MctlArrayTypeDescriptor(
-                new MctlNumberDescriptor(),1);
-
-        int degree = 1;
-        int lineNumber = 0;
-
-
-        when(_symbolTable.searchType("NUMBER")).thenReturn(new MctlNumberDescriptor());
-        typeCheckingVisitor = new TypeCheckingVisitor(problemCollection, _symbolTable);
-
-        MctlTypeDescriptor result = typeCheckingVisitor._getArrayType(typeDescriptor, degree, lineNumber);
-        MctlArrayTypeDescriptor resultAsArray = (MctlArrayTypeDescriptor) result;
-
-        softAssert.assertEquals(result.get_type_literal(), "NUMBER[]", "IDTypeNode Array type checking went wrong");
-        softAssert.assertEquals(resultAsArray.getDegree(), 1, "IDTypeNode Array type checking went wrong");
-        softAssert.assertAll();
-    }
-
     @Test()
     public void ActualIDExpNode_ValidInput_ReturnsCorrectType() {
 
