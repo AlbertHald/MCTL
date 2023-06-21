@@ -167,157 +167,6 @@ public class TypeCheckingVisitor {
         return typeDescriptor;
     }
 
-    public MctlTypeDescriptor visit(IDArrayExpNode node) {
-        Symbol symbol = _symbolTable.searchSymbol(node.get_contained_id());
-        MctlTypeDescriptor accessorArrayTypeDescriptor = new MctlNothingDescriptor();
-
-        if (symbol == null || !symbol.get_isInstantiated()) {
-            return accessorArrayTypeDescriptor;
-        }
-
-        // Counting array nodes
-        int arrayDegree = 0;
-        IDExpNode tempIdNode = node;
-        while (tempIdNode instanceof IDArrayExpNode) {
-            arrayDegree++;
-            tempIdNode = tempIdNode.get_idNode();
-        }
-
-        if (symbol.get_type() instanceof MctlArrayTypeDescriptor arrayTypeDescriptor) {
-            int accessorDegree = arrayTypeDescriptor.getDegree() - arrayDegree;
-
-            // The contained type is a struct type
-            if (arrayTypeDescriptor.getType() instanceof MctlStructDescriptor && tempIdNode instanceof  IDStructNode idStructNode) {
-                // Struct Type
-                MctlTypeDescriptor descriptor = getStructDerivedType(arrayTypeDescriptor, idStructNode);
-
-                if (descriptor instanceof MctlArrayTypeDescriptor arrayDescriptor) {
-                    accessorDegree = arrayDescriptor.getDegree() - arrayDegree;
-
-                    // The type referred to is a primitive type
-                    accessorArrayTypeDescriptor = _getArrayType(arrayDescriptor, accessorDegree, node.get_lineNumber());
-                }
-            }
-            else if (arrayTypeDescriptor.getType() instanceof MctlStructDescriptor && tempIdNode instanceof  ActualIDExpNode actualIDExpNode) {
-                accessorDegree = arrayTypeDescriptor.getDegree() - arrayDegree;
-
-                // The type referred to is a primitive type
-                accessorArrayTypeDescriptor = _getArrayType(arrayTypeDescriptor, accessorDegree, node.get_lineNumber());
-            }
-            else {
-                // The type referred to is a primitive type
-                accessorArrayTypeDescriptor = _getArrayType(arrayTypeDescriptor, accessorDegree, node.get_lineNumber());
-            }
-        }
-        else if (symbol.get_type() instanceof MctlStructDescriptor structTypeDescriptor) {
-            MctlTypeDescriptor derivedType = getStructDerivedType(structTypeDescriptor, tempIdNode);
-
-            if (arrayDegree > 0 && !(derivedType instanceof MctlArrayTypeDescriptor)) {
-                _problemCollection.addFormattedProblem(
-                        ProblemType.ERROR_TYPE_MISMATCH,
-                        "The type \"" + derivedType.get_type_literal() + "\" cannot be accessed in array degree: " + arrayDegree,
-                        node.get_lineNumber()
-                );
-                return new MctlNothingDescriptor();
-            } else if (arrayDegree > 0 && derivedType instanceof MctlArrayTypeDescriptor derivedArrayType) {
-                // Calculating the accessory array degree
-                int accessorDegree = derivedArrayType.getDegree() - arrayDegree;
-
-                // The type referred to is not an array
-                accessorArrayTypeDescriptor = _getArrayType(derivedArrayType, accessorDegree, node.get_lineNumber());
-            }
-            else {
-                accessorArrayTypeDescriptor = derivedType;
-            }
-        }
-        else {
-            _problemCollection.addFormattedProblem(
-                    ProblemType.ERROR_TYPE_MISMATCH,
-                    "The variable \"" + symbol.get_name() + "\" is not of the correct type",
-                    node.get_lineNumber()
-            );
-        }
-
-        return accessorArrayTypeDescriptor;
-    }
-
-    public MctlTypeDescriptor _getArrayType(MctlArrayTypeDescriptor descriptor, int degree, int lineNumber) {
-        MctlTypeDescriptor accessorType = new MctlNothingDescriptor();
-
-        // The type referred to is not an array
-        if (degree == 0) {
-            accessorType = descriptor.getType();
-        } else if (degree < 0) {
-            _problemCollection.addFormattedProblem(
-                    ProblemType.ERROR_TYPE_MISMATCH,
-                    "It is not possible to access the degree \"" + degree + "\" on the type \"" + descriptor.get_type_literal() + "\"",
-                    lineNumber
-            );
-        } else {
-            accessorType = new MctlArrayTypeDescriptor(descriptor.getType(), degree);
-        }
-
-        return accessorType;
-    }
-
-    private MctlTypeDescriptor getStructDerivedType(MctlTypeDescriptor parsedStructDescriptor, IDExpNode idNode) {
-        IDExpNode idExpNode = idNode;
-        MctlTypeDescriptor accessorType = parsedStructDescriptor;
-
-        List<IDExpNode> nodeList = new ArrayList<>();
-
-        // Add all IdExpNodes to a list in bottom up order
-        while(!(idExpNode instanceof ActualIDExpNode)) {
-            nodeList.add(0, idExpNode);
-            idExpNode = idExpNode.get_idNode();
-        }
-
-        // Iterate over each element in the IdExpNodeElement
-        for (IDExpNode idExp : nodeList) {
-            if (idExp instanceof IDStructNode tempIDStructNode) {
-                if (accessorType instanceof MctlStructDescriptor accessorDescriptor) {
-                    accessorType = accessorDescriptor.get_structsymbol(tempIDStructNode.get_accessor().get_contained_id());
-
-                    // Trying to access a field that is not declared on the specific struct type
-                    if (accessorType == null) {
-                        _problemCollection.addFormattedProblem(
-                                ProblemType.ERROR_UNDEFINED_IDENTIFIER,
-                                "The type \"" + accessorDescriptor.get_type_literal() + "\" does not contain a field \"" + tempIDStructNode.get_accessor().get_contained_id() + "\"",
-                                tempIDStructNode.get_lineNumber()
-                        );
-                        return new MctlNothingDescriptor();
-                    }
-                } else {
-                    // Happens if user is trying to access a struct on a type that is not a struct and so on
-                    _problemCollection.addFormattedProblem(
-                            ProblemType.ERROR_TYPE_MISMATCH,
-                            "The type \"" + accessorType.get_type_literal() + "\" cannot be accessed as a struct",
-                            idExp.get_lineNumber()
-                    );
-
-                    return new MctlNothingDescriptor();
-                }
-            } else if (idExp instanceof IDArrayExpNode) {
-                if (accessorType instanceof MctlArrayTypeDescriptor accessorDescriptor) {
-                    int accessorDegree = accessorDescriptor.getDegree() - 1;
-
-                    accessorType = _getArrayType(accessorDescriptor, accessorDegree, idExp.get_lineNumber());
-                } else {
-                    // Happens if user is trying to access an array type on a type that is not an array
-                    _problemCollection.addFormattedProblem(
-                            ProblemType.ERROR_TYPE_MISMATCH,
-                            "The type \"" + accessorType.get_type_literal() + "\" cannot be accessed using []",
-                            idExp.get_lineNumber()
-                    );
-
-                    return new MctlNothingDescriptor();
-                }
-            }
-        }
-
-        return accessorType;
-    }
-
     public MctlTypeDescriptor visit(ActualIDExpNode node) {
         Symbol symbol = _symbolTable.searchSymbol(node.get_id());
 
@@ -329,34 +178,66 @@ public class TypeCheckingVisitor {
     }
 
     public MctlTypeDescriptor visit(IDStructNode node) {
-        Symbol symbol = _symbolTable.searchSymbol(node.get_contained_id());
-        MctlTypeDescriptor type;
+        MctlTypeDescriptor type = visit(node.get_idNode());
 
-        // Return if the variable has not yet been instantiated
-        if (symbol == null || !symbol.get_isInstantiated()) {
-            return new MctlNothingDescriptor();
+        if (type.get_type_literal().equals("NOTHING")) {
+            return type;
         }
 
-        type = symbol.get_type();
+        MctlTypeDescriptor returnType = _symbolTable.searchType("NOTHING");
 
-        // Check if the root type is a Struct or an Array
-        if (symbol.get_type() instanceof MctlArrayTypeDescriptor arrayTypeDescriptor &&
-                arrayTypeDescriptor.getType() instanceof MctlStructDescriptor) {
-            // The contained type is a struct type
-            type = getStructDerivedType(arrayTypeDescriptor, node);
-        }
-        else if (type instanceof MctlStructDescriptor structTypeDescriptor) {
-            type = getStructDerivedType(structTypeDescriptor, node);
+        if (type instanceof MctlStructDescriptor structType) {
+            returnType = structType.get_structsymbol(node.get_accessor().get_id());
+
+            if (returnType == null) {
+                _problemCollection.addFormattedProblem(
+                        ProblemType.ERROR_TYPE_MISMATCH,
+                        "The type \"" + type.get_type_literal() + "\" cannot be accesses as a struct using the accessor \"" + node.get_accessor().get_id() + "\"",
+                        node.get_lineNumber()
+                );
+
+                returnType = _symbolTable.searchType("NOTHING");
+            }
         }
         else {
+            // Add problem
             _problemCollection.addFormattedProblem(
                     ProblemType.ERROR_TYPE_MISMATCH,
-                    "The variable \"" + symbol.get_name() + "\" is not of the correct type",
+                    "The type \"" + type.get_type_literal() + "\" cannot be accesses as a struct",
                     node.get_lineNumber()
             );
         }
 
-        return type;
+        return returnType;
+    }
+
+    public MctlTypeDescriptor visit(IDArrayExpNode node) {
+        MctlTypeDescriptor type = visit(node.get_idNode());
+
+        if (type.get_type_literal().equals("NOTHING")) {
+            return type;
+        }
+
+        MctlTypeDescriptor returnType = _symbolTable.searchType("NOTHING");
+
+        if (type instanceof MctlArrayTypeDescriptor arrayType) {
+            if (arrayType.getDegree() > 1) {
+                returnType = new MctlArrayTypeDescriptor(arrayType.getType(), arrayType.getDegree() - 1);
+            }
+            else if (arrayType.getDegree() == 1) {
+                returnType = arrayType.getType();
+            }
+        }
+        else {
+            // Add problem
+            _problemCollection.addFormattedProblem(
+                    ProblemType.ERROR_TYPE_MISMATCH,
+                    "The type \"" + type.get_type_literal() + "\" cannot be accesses as a struct",
+                    node.get_lineNumber()
+            );
+        }
+
+        return returnType;
     }
 
     public MctlTypeDescriptor visit(ExpNode node) {

@@ -244,8 +244,12 @@ public class SymbolTableVisitor implements INodeVisitor {
                         node.get_lineNumber()
                 );
             } else {
+                // Ignore problems as the relevant problems has already been added
+                problemCollection.ignoreProblems = true;
                 variable.set_isInstantiated(true);
                 idTypeDescriptor = typeCheckingVisitor.visit(node.get_assignId());
+                problemCollection.ignoreProblems = false;
+
                 if (!(idTypeDescriptor.get_type_literal().equals(expTypeDescriptor.get_type_literal()))) {
                     problemCollection.addFormattedProblem(
                             ProblemType.ERROR_TYPE_MISMATCH,
