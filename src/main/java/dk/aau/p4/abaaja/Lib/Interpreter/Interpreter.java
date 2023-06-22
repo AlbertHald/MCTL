@@ -726,6 +726,7 @@ public class Interpreter implements INodeVisitor {
         Symbol rightSymbol = resolve((ExpNode) node.get_children().get(1)).clone();
         double leftInit = ((Number) leftSymbol.get_value()).doubleValue();
         double rightInit = ((Number) rightSymbol.get_value()).doubleValue();
+
         switch(node.get_operatorLiteral()) {
             case "*" -> {
                 leftSymbol.set_value(leftInit * rightInit);
@@ -741,7 +742,12 @@ public class Interpreter implements INodeVisitor {
                 return leftSymbol;
             }
             case "%" -> {
-                leftSymbol.set_value(leftInit % rightInit);
+                if(rightInit == 0.0) {
+                    problemCollection.addFormattedProblem(ProblemType.ERROR_INTERPRETER, "Cannot divide by 0", node.get_lineNumber());
+                    leftSymbol.set_value(null);
+                }else{
+                    leftSymbol.set_value(leftInit % rightInit);
+                }
                 return leftSymbol;
             }
             default -> {
